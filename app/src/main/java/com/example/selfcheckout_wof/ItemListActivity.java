@@ -86,7 +86,10 @@ public class ItemListActivity extends AppCompatActivity {
                 MainCategories item = (MainCategories) view.getTag();
                 if (mTwoPane) {
                     Bundle arguments = new Bundle();
-                    arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.id);
+                    /**
+                     * ID here will be the name of the enum entry of the MainCategories enum
+                     */
+                    arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.name());
                     ItemDetailFragment fragment = new ItemDetailFragment();
                     fragment.setArguments(arguments);
                     mParentActivity.getSupportFragmentManager().beginTransaction()
@@ -95,7 +98,10 @@ public class ItemListActivity extends AppCompatActivity {
                 } else {
                     Context context = view.getContext();
                     Intent intent = new Intent(context, ItemDetailActivity.class);
-                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item.id);
+                    /**
+                     * ID here will be the name of the enum entry of the MainCategories enum
+                     */
+                    intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, item.name());
 
                     context.startActivity(intent);
                 }
