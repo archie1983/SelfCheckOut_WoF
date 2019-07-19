@@ -28,7 +28,7 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="com.example.selfcheckout_wof.ItemListActivity"
-        tools:listitem="@layout/item_list_content" />
+        tools:listitem="@layout/main_selector_row" />
 
     <FrameLayout
         android:id="@+id/item_detail_container"
