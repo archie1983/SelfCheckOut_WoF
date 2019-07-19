@@ -120,7 +120,7 @@ public class ItemListActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.label.setText(mValues.get(position).label);
             //holder.cvThisPicture.setBackgroundResource(mValues.get(position).getImage_resource());
             holder.llIconContent.setBackgroundResource(mValues.get(position).getImage_resource());
 
@@ -135,14 +135,14 @@ public class ItemListActivity extends AppCompatActivity {
 
         class ViewHolder extends RecyclerView.ViewHolder {
             final TextView mIdView;
-            final TextView mContentView;
+            final TextView label;
             final CardView cvThisPicture;
             final LinearLayout llIconContent;
 
             ViewHolder(View view) {
                 super(view);
                 mIdView = (TextView) view.findViewById(R.id.id_text);
-                mContentView = (TextView) view.findViewById(R.id.content);
+                label = (TextView) view.findViewById(R.id.label);
                 cvThisPicture = (CardView) view.findViewById(R.id.cvMainItemIcon);
                 llIconContent = (LinearLayout)view.findViewById(R.id.vlContent);
             }
