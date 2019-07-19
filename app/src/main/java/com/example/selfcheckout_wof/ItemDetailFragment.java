@@ -7,9 +7,12 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -65,8 +68,14 @@ public class ItemDetailFragment extends Fragment {
         /**
          * Now display the sub-selection for this main category
          */
-        if (chosenCategory != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(chosenCategory.name());
+        if (chosenCategory != null && chosenCategory.getCategory_content() != null) {
+            LinearLayout hlItemsHolder = new LinearLayout(getContext());
+            ((LinearLayout) rootView.findViewById(R.id.vItemLinesHolder)).addView(hlItemsHolder);
+            for (PurchasableGoods pg : chosenCategory.getCategory_content()) {
+                ImageView iv = new ImageView(getContext());
+                iv.setImageResource(pg.getImage_resource());
+                hlItemsHolder.addView(iv);
+            }
         }
 
         return rootView;

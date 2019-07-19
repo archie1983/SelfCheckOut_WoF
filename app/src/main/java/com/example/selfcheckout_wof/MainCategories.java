@@ -32,6 +32,7 @@ public enum MainCategories {
         this.image_resource = image_resource;
         this.id = id;
         this.label = label;
+        this.category_content = category_content;
     }
 
     public static List<MainCategories> getMainCategoriesAsList() {
@@ -40,5 +41,9 @@ public enum MainCategories {
 
     public int getImage_resource() {
         return image_resource;
+    }
+
+    public PurchasableGoods[] getCategory_content() {
+        return category_content;
     }
 }
