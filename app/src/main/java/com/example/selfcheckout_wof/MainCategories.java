@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Enum of the main categories that can be initially selected
+ * from the left side of the screen.
+ */
 public enum MainCategories {
-    NOODLES_BASE(R.drawable.noodle_base, "Pick Your Base", "nbase"),
+    BASES(R.drawable.noodle_base, "Pick Your Base", "nbase"),
     TOPPINGS(R.drawable.noodle_toppings, "With Topping", "ntop"),
     SAUCES(R.drawable.noodle_sauces, "And Sauce", "nsauce"),
     EXTRAS(R.drawable.noodle_extras, "Add Some Extras", "nextra"),
