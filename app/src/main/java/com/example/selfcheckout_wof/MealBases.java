@@ -3,7 +3,7 @@ package com.example.selfcheckout_wof;
 import java.util.Arrays;
 import java.util.List;
 
-public enum MealBases {
+public enum MealBases implements PurchasableGoods{
     EGG_NOODLES(R.drawable.dragndrop, "Egg Noodles", "With Fresh Vegetable & Egg", 425),
     WHOLE_WHEAT_NOODLES(R.drawable.dragndrop, "Whole-Wheat Noodles", "With Fresh Vegetable & Egg", 425),
     RICE_NOODLES(R.drawable.dragndrop, "Rice Noodles", "With Fresh Vegetable & Egg", 425),
@@ -30,10 +30,26 @@ public enum MealBases {
         this.price = price;
     }
 
-    public static List<MainCategories> getMealBasesAsList() {
-        return Arrays.asList(MainCategories.values());
+    public static List<MealBases> getItemsAsList() {
+        return Arrays.asList(MealBases.values());
     }
 
+    @Override
+    public int getPrice() {
+        return price;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    @Override
     public int getImage_resource() {
         return image_resource;
     }
