@@ -1,4 +1,6 @@
-package com.example.selfcheckout_wof;
+package com.example.selfcheckout_wof.data;
+
+import com.example.selfcheckout_wof.R;
 
 import java.util.Arrays;
 import java.util.List;

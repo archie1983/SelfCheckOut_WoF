@@ -3,17 +3,17 @@ package com.example.selfcheckout_wof;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.example.selfcheckout_wof.data.MainCategories;
+import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -69,9 +69,24 @@ public class ItemDetailFragment extends Fragment {
          * Now display the sub-selection for this main category
          */
         if (chosenCategory != null && chosenCategory.getCategory_content() != null) {
-            LinearLayout hlItemsHolder = new LinearLayout(getContext());
-            ((LinearLayout) rootView.findViewById(R.id.vItemLinesHolder)).addView(hlItemsHolder);
+            /**
+             * We have a vertical layout in the fragment (vItemLinesHolder).
+             * We'll be creating a series of horizontal layouts (hlItemsHolder)
+             * and adding them to the vertical layout one by one. Once we get
+             * a defined number (3 atm) of widgets in the horizontal layout,
+             * we create a new horizontal layout and add that again to the
+             * vertical layout.
+             */
+            int i = 0;
+            LinearLayout hlItemsHolder = null;
+            int widgetsInRow = 3;
+
             for (PurchasableGoods pg : chosenCategory.getCategory_content()) {
+                if (i % widgetsInRow == 0) {
+                    hlItemsHolder = new LinearLayout(getContext());
+                    ((LinearLayout) rootView.findViewById(R.id.vItemLinesHolder)).addView(hlItemsHolder);
+                }
+                i++;
                 ImageView iv = new ImageView(getContext());
                 iv.setImageResource(pg.getImage_resource());
                 hlItemsHolder.addView(iv);
