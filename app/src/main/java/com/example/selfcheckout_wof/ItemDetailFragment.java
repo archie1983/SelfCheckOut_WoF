@@ -3,6 +3,7 @@ package com.example.selfcheckout_wof;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.example.selfcheckout_wof.custom_components.SelectionGUIForOrder;
 import com.example.selfcheckout_wof.data.MainCategories;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -87,9 +88,11 @@ public class ItemDetailFragment extends Fragment {
                     ((LinearLayout) rootView.findViewById(R.id.vItemLinesHolder)).addView(hlItemsHolder);
                 }
                 i++;
-                ImageView iv = new ImageView(getContext());
-                iv.setImageResource(pg.getImage_resource());
-                hlItemsHolder.addView(iv);
+                //ImageView iv = new ImageView(getContext());
+                //iv.setImageResource(pg.getImage_resource());
+                //hlItemsHolder.addView(iv);
+                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg, getContext());
+                hlItemsHolder.addView(orderingGUI);
             }
         }
 
