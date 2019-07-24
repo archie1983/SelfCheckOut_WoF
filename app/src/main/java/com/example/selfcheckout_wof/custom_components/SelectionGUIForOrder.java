@@ -1,7 +1,10 @@
 package com.example.selfcheckout_wof.custom_components;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.InputType;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -9,6 +12,9 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.cardview.widget.CardView;
 
 import com.example.selfcheckout_wof.data.PurchasableGoods;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 /**
  * A component to allow user to make a selection of an item that they want
@@ -48,6 +54,16 @@ public class SelectionGUIForOrder extends LinearLayout {
          * Now create and add a checkbox
          */
         AppCompatCheckBox chkThisSelected = new AppCompatCheckBox(context);
+        LayoutParams layoutParams_chk = new LayoutParams(
+                LayoutParams.MATCH_PARENT, // width
+                LayoutParams.WRAP_CONTENT // height
+        );
+
+        layoutParams_chk.bottomMargin = 0;
+        //layoutParams_chk.setMarginEnd(16);
+        layoutParams_chk.topMargin = 20;
+        //layoutParams_chk.setMarginStart(16);
+        chkThisSelected.setLayoutParams(layoutParams_chk);
         this.addView(chkThisSelected);
 
         /**
@@ -62,18 +78,63 @@ public class SelectionGUIForOrder extends LinearLayout {
         vlCardViewContent.setBackgroundResource(pgItemToDisplay.getImage_resource());
         this.addView(cvThisGUI);
 
+        LayoutParams layoutParams_cv = new LayoutParams(
+                LayoutParams.MATCH_PARENT, // CardView width
+                LayoutParams.WRAP_CONTENT // CardView height
+        );
+        // Set the card view content padding
+        cvThisGUI.setContentPadding(5,5,5,5);
+        // Set margins for card view
+        layoutParams_cv.bottomMargin = 8;
+        layoutParams_cv.setMarginEnd(8);
+        layoutParams_cv.topMargin = 0;
+        layoutParams_cv.setMarginStart(8);
+        layoutParams_cv.gravity = Gravity.CENTER;
+        layoutParams_cv.height = 200;
+        layoutParams_cv.width = 250;
+        // Set the card view layout params
+        cvThisGUI.setLayoutParams(layoutParams_cv);
+        // Set the card view corner radius
+        cvThisGUI.setRadius(4F);
+        // Set card view elevation
+        cvThisGUI.setCardElevation(8F);
+
         /**
          * Now a TextView for description
          */
         TextView tvDescription = new TextView(context);
         tvDescription.setText(pgItemToDisplay.getLabel() + " " + pgItemToDisplay.getDescription());
+        //tvDescription.setSingleLine(false);
+        //tvDescription.setInputType(InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
+        tvDescription.setLines(2);
+        tvDescription.setMaxLines(2);
+
+        LayoutParams layoutParams_desc = new LayoutParams(
+                LayoutParams.MATCH_PARENT, // width
+                LayoutParams.WRAP_CONTENT // height
+        );
+
+        //layoutParams_desc.bottomMargin = 8;
+        layoutParams_desc.setMarginEnd(16);
+        //layoutParams_desc.topMargin = 8;
+        layoutParams_desc.setMarginStart(16);
+
+        tvDescription.setLayoutParams(layoutParams_desc);
         this.addView(tvDescription);
 
         /**
          * Now a TextView for price
          */
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        symbols.setGroupingSeparator(',');
+        symbols.setDecimalSeparator('.');
+
+        DecimalFormat decimalFormat = new DecimalFormat("£ #,###.00", symbols);
+        String price = decimalFormat.format(pgItemToDisplay.getPrice() / 100);
+
         TextView tvPrice = new TextView(context);
-        tvPrice.setText("£" + pgItemToDisplay.getPrice() / 100);
+        tvPrice.setLayoutParams(layoutParams_desc);
+        tvPrice.setText(price);
         this.addView(tvPrice);
     }
 }
