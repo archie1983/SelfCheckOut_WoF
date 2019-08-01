@@ -2,6 +2,7 @@ package com.example.selfcheckout_wof.custom_components;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -106,6 +107,9 @@ public class SelectionGUIForOrder extends LinearLayout {
         tvDescription.setText(pgItemToDisplay.getLabel() + " " + pgItemToDisplay.getDescription());
         //tvDescription.setSingleLine(false);
         //tvDescription.setInputType(InputType.TYPE_TEXT_FLAG_IME_MULTI_LINE);
+        /**
+         * On two lines
+         */
         tvDescription.setLines(2);
         tvDescription.setMaxLines(2);
 
@@ -129,10 +133,14 @@ public class SelectionGUIForOrder extends LinearLayout {
         symbols.setGroupingSeparator(',');
         symbols.setDecimalSeparator('.');
 
+        /**
+         * Money format
+         */
         DecimalFormat decimalFormat = new DecimalFormat("£ #,###.00", symbols);
         String price = decimalFormat.format(pgItemToDisplay.getPrice() / 100);
 
         TextView tvPrice = new TextView(context);
+        tvPrice.setTypeface(null, Typeface.BOLD);
         tvPrice.setLayoutParams(layoutParams_desc);
         tvPrice.setText(price);
         this.addView(tvPrice);
