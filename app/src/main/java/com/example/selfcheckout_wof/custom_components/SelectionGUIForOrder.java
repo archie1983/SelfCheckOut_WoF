@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -54,7 +55,7 @@ public class SelectionGUIForOrder extends LinearLayout {
         /**
          * Now create and add a checkbox
          */
-        AppCompatCheckBox chkThisSelected = new AppCompatCheckBox(context);
+        final AppCompatCheckBox chkThisSelected = new AppCompatCheckBox(context);
         LayoutParams layoutParams_chk = new LayoutParams(
                 LayoutParams.MATCH_PARENT, // width
                 LayoutParams.WRAP_CONTENT // height
@@ -67,7 +68,7 @@ public class SelectionGUIForOrder extends LinearLayout {
         chkThisSelected.setLayoutParams(layoutParams_chk);
         this.addView(chkThisSelected);
 
-        /**
+        /*
          * Now create and add a CardView to show the picture of the item that we're
          * adding to the order. The VardView will need to contain its own LinearLayout
          * because that's how I like to add images to CardView- by setting an image to
@@ -77,6 +78,21 @@ public class SelectionGUIForOrder extends LinearLayout {
         LinearLayout vlCardViewContent = new LinearLayout(context);
         cvThisGUI.addView(vlCardViewContent);
         vlCardViewContent.setBackgroundResource(pgItemToDisplay.getImage_resource());
+
+        /*
+         * Adding clickhandler for this cardView object to mark the checkbox checked
+         */
+        cvThisGUI.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (chkThisSelected.isChecked()) {
+                    chkThisSelected.setChecked(false);
+                } else {
+                    chkThisSelected.setChecked(true);
+                }
+            }
+        });
+
         this.addView(cvThisGUI);
 
         LayoutParams layoutParams_cv = new LayoutParams(
