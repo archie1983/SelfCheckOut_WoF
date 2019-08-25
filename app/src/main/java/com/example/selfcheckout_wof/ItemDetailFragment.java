@@ -66,11 +66,11 @@ public class ItemDetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
-        /**
+        /*
          * Now display the sub-selection for this main category
          */
         if (chosenCategory != null && chosenCategory.getCategory_content() != null) {
-            /**
+            /*
              * We have a vertical layout in the fragment (vItemLinesHolder).
              * We'll be creating a series of horizontal layouts (hlItemsHolder)
              * and adding them to the vertical layout one by one. Once we get
@@ -91,7 +91,7 @@ public class ItemDetailFragment extends Fragment {
                 //ImageView iv = new ImageView(getContext());
                 //iv.setImageResource(pg.getImage_resource());
                 //hlItemsHolder.addView(iv);
-                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg, getContext());
+                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg, false, getContext());
                 hlItemsHolder.addView(orderingGUI);
             }
         }

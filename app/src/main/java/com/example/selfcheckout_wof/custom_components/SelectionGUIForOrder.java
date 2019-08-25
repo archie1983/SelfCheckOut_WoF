@@ -29,46 +29,60 @@ import java.text.DecimalFormatSymbols;
  * component should become highlighted.
  */
 public class SelectionGUIForOrder extends LinearLayout {
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, Context context) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context) {
         super(context);
-        setUpGUI(pgItemToDisplay, context);
+        setUpGUI(pgItemToDisplay, context, showCheckBox);
     }
 
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, Context context, AttributeSet attrs) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs) {
         super(context, attrs);
-        setUpGUI(pgItemToDisplay, context);
+        setUpGUI(pgItemToDisplay, context, showCheckBox);
     }
 
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, Context context, AttributeSet attrs, int defStyleAttr) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setUpGUI(pgItemToDisplay, context);
+        setUpGUI(pgItemToDisplay, context, showCheckBox);
     }
 
     /**
      * Creating the required components and adding them to this SelectionGUIForOrder,
      * which at the start is just a linear layout.
+     *
+     * @param pgItemToDisplay Item to display
+     * @param context context
+     * @param showCheckBox a flag of whether we want checkbox above the item (for debug purposes)
      */
-    private void setUpGUI(PurchasableGoods pgItemToDisplay, final Context context) {
+    private void setUpGUI(PurchasableGoods pgItemToDisplay, final Context context, final boolean showCheckBox) {
         /**
          * First make the layout vertical
          */
         setOrientation(VERTICAL);
 
-        /**
-         * Now create and add a checkbox
+        /*
+         * Now create and (if required) add a checkbox. If checkbox not required,
+         * we still need to create it as we'll use it as a boolean indicator to decide
+         * if the item has been selected or not (it's easier that way instead of having
+         * a boolean flag, because the object has to be final and if boolean flag is
+         * final, then we can't change it, but we can change the "selected" property
+         * of a final checkbox.
          */
         final AppCompatCheckBox chkThisSelected = new AppCompatCheckBox(context);
-        LayoutParams layoutParams_chk = new LayoutParams(
-                LayoutParams.MATCH_PARENT, // width
-                LayoutParams.WRAP_CONTENT // height
-        );
+        /*
+        Only display the checkbox if we need to do so (probably for debug purposes)
+         */
+        if (showCheckBox) {
+            LayoutParams layoutParams_chk = new LayoutParams(
+                    LayoutParams.MATCH_PARENT, // width
+                    LayoutParams.WRAP_CONTENT // height
+            );
 
-        layoutParams_chk.bottomMargin = 0;
-        //layoutParams_chk.setMarginEnd(16);
-        layoutParams_chk.topMargin = 20;
-        //layoutParams_chk.setMarginStart(16);
-        chkThisSelected.setLayoutParams(layoutParams_chk);
-        this.addView(chkThisSelected);
+            layoutParams_chk.bottomMargin = 0;
+            //layoutParams_chk.setMarginEnd(16);
+            layoutParams_chk.topMargin = 20;
+            //layoutParams_chk.setMarginStart(16);
+            chkThisSelected.setLayoutParams(layoutParams_chk);
+            this.addView(chkThisSelected);
+        }
 
         /*
          * Now create and add a CardView to show the picture of the item that we're
