@@ -12,7 +12,9 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 
+import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
 import java.text.DecimalFormat;
@@ -46,7 +48,7 @@ public class SelectionGUIForOrder extends LinearLayout {
      * Creating the required components and adding them to this SelectionGUIForOrder,
      * which at the start is just a linear layout.
      */
-    private void setUpGUI(PurchasableGoods pgItemToDisplay, Context context) {
+    private void setUpGUI(PurchasableGoods pgItemToDisplay, final Context context) {
         /**
          * First make the layout vertical
          */
@@ -74,7 +76,7 @@ public class SelectionGUIForOrder extends LinearLayout {
          * because that's how I like to add images to CardView- by setting an image to
          * be a background of a LinearLayout inside the Cardview.
          */
-        CardView cvThisGUI = new CardView(context);
+        final CardView cvThisGUI = new CardView(context);
         LinearLayout vlCardViewContent = new LinearLayout(context);
         cvThisGUI.addView(vlCardViewContent);
         vlCardViewContent.setBackgroundResource(pgItemToDisplay.getImage_resource());
@@ -87,8 +89,10 @@ public class SelectionGUIForOrder extends LinearLayout {
             public void onClick(View view) {
                 if (chkThisSelected.isChecked()) {
                     chkThisSelected.setChecked(false);
+                    cvThisGUI.setCardBackgroundColor(Color.WHITE);
                 } else {
                     chkThisSelected.setChecked(true);
+                    cvThisGUI.setCardBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
                 }
             }
         });
