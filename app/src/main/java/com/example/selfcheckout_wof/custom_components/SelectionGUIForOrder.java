@@ -58,6 +58,8 @@ public class SelectionGUIForOrder extends LinearLayout {
          */
         setOrientation(VERTICAL);
 
+        final SelectionGUIForOrder thisSelectionGUI = this;
+
         /*
          * Now create and (if required) add a checkbox. If checkbox not required,
          * we still need to create it as we'll use it as a boolean indicator to decide
@@ -95,22 +97,6 @@ public class SelectionGUIForOrder extends LinearLayout {
         cvThisGUI.addView(vlCardViewContent);
         vlCardViewContent.setBackgroundResource(pgItemToDisplay.getImage_resource());
 
-        /*
-         * Adding clickhandler for this cardView object to mark the checkbox checked
-         */
-        cvThisGUI.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (chkThisSelected.isChecked()) {
-                    chkThisSelected.setChecked(false);
-                    cvThisGUI.setCardBackgroundColor(Color.WHITE);
-                } else {
-                    chkThisSelected.setChecked(true);
-                    cvThisGUI.setCardBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
-                }
-            }
-        });
-
         this.addView(cvThisGUI);
 
         LayoutParams layoutParams_cv = new LayoutParams(
@@ -122,7 +108,7 @@ public class SelectionGUIForOrder extends LinearLayout {
         // Set margins for card view
         layoutParams_cv.bottomMargin = 8;
         layoutParams_cv.setMarginEnd(8);
-        layoutParams_cv.topMargin = 0;
+        layoutParams_cv.topMargin = (showCheckBox ? 0 : 20);
         layoutParams_cv.setMarginStart(8);
         layoutParams_cv.gravity = Gravity.CENTER;
         layoutParams_cv.height = 200;
@@ -160,6 +146,11 @@ public class SelectionGUIForOrder extends LinearLayout {
         tvDescription.setLayoutParams(layoutParams_desc);
         this.addView(tvDescription);
 
+        /*
+        Description view for colouring it later when selected
+         */
+        final View vDescription = this.getChildAt(this.getChildCount() - 1);
+
         /**
          * Now a TextView for price
          */
@@ -178,5 +169,32 @@ public class SelectionGUIForOrder extends LinearLayout {
         tvPrice.setLayoutParams(layoutParams_desc);
         tvPrice.setText(price);
         this.addView(tvPrice);
+
+        /*
+        Price view for colouring it later when selected
+         */
+        final View vPrice = this.getChildAt(this.getChildCount() - 1);
+
+        /*
+         * Adding clickhandler for this cardView object to mark the checkbox checked
+         */
+        cvThisGUI.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (chkThisSelected.isChecked()) {
+                    chkThisSelected.setChecked(false);
+                    cvThisGUI.setCardBackgroundColor(Color.WHITE);
+                    vDescription.setBackgroundColor(Color.WHITE);
+                    vPrice.setBackgroundColor(Color.WHITE);
+                    //thisSelectionGUI.setBackgroundColor(Color.WHITE);
+                } else {
+                    chkThisSelected.setChecked(true);
+                    cvThisGUI.setCardBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+                    //thisSelectionGUI.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+                    vDescription.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+                    vPrice.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+                }
+            }
+        });
     }
 }
