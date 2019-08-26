@@ -32,19 +32,19 @@ import java.text.DecimalFormatSymbols;
  * component should become highlighted.
  */
 public class SelectionGUIForOrder extends LinearLayout {
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final ItemListActivity fragmentsParent, final boolean showCheckBox, Context context) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context) {
         super(context);
-        setUpGUI(pgItemToDisplay, context, fragmentsParent, showCheckBox);
+        setUpGUI(pgItemToDisplay, context, showCheckBox);
     }
 
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final ItemListActivity fragmentsParent, final boolean showCheckBox, Context context, AttributeSet attrs) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs) {
         super(context, attrs);
-        setUpGUI(pgItemToDisplay, context, fragmentsParent, showCheckBox);
+        setUpGUI(pgItemToDisplay, context, showCheckBox);
     }
 
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final ItemListActivity fragmentsParent, final boolean showCheckBox, Context context, AttributeSet attrs, int defStyleAttr) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setUpGUI(pgItemToDisplay, context, fragmentsParent, showCheckBox);
+        setUpGUI(pgItemToDisplay, context, showCheckBox);
     }
 
     /**
@@ -53,11 +53,9 @@ public class SelectionGUIForOrder extends LinearLayout {
      *
      * @param pgItemToDisplay Item to display
      * @param context context
-     * @param fragmentsParent parent of the fragment, where we're using this GUI object. We'll need it
-     *                        for inflating the user's choice fragment.
      * @param showCheckBox a flag of whether we want checkbox above the item (for debug purposes)
      */
-    private void setUpGUI(final PurchasableGoods pgItemToDisplay, final Context context, final ItemListActivity fragmentsParent, final boolean showCheckBox) {
+    private void setUpGUI(final PurchasableGoods pgItemToDisplay, final Context context, final boolean showCheckBox) {
         /**
          * First make the layout vertical
          */
@@ -193,7 +191,6 @@ public class SelectionGUIForOrder extends LinearLayout {
                     vPrice.setBackgroundColor(Color.WHITE);
                     //thisSelectionGUI.setBackgroundColor(Color.WHITE);
 
-
                     /*
                      * Now we'll update the user's selected choice on the right hand side.
                      * The selected choice will eventually form the invoice and will be sent
@@ -206,7 +203,13 @@ public class SelectionGUIForOrder extends LinearLayout {
                     arguments.putString(UsersChoiceFragment.ARG_PARAM3, pgItemToDisplay.getLabel() + " " + pgItemToDisplay.getDescription());
                     UsersChoiceFragment fragment = new UsersChoiceFragment();
                     fragment.setArguments(arguments);
-                    fragmentsParent.getSupportFragmentManager().beginTransaction()
+
+                    /*
+                     * Fragment support manager is acquired from ItemListActivity.getInstance()
+                     * as that is where we got it from for the first fragment. We will use it
+                     * again for the users choice fragment.
+                     */
+                    ItemListActivity.getInstance().getSupportFragmentManager().beginTransaction()
                             .replace(R.id.users_choice_container, fragment)
                             .commit();
                 } else {

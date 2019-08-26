@@ -30,19 +30,34 @@ import java.util.List;
  * lead to a {@link ItemDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
- *
- * It has to implement Serializable because I'm planning to pass it to
- * the fragment of item category content and use it there to pass to
- * SelectionGUIForOrder, where it will be used to fill in another
- * fragment- this time the user's selected choice.
  */
-public class ItemListActivity extends AppCompatActivity implements Serializable {
+public class ItemListActivity extends AppCompatActivity {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.
      */
     private boolean mTwoPane;
+
+    /**
+     * I need a static reference to this class because I'm planning to use
+     * its fragment manager capabilities in SelectionGUIForOrder, where it
+     * will be used to fill in another fragment- this time the user's
+     * selected choice.
+     */
+    private static ItemListActivity self;
+
+    /**
+     * I'm planning to use a static reference to this class for
+     * its fragment manager capabilities in SelectionGUIForOrder, where it
+     * will be used to fill in another fragment- this time the user's
+     * selected choice.
+     *
+     * @return
+     */
+    public static ItemListActivity getInstance() {
+        return self;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +91,7 @@ public class ItemListActivity extends AppCompatActivity implements Serializable 
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+        self = this;
         recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(this, MainCategories.getMainCategoriesAsList(), mTwoPane));
     }
 
@@ -95,13 +111,6 @@ public class ItemListActivity extends AppCompatActivity implements Serializable 
                      * ID here will be the name of the enum entry of the MainCategories enum
                      */
                     arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.name());
-
-                    /*
-                     * Including parent this class as parent for the fragment that we will
-                     * be inflating now. We will later need this parent to inflate another
-                     * fragment- the user's selected choice.
-                     */
-                    arguments.putSerializable(ItemDetailFragment.ARG_PARENT_KEY, mParentActivity);
 
                     ItemDetailFragment fragment = new ItemDetailFragment();
                     fragment.setArguments(arguments);
