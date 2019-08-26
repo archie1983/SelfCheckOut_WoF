@@ -3,6 +3,7 @@ package com.example.selfcheckout_wof;
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.example.selfcheckout_wof.custom_components.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.custom_components.SelectionGUIForOrder;
 import com.example.selfcheckout_wof.data.MainCategories;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
@@ -91,7 +92,7 @@ public class ItemDetailFragment extends Fragment {
                 //ImageView iv = new ImageView(getContext());
                 //iv.setImageResource(pg.getImage_resource());
                 //hlItemsHolder.addView(iv);
-                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg, false, getContext());
+                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg, new ActionForSelectionGUI(pg), false, getContext());
                 hlItemsHolder.addView(orderingGUI);
             }
         }

@@ -32,30 +32,31 @@ import java.text.DecimalFormatSymbols;
  * component should become highlighted.
  */
 public class SelectionGUIForOrder extends LinearLayout {
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, ActionForSelectionGUI action, boolean showCheckBox, Context context) {
         super(context);
-        setUpGUI(pgItemToDisplay, context, showCheckBox);
+        setUpGUI(pgItemToDisplay, action, context, showCheckBox);
     }
 
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs) {
-        super(context, attrs);
-        setUpGUI(pgItemToDisplay, context, showCheckBox);
-    }
-
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        setUpGUI(pgItemToDisplay, context, showCheckBox);
-    }
+//    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs) {
+//        super(context, attrs);
+//        setUpGUI(pgItemToDisplay, context, showCheckBox);
+//    }
+//
+//    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs, int defStyleAttr) {
+//        super(context, attrs, defStyleAttr);
+//        setUpGUI(pgItemToDisplay, context, showCheckBox);
+//    }
 
     /**
      * Creating the required components and adding them to this SelectionGUIForOrder,
      * which at the start is just a linear layout.
      *
      * @param pgItemToDisplay Item to display
+     * @param action action to perform upon selecting / de-selecting the item
      * @param context context
      * @param showCheckBox a flag of whether we want checkbox above the item (for debug purposes)
      */
-    private void setUpGUI(final PurchasableGoods pgItemToDisplay, final Context context, final boolean showCheckBox) {
+    private void setUpGUI(PurchasableGoods pgItemToDisplay, final ActionForSelectionGUI action, final Context context, final boolean showCheckBox) {
         /**
          * First make the layout vertical
          */
@@ -192,32 +193,22 @@ public class SelectionGUIForOrder extends LinearLayout {
                     //thisSelectionGUI.setBackgroundColor(Color.WHITE);
 
                     /*
-                     * Now we'll update the user's selected choice on the right hand side.
-                     * The selected choice will eventually form the invoice and will be sent
-                     * to the chef for cooking.
+                     * performing the necessary action upon de-selecting the item (e.g. removing the item from the user's
+                     * choice and displaying partial invoice.
                      */
-                    Bundle arguments = new Bundle();
-                    /*
-                     * ID here will be the name of the enum entry of the MainCategories enum
-                     */
-                    arguments.putString(UsersChoiceFragment.ARG_PARAM3, pgItemToDisplay.getLabel() + " " + pgItemToDisplay.getDescription());
-                    UsersChoiceFragment fragment = new UsersChoiceFragment();
-                    fragment.setArguments(arguments);
-
-                    /*
-                     * Fragment support manager is acquired from ItemListActivity.getInstance()
-                     * as that is where we got it from for the first fragment. We will use it
-                     * again for the users choice fragment.
-                     */
-                    ItemListActivity.getInstance().getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.users_choice_container, fragment)
-                            .commit();
+                    action.onDeSelected();
                 } else {
                     chkThisSelected.setChecked(true);
                     cvThisGUI.setCardBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
                     //thisSelectionGUI.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
                     vDescription.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
                     vPrice.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+
+                    /*
+                     * performing the necessary action upon selecting the item (e.g. adding the item to the user's
+                     * choice and displaying partial invoice.
+                     */
+                    action.onSelected();
                 }
             }
         });
