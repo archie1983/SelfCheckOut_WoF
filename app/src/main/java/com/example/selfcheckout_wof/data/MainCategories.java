@@ -14,7 +14,7 @@ public enum MainCategories {
      * For meal bases we will only want one item selected (hence 1 item selectable).
      */
     BASES(R.drawable.noodle_base, "Pick Your Base", "nbase", MealBases.values(), 1, MealBases.class),
-    TOPPINGS(R.drawable.noodle_toppings, "With Topping", "ntop", null, 0,null),
+    TOPPINGS(R.drawable.noodle_toppings, "With Topping", "ntop", MealToppings.values(), MealToppings.values().length, MealToppings.class),
     SAUCES(R.drawable.noodle_sauces, "And Sauce", "nsauce", null,0,null),
     EXTRAS(R.drawable.noodle_extras, "Add Some Extras", "nextra", null,0,null),
     DRINKS(R.drawable.bubble_drinks, "Choose Drink", "bdrink", null,0,null);
