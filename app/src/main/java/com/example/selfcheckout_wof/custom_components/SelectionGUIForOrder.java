@@ -32,9 +32,23 @@ import java.text.DecimalFormatSymbols;
  * component should become highlighted.
  */
 public class SelectionGUIForOrder extends LinearLayout {
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, ActionForSelectionGUI action, boolean showCheckBox, Context context) {
+
+    /**
+     * Constructor of the selection GUI.
+     *
+     * @param pgItemToDisplay the purchasable item to represent
+     * @param action action to perform when selected / de-selected
+     * @param selected a flag of whether it is initially selected or not
+     * @param showCheckBox a flag of whether we want to display a checkbox
+     * @param context
+     */
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay,
+                                ActionForSelectionGUI action,
+                                boolean selected,
+                                boolean showCheckBox,
+                                Context context) {
         super(context);
-        setUpGUI(pgItemToDisplay, action, context, showCheckBox);
+        setUpGUI(pgItemToDisplay, action, selected, context, showCheckBox);
     }
 
 //    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs) {
@@ -53,10 +67,15 @@ public class SelectionGUIForOrder extends LinearLayout {
      *
      * @param pgItemToDisplay Item to display
      * @param action action to perform upon selecting / de-selecting the item
+     * @param selected a flag of whether this selection GUI is initially selected or not
      * @param context context
      * @param showCheckBox a flag of whether we want checkbox above the item (for debug purposes)
      */
-    private void setUpGUI(PurchasableGoods pgItemToDisplay, final ActionForSelectionGUI action, final Context context, final boolean showCheckBox) {
+    private void setUpGUI(PurchasableGoods pgItemToDisplay,
+                          final ActionForSelectionGUI action,
+                          final boolean selected,
+                          final Context context,
+                          final boolean showCheckBox) {
         /**
          * First make the layout vertical
          */
@@ -212,5 +231,17 @@ public class SelectionGUIForOrder extends LinearLayout {
                 }
             }
         });
+
+        /*
+         * finally if we already have this item selected in the user's choices, then
+         * we need to paint it selected.
+         */
+        if (selected) {
+            chkThisSelected.setChecked(true);
+            cvThisGUI.setCardBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+            //thisSelectionGUI.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+            vDescription.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+            vPrice.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import com.example.selfcheckout_wof.custom_components.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.custom_components.SelectionGUIForOrder;
+import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.data.MainCategories;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -92,7 +93,11 @@ public class ItemDetailFragment extends Fragment {
                 //ImageView iv = new ImageView(getContext());
                 //iv.setImageResource(pg.getImage_resource());
                 //hlItemsHolder.addView(iv);
-                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg, new ActionForSelectionGUI(pg), false, getContext());
+                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg,
+                        new ActionForSelectionGUI(pg),
+                        UsersSelectedChoice.itemIsSelected(pg),
+                        false,
+                        getContext());
                 hlItemsHolder.addView(orderingGUI);
             }
         }
