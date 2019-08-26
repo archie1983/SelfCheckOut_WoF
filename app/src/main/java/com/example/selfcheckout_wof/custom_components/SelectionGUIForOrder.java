@@ -165,8 +165,8 @@ public class SelectionGUIForOrder extends LinearLayout {
         /**
          * Money format
          */
-        DecimalFormat decimalFormat = new DecimalFormat("£ #,###.00", symbols);
-        String price = decimalFormat.format(pgItemToDisplay.getPrice() / 100);
+        DecimalFormat decimalFormat = new DecimalFormat("£ #,##0.00", symbols);
+        String price = decimalFormat.format(pgItemToDisplay.getPrice() / 100.0);
 
         TextView tvPrice = new TextView(context);
         tvPrice.setTypeface(null, Typeface.BOLD);
