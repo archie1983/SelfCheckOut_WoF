@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -29,8 +30,13 @@ import java.util.List;
  * lead to a {@link ItemDetailActivity} representing
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
+ *
+ * It has to implement Serializable because I'm planning to pass it to
+ * the fragment of item category content and use it there to pass to
+ * SelectionGUIForOrder, where it will be used to fill in another
+ * fragment- this time the user's selected choice.
  */
-public class ItemListActivity extends AppCompatActivity {
+public class ItemListActivity extends AppCompatActivity implements Serializable {
 
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
@@ -51,7 +57,7 @@ public class ItemListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Replace with your own action1", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -89,8 +95,17 @@ public class ItemListActivity extends AppCompatActivity {
                      * ID here will be the name of the enum entry of the MainCategories enum
                      */
                     arguments.putString(ItemDetailFragment.ARG_ITEM_ID, item.name());
+
+                    /*
+                     * Including parent this class as parent for the fragment that we will
+                     * be inflating now. We will later need this parent to inflate another
+                     * fragment- the user's selected choice.
+                     */
+                    arguments.putSerializable(ItemDetailFragment.ARG_PARENT_KEY, mParentActivity);
+
                     ItemDetailFragment fragment = new ItemDetailFragment();
                     fragment.setArguments(arguments);
+
                     mParentActivity.getSupportFragmentManager().beginTransaction()
                             .replace(R.id.item_detail_container, fragment)
                             .commit();

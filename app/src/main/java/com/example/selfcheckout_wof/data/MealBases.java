@@ -18,7 +18,7 @@ public enum MealBases implements PurchasableGoods{
     public String description = "AE";
     public String label = "AE2";
 
-    /**
+    /*
      * Price of the meal base in PENNIES (hence it's an int and not a double)
      */
     public int price = 0;
@@ -54,5 +54,14 @@ public enum MealBases implements PurchasableGoods{
     @Override
     public int getImage_resource() {
         return image_resource;
+    }
+
+    @Override
+    public int numberOfMultiSelectableItems() {
+    /*
+    A number of how many items can be selected alongside other items in this category.
+    For meal bases we will only want one item selected (hence 0 items selectable alongside).
+     */
+        return 0;
     }
 }

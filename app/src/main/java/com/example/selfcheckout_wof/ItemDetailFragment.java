@@ -28,6 +28,13 @@ public class ItemDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_PARENT_KEY = "parent_key";
+
+    /*
+     * We will need the parent of this fragment as we will need to inflate more fragments-
+     * the user's selected choice for example.
+     */
+    private ItemListActivity thisFragmentsParent = null;
 
     /**
      * The main category selection that this fragment is now representing.
@@ -58,6 +65,10 @@ public class ItemDetailFragment extends Fragment {
             if (appBarLayout != null) {
                 appBarLayout.setTitle(chosenCategory.label);
             }
+        }
+
+        if(getArguments().containsKey(ARG_PARENT_KEY)) {
+            thisFragmentsParent = (ItemListActivity) getArguments().getSerializable(ARG_PARENT_KEY);
         }
     }
 
@@ -91,7 +102,7 @@ public class ItemDetailFragment extends Fragment {
                 //ImageView iv = new ImageView(getContext());
                 //iv.setImageResource(pg.getImage_resource());
                 //hlItemsHolder.addView(iv);
-                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg, false, getContext());
+                SelectionGUIForOrder orderingGUI = new SelectionGUIForOrder(pg, thisFragmentsParent,false, getContext());
                 hlItemsHolder.addView(orderingGUI);
             }
         }

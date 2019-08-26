@@ -12,5 +12,19 @@ public interface PurchasableGoods {
     public int getPrice();
     public String getDescription();
     public String getLabel();
+
+    /**
+     * Returns the image that we want displayed for this purchasable goods item.
+     *
+     * @return
+     */
     public int getImage_resource();
+
+    /**
+     * Returns a number of how many purchasable goods items can be selected
+     * alongside other purchasable goods items in the same category.
+     *
+     * @return
+     */
+    public int numberOfMultiSelectableItems();
 }

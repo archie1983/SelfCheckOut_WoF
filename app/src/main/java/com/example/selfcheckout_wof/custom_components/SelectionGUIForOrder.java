@@ -3,6 +3,7 @@ package com.example.selfcheckout_wof.custom_components;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.text.InputType;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -13,7 +14,9 @@ import android.widget.TextView;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
+import com.example.selfcheckout_wof.ItemListActivity;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
@@ -29,19 +32,19 @@ import java.text.DecimalFormatSymbols;
  * component should become highlighted.
  */
 public class SelectionGUIForOrder extends LinearLayout {
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final ItemListActivity fragmentsParent, final boolean showCheckBox, Context context) {
         super(context);
-        setUpGUI(pgItemToDisplay, context, showCheckBox);
+        setUpGUI(pgItemToDisplay, context, fragmentsParent, showCheckBox);
     }
 
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final ItemListActivity fragmentsParent, final boolean showCheckBox, Context context, AttributeSet attrs) {
         super(context, attrs);
-        setUpGUI(pgItemToDisplay, context, showCheckBox);
+        setUpGUI(pgItemToDisplay, context, fragmentsParent, showCheckBox);
     }
 
-    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final boolean showCheckBox, Context context, AttributeSet attrs, int defStyleAttr) {
+    public SelectionGUIForOrder(PurchasableGoods pgItemToDisplay, final ItemListActivity fragmentsParent, final boolean showCheckBox, Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setUpGUI(pgItemToDisplay, context, showCheckBox);
+        setUpGUI(pgItemToDisplay, context, fragmentsParent, showCheckBox);
     }
 
     /**
@@ -50,9 +53,11 @@ public class SelectionGUIForOrder extends LinearLayout {
      *
      * @param pgItemToDisplay Item to display
      * @param context context
+     * @param fragmentsParent parent of the fragment, where we're using this GUI object. We'll need it
+     *                        for inflating the user's choice fragment.
      * @param showCheckBox a flag of whether we want checkbox above the item (for debug purposes)
      */
-    private void setUpGUI(PurchasableGoods pgItemToDisplay, final Context context, final boolean showCheckBox) {
+    private void setUpGUI(final PurchasableGoods pgItemToDisplay, final Context context, final ItemListActivity fragmentsParent, final boolean showCheckBox) {
         /**
          * First make the layout vertical
          */
@@ -187,6 +192,23 @@ public class SelectionGUIForOrder extends LinearLayout {
                     vDescription.setBackgroundColor(Color.WHITE);
                     vPrice.setBackgroundColor(Color.WHITE);
                     //thisSelectionGUI.setBackgroundColor(Color.WHITE);
+
+
+                    /*
+                     * Now we'll update the user's selected choice on the right hand side.
+                     * The selected choice will eventually form the invoice and will be sent
+                     * to the chef for cooking.
+                     */
+                    Bundle arguments = new Bundle();
+                    /*
+                     * ID here will be the name of the enum entry of the MainCategories enum
+                     */
+                    arguments.putString(UsersChoiceFragment.ARG_PARAM3, pgItemToDisplay.getLabel() + " " + pgItemToDisplay.getDescription());
+                    UsersChoiceFragment fragment = new UsersChoiceFragment();
+                    fragment.setArguments(arguments);
+                    fragmentsParent.getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.users_choice_container, fragment)
+                            .commit();
                 } else {
                     chkThisSelected.setChecked(true);
                     cvThisGUI.setCardBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
