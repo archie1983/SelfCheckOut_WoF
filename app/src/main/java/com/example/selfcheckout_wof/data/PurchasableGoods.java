@@ -19,12 +19,4 @@ public interface PurchasableGoods {
      * @return
      */
     public int getImage_resource();
-
-    /**
-     * Returns a number of how many purchasable goods items can be selected
-     * alongside other purchasable goods items in the same category.
-     *
-     * @return
-     */
-    public int numberOfMultiSelectableItems();
 }

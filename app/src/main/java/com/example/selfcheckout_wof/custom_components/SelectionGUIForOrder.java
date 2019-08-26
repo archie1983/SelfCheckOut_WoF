@@ -186,29 +186,29 @@ public class SelectionGUIForOrder extends LinearLayout {
             @Override
             public void onClick(View view) {
                 if (chkThisSelected.isChecked()) {
-                    chkThisSelected.setChecked(false);
-                    cvThisGUI.setCardBackgroundColor(Color.WHITE);
-                    vDescription.setBackgroundColor(Color.WHITE);
-                    vPrice.setBackgroundColor(Color.WHITE);
-                    //thisSelectionGUI.setBackgroundColor(Color.WHITE);
-
                     /*
                      * performing the necessary action upon de-selecting the item (e.g. removing the item from the user's
                      * choice and displaying partial invoice.
                      */
-                    action.onDeSelected();
+                    if (action.onDeSelected()) {
+                        chkThisSelected.setChecked(false);
+                        cvThisGUI.setCardBackgroundColor(Color.WHITE);
+                        vDescription.setBackgroundColor(Color.WHITE);
+                        vPrice.setBackgroundColor(Color.WHITE);
+                        //thisSelectionGUI.setBackgroundColor(Color.WHITE);
+                    }
                 } else {
-                    chkThisSelected.setChecked(true);
-                    cvThisGUI.setCardBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
-                    //thisSelectionGUI.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
-                    vDescription.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
-                    vPrice.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
-
                     /*
                      * performing the necessary action upon selecting the item (e.g. adding the item to the user's
                      * choice and displaying partial invoice.
                      */
-                    action.onSelected();
+                    if (action.onSelected()) {
+                        chkThisSelected.setChecked(true);
+                        cvThisGUI.setCardBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+                        //thisSelectionGUI.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+                        vDescription.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+                        vPrice.setBackgroundColor(ContextCompat.getColor(context, R.color.selected_goods));
+                    }
                 }
             }
         });

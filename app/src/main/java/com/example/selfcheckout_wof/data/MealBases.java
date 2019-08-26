@@ -55,13 +55,4 @@ public enum MealBases implements PurchasableGoods{
     public int getImage_resource() {
         return image_resource;
     }
-
-    @Override
-    public int numberOfMultiSelectableItems() {
-    /*
-    A number of how many items can be selected alongside other items in this category.
-    For meal bases we will only want one item selected (hence 0 items selectable alongside).
-     */
-        return 0;
-    }
 }
