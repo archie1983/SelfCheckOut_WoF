@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical"
+tools:context=".AdminActivity">
+
+    <EditText
+        android:id="@+id/txtCatLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/enter_cat_label"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:text="@string/txtItemLabel" />
+
+    <Button
+        android:id="@+id/btnAddMainCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onAddMainCategory"
+        android:text="@string/btnAddMainCategory" />
+
+    <fragment
+        android:id="@+id/fEditSalesItem"
+        android:name="com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

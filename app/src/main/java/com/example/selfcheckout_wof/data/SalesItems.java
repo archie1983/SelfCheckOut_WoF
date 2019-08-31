@@ -26,4 +26,22 @@ public class SalesItems {
 
     @ColumnInfo(name = "price")
     public int price;
+
+    /**
+     * A static method for creating a top level category
+     *
+     * @param label
+     * @return
+     */
+    public static SalesItems createTopCategory(String label) {
+        SalesItems s = new SalesItems();
+        s.label = label;
+        s.description = "";
+        s.numberOfMultiSelectableItems = 1;
+        s.parentCategoryId = -1;
+        s.price = 0;
+        s.pictureUrl = "";
+
+        return s;
+    }
 }
