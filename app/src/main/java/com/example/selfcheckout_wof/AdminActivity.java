@@ -14,6 +14,8 @@ import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.SalesItems;
 
+import java.util.List;
+
 /**
  * Activity for managing sales items (adding, removing, listing).
  *
@@ -42,10 +44,28 @@ public class AdminActivity extends AppCompatActivity
      * @param view
      */
     public void onAddMainCategory(View view) {
-        String mainCatText = ((EditText)findViewById(R.id.txtCatLabel)).getText().toString();
-        AppDatabase db = getDBInstance(getApplicationContext());
+        final String mainCatText = ((EditText)findViewById(R.id.txtCatLabel)).getText().toString();
+        final AppDatabase db = getDBInstance(getApplicationContext());
 
-        db.salesItemsDao().insertAll(SalesItems.createTopCategory(mainCatText));
+        /**
+         * Have to do it in a separate thread because Room doesn't allow running
+         * db stuff on the main thread.
+         */
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                db.salesItemsDao().insertAll(SalesItems.createTopCategory(mainCatText));
+                updateSalesItemsListView();
+            }
+        });
+
+        t.start();
+    }
+
+    private static List<SalesItems> salesItemsList;
+
+    public static List<SalesItems> getCurrentSalesItemsList() {
+        return salesItemsList;
     }
 
     /**
@@ -53,9 +73,14 @@ public class AdminActivity extends AppCompatActivity
      * the fragment, where we're showing them. This function will do that.
      */
     private void updateSalesItemsListView() {
+        final AppDatabase db = getDBInstance(getApplicationContext());
+        if (db != null) {
+            salesItemsList = db.salesItemsDao().getAll();
+        }
+
         AdmSalesItemsListFragment fragment = new AdmSalesItemsListFragment();
 
-        ItemListActivity.getInstance().getSupportFragmentManager().beginTransaction()
+        getSupportFragmentManager().beginTransaction()
                 .replace(R.id.adm_sales_items_list_container, fragment)
                 .commit();
     }

@@ -41,11 +41,6 @@ public class AdmSalesItemsListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    /*
-     * Access to database. We initiate it in the onAttach method.
-     */
-    private AppDatabase db = null;
-
     public AdmSalesItemsListFragment() {
         // Required empty public constructor
     }
@@ -81,14 +76,13 @@ public class AdmSalesItemsListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_adm_sales_items_list, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_adm_sales_items_list, container, false);
 
-        if (db != null) {
-            List<SalesItems> salesItemsList = db.salesItemsDao().getAll();
+        LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vItemListRows));
 
-            LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vItemListRows));
-
-            for (SalesItems si : salesItemsList) {
+        List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
+        if (sales_items != null) {
+            for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
                 TextView tv = new TextView(getContext());
                 tv.setText(si.label);
                 itemListRows.addView(tv);
@@ -115,7 +109,6 @@ public class AdmSalesItemsListFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
 
-        db = AdminActivity.getDBInstance(context);
     }
 
     @Override

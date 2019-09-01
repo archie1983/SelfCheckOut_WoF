@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 
 @Entity
 public class SalesItems {
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     public int si_id;
 
     @ColumnInfo(name = "item_label")
