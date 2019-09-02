@@ -10,17 +10,40 @@ tools:context=".AdminActivity">
 
     <EditText
         android:id="@+id/txtCatLabel"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:ems="10"
         android:hint="@string/enter_cat_label"
         android:importantForAutofill="no"
-        android:inputType="text"
-        android:text="@string/txtItemLabel" />
+        android:inputType="text" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnChooseCatImg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_horizontal|center_vertical"
+            android:onClick="onCategoryPictureSelect"
+            android:text="@string/choose_cat_img" />
+
+        <ImageView
+            android:id="@+id/imgCategoryPicture"
+            android:layout_width="120dp"
+            android:layout_height="90dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/choose_cat_img"
+            app:srcCompat="@drawable/dragndrop" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btnAddMainCategory"
-        android:layout_width="match_parent"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:onClick="onAddMainCategory"
         android:text="@string/btnAddMainCategory" />

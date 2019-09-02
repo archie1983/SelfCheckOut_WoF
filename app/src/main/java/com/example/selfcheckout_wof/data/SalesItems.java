@@ -33,14 +33,14 @@ public class SalesItems {
      * @param label
      * @return
      */
-    public static SalesItems createTopCategory(String label) {
+    public static SalesItems createTopCategory(String label, String pictureUrl) {
         SalesItems s = new SalesItems();
         s.label = label;
         s.description = "";
         s.numberOfMultiSelectableItems = 1;
         s.parentCategoryId = -1;
         s.price = 0;
-        s.pictureUrl = "";
+        s.pictureUrl = pictureUrl;
 
         return s;
     }

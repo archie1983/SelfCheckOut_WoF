@@ -8,5 +8,6 @@
     <string name="btnAddMainCategory">Add Main Category</string>
     <string name="txtItemLabel">Label</string>
     <string name="enter_cat_label">Enter Category Label</string>
+    <string name="choose_cat_img">Choose Category Image</string>
 
 </resources>

@@ -83,9 +83,18 @@ public class AdmSalesItemsListFragment extends Fragment {
         List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
         if (sales_items != null) {
             for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
-                TextView tv = new TextView(getContext());
-                tv.setText(si.label);
-                itemListRows.addView(tv);
+                LinearLayout itemRow = new LinearLayout(getContext());
+                itemRow.setOrientation(LinearLayout.HORIZONTAL);
+
+                TextView tvLabel = new TextView(getContext());
+                tvLabel.setText(si.label);
+                itemRow.addView(tvLabel);
+
+                TextView tvUri = new TextView(getContext());
+                tvUri.setText(si.pictureUrl);
+                itemRow.addView(tvUri);
+
+                itemListRows.addView(itemRow);
             }
         }
 
