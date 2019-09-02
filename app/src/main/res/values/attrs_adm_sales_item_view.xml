@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="AdmSalesItemView">
+        <attr name="selected" format="boolean" />
+    </declare-styleable>
+</resources>

@@ -3,20 +3,13 @@ package com.example.selfcheckout_wof.custom_components;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Bundle;
-import android.text.InputType;
-import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
-import com.example.selfcheckout_wof.ItemListActivity;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 

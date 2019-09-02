@@ -211,7 +211,7 @@ public class AdminActivity extends AppCompatActivity
                 //showImage(uri);
                 ImageView iv = ((ImageView)findViewById(R.id.imgCategoryPicture));
                 iv.setImageURI(uri);
-                selected_image_uri = uri.getPath();
+                selected_image_uri = uri.toString();
             }
         }
     }

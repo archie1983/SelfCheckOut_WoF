@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -83,18 +84,7 @@ public class AdmSalesItemsListFragment extends Fragment {
         List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
         if (sales_items != null) {
             for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
-                LinearLayout itemRow = new LinearLayout(getContext());
-                itemRow.setOrientation(LinearLayout.HORIZONTAL);
-
-                TextView tvLabel = new TextView(getContext());
-                tvLabel.setText(si.label);
-                itemRow.addView(tvLabel);
-
-                TextView tvUri = new TextView(getContext());
-                tvUri.setText(si.pictureUrl);
-                itemRow.addView(tvUri);
-
-                itemListRows.addView(itemRow);
+                itemListRows.addView(new AdmSalesItemView(si, getContext()));
             }
         }
 
