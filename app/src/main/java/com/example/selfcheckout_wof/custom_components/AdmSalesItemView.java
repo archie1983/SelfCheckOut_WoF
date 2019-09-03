@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -111,6 +112,23 @@ public class AdmSalesItemView extends LinearLayout {
         ImageView iv = new ImageView(getContext());
         Uri uri = Uri.parse(path);
         iv.setImageURI(uri);
+
+        LayoutParams layoutParams_iv = new LayoutParams(
+                LayoutParams.MATCH_PARENT, // CardView width
+                LayoutParams.WRAP_CONTENT // CardView height
+        );
+//        // Set the card view content padding
+//        cvThisGUI.setContentPadding(5,5,5,5);
+        // Set margins for card view
+        layoutParams_iv.bottomMargin = 8;
+        layoutParams_iv.setMarginEnd(8);
+        layoutParams_iv.topMargin = 20;
+        layoutParams_iv.setMarginStart(8);
+        layoutParams_iv.gravity = Gravity.CENTER;
+        layoutParams_iv.height = 200;
+        layoutParams_iv.width = 250;
+
+        iv.setLayoutParams(layoutParams_iv);
 
         return iv;
     }

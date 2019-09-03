@@ -79,7 +79,7 @@ public class AdmSalesItemsListFragment extends Fragment {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_adm_sales_items_list, container, false);
 
-        LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vItemListRows));
+        LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
 
         List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
         if (sales_items != null) {
