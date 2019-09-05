@@ -14,6 +14,7 @@ import android.widget.ImageView;
 
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
+import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.SalesItems;
 
@@ -30,14 +31,52 @@ public class AdminActivity extends AppCompatActivity
         implements AdmSalesItemsListFragment.OnFragmentInteractionListener,
         EditSalesItemFragment.OnFragmentInteractionListener {
 
-    /**
-     * A static reference to the database. We'll initialise it in the getDBInstance(...) function
+    /*
+     * A static reference to itself so that we can access it from elsewhere
+     * in the application and call functions like getDBInstance(...)
+     * and updateSalesItemsListView().
      */
-    private static AppDatabase db_instance = null;
+    private static AdminActivity self = null;
+
+    public static AdminActivity getInstance() throws AdminActivityNotReady {
+        if (self == null) {
+            throw new AdminActivityNotReady();
+        }
+        return self;
+    }
+
+    /**
+     * A reference to the database. We'll initialise it in the getDBInstance(...) function
+     */
+    private AppDatabase db_instance = null;
+
+    /**
+     * Returns the database instance. This function has to be public,
+     * because we will be accessing AdminActivity in a static context
+     * and then using this function to get db instance so that we can
+     * use db functionality elsewhere in application.
+     *
+     * @param context
+     * @return
+     */
+    public AppDatabase getDBInstance(Context context) {
+        if (db_instance == null) {
+            db_instance = Room.databaseBuilder(context,
+                    AppDatabase.class, "sales-items").build();
+        }
+
+        return db_instance;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*
+         * We could initialise the self reference in a constructor- the singelton
+         * way, but it's probably ok at least for now to set it here instead.
+         */
+        self = this;
         setContentView(R.layout.activity_admin);
     }
 
@@ -48,8 +87,6 @@ public class AdminActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-
-        final AppDatabase db = getDBInstance(getApplicationContext());
 
         /**
          * Have to do it in a separate thread because Room doesn't allow running
@@ -106,8 +143,11 @@ public class AdminActivity extends AppCompatActivity
     /**
      * After we've added or removed sales items, we'll want to update
      * the fragment, where we're showing them. This function will do that.
+     *
+     * It is also public, because we'll want to include in AdmSalesItemAction,
+     * which we'll create in AdmSalesItemsListFragment and pass to AdmSalesItemView.
      */
-    private void updateSalesItemsListView() {
+    public void updateSalesItemsListView() {
         final AppDatabase db = getDBInstance(getApplicationContext());
         if (db != null) {
             salesItemsList = db.salesItemsDao().getAll();
@@ -118,22 +158,6 @@ public class AdminActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.adm_sales_items_list_container, fragment)
                 .commit();
-    }
-
-    /**
-     * Returns the database instance in a static way so that we can
-     * use this method elsewhere in application to get db functionality.
-     *
-     * @param context
-     * @return
-     */
-    public static AppDatabase getDBInstance(Context context) {
-        if (db_instance == null) {
-            db_instance = Room.databaseBuilder(context,
-                    AppDatabase.class, "sales-items").build();
-        }
-
-        return db_instance;
     }
 
     /**

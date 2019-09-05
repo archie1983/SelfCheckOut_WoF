@@ -23,4 +23,7 @@ public interface SalesItemsDao {
 
     @Delete
     void delete(SalesItems salesItem);
+
+    @Query("DELETE FROM salesitems WHERE si_id=:salesItem_id")
+    void deleteByID(int salesItem_id);
 }

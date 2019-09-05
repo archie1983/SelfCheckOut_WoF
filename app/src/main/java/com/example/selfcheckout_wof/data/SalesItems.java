@@ -4,6 +4,18 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+/**
+ * Representation of a row in SalesItems table in the db.
+ * This is mostly a container class to represent a sales item,
+ * and it may seem confusing that it's called "sales items" and
+ * not "sales item", but that is because the name of the db
+ * entity is called SalesItems (as it contains many sales items)
+ * and just so happens that the corresponding POJO (if annotated)
+ * with the db annotations, is called the same as the entity.
+ *
+ * This class also contains a static function to create a new
+ * SalesItems entry, that can then be stored into the db.
+ */
 @Entity
 public class SalesItems {
     @PrimaryKey(autoGenerate = true)

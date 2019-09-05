@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.selfcheckout_wof.AdminActivity;
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.SalesItems;
 
@@ -84,7 +85,15 @@ public class AdmSalesItemsListFragment extends Fragment {
         List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
         if (sales_items != null) {
             for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
-                itemListRows.addView(new AdmSalesItemView(si, getContext()));
+                /*
+                 * Creating a new admin sales item view and an action pertaining to that view
+                 * and then adding that view to the collection of rows.
+                 */
+                itemListRows.addView(
+                        new AdmSalesItemView(
+                                si,
+                                new AdmSalesItemAction(si, getContext()),
+                                getContext()));
             }
         }
 
