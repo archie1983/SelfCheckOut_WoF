@@ -96,9 +96,36 @@ public class AdmSalesItemView extends LinearLayout {
         tvUri.setText(salesItem.pictureUrl);
         addView(tvUri);
 
+        /*
+         * Now image
+         */
         addView(createImgFromFile(salesItem.pictureUrl));
-
         setSelected(this.selected);
+
+        /*
+         * Lastly formatting of the text views- just visual formatting below this line
+         */
+        LayoutParams layoutParams_tv = new LayoutParams(
+                LayoutParams.MATCH_PARENT, // imageView width
+                LayoutParams.WRAP_CONTENT // imageView height
+        );
+
+        // Set margins for text view
+        layoutParams_tv.bottomMargin = 8;
+        layoutParams_tv.setMarginEnd(8);
+        layoutParams_tv.topMargin = 20;
+        layoutParams_tv.setMarginStart(8);
+        layoutParams_tv.gravity = Gravity.CENTER;
+        layoutParams_tv.height = 200;
+        layoutParams_tv.width = 250;
+
+        tvLabel.setLayoutParams(layoutParams_tv);
+        // Set the text view content padding
+        tvLabel.setPadding(5,5,5,5);
+
+        tvUri.setLayoutParams(layoutParams_tv);
+        // Set the text view content padding
+        tvUri.setPadding(5,5,5,5);
     }
 
     /**
@@ -114,8 +141,8 @@ public class AdmSalesItemView extends LinearLayout {
         iv.setImageURI(uri);
 
         LayoutParams layoutParams_iv = new LayoutParams(
-                LayoutParams.MATCH_PARENT, // CardView width
-                LayoutParams.WRAP_CONTENT // CardView height
+                LayoutParams.MATCH_PARENT, // imageView width
+                LayoutParams.WRAP_CONTENT // imageView height
         );
 //        // Set the card view content padding
 //        cvThisGUI.setContentPadding(5,5,5,5);
