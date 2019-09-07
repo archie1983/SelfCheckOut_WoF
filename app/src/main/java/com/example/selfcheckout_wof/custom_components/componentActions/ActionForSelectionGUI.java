@@ -1,9 +1,11 @@
-package com.example.selfcheckout_wof.custom_components;
+package com.example.selfcheckout_wof.custom_components.componentActions;
 
 import android.os.Bundle;
 
 import com.example.selfcheckout_wof.ItemListActivity;
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.UsersChoiceFragment;
+import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.data.MainCategories;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
@@ -82,7 +84,7 @@ public class ActionForSelectionGUI {
      *
      * @return a flag if the action was successful
      */
-    boolean onSelected() {
+    public boolean onSelected() {
         /*
          * Fragment support manager is acquired from ItemListActivity.getInstance()
          * as that is where we got it from for the first fragment. We will use it
@@ -103,7 +105,7 @@ public class ActionForSelectionGUI {
      *
      * @return a flag if the action was successful
      */
-    boolean onDeSelected() {
+    public boolean onDeSelected() {
         if (removeSelectedItem(pgForTheseActions)) {
             updateInvoice();
             return true;

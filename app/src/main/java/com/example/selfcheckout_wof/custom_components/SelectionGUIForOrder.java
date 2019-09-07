@@ -11,6 +11,7 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
 import java.text.DecimalFormat;

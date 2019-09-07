@@ -3,7 +3,7 @@ package com.example.selfcheckout_wof;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.example.selfcheckout_wof.custom_components.ActionForSelectionGUI;
+import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.custom_components.SelectionGUIForOrder;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.data.MainCategories;
@@ -15,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 /**
