@@ -1,5 +1,7 @@
 package com.example.selfcheckout_wof.data;
 
+import android.database.Cursor;
+
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -14,6 +16,9 @@ public interface SalesItemsDao {
 
     @Query("SELECT * FROM salesitems WHERE parent_category=-1")
     List<SalesItems> loadTopCategories();
+
+    @Query("SELECT si_id as _id, item_label FROM salesitems WHERE parent_category=-1")
+    Cursor loadTopCategoriesForDropDownBox();
 
     @Query("SELECT * FROM salesitems WHERE parent_category=:parentId")
     List<SalesItems> loadSubCategory(int parentId);

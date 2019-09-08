@@ -22,9 +22,40 @@ public class AdmSalesItemAction {
         this.context = context;
     }
 
+    /**
+     * Loads the selected sales item into the appropriate fields in the AdminActvity form.
+     */
+    public void selectSalesItemForEdit() {
+        final AdminActivity adminActivity;
+
+        /*
+         * First check that we even have an instance of the AdminActivity
+         * active right now because we'll need it for everything else.
+         */
+        try {
+            adminActivity = AdminActivity.getInstance();
+        } catch (AdminActivityNotReady exc) {
+            /*
+             * If Admin activity has not yet been opened, then we have no business
+             * deleting anything and should not continue (we won't have DB instance
+             * anyway).
+             */
+            return;
+        }
+
+        adminActivity.loadExistingSalesItemForEdit(salesItem);
+    }
+
+    /**
+     * Deletes an admin sales item from the db and reloads the sales items admin view.
+     */
     public void deleteSalesItem() {
         final AdminActivity adminActivity;
 
+        /*
+         * First check that we even have an instance of the AdminActivity
+         * active right now because we'll need it for everything else.
+         */
         try {
             adminActivity = AdminActivity.getInstance();
         } catch (AdminActivityNotReady exc) {

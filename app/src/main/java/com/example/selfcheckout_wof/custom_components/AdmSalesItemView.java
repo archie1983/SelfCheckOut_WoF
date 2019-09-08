@@ -120,7 +120,8 @@ public class AdmSalesItemView extends LinearLayout {
         btnEditThisItem.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                action.deleteSalesItem();
+                action.selectSalesItemForEdit();
+                //action.deleteSalesItem();
             }
         });
 

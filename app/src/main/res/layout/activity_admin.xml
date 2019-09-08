@@ -41,16 +41,39 @@ tools:context=".AdminActivity">
             app:srcCompat="@drawable/dragndrop" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/lblParentCategory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/lblParentCategory" />
+
+        <Spinner
+            android:id="@+id/spnParentCategories"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown" />
+
+    </LinearLayout>
+
     <Button
-        android:id="@+id/btnAddMainCategory"
+        android:id="@+id/btnAddCategory"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:onClick="onAddMainCategory"
         android:text="@string/btnAddMainCategory" />
 
+
+
     <fragment
         android:id="@+id/adm_sales_items_list_container"
         android:name="com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        tools:layout="@layout/fragment_adm_sales_items_list" />
 </LinearLayout>

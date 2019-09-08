@@ -6,11 +6,18 @@ import androidx.room.Room;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ResourceCursorAdapter;
+import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
@@ -109,6 +116,12 @@ public class AdminActivity extends AppCompatActivity
      * method.
      */
     String selected_image_uri = "";
+
+    /**
+     * ID of the selected parent category for this entry.
+     */
+    int selected_parent_category = -1;
+
     /**
      * This is what happens when we press the "Add main category" button
      *
@@ -134,6 +147,23 @@ public class AdminActivity extends AppCompatActivity
         t.start();
     }
 
+    /**
+     * Loads an existing sales item into the edit fields of the AdminActivity
+     * to make it ready for editing.
+     *
+     * @param salesItem
+     */
+    public void loadExistingSalesItemForEdit(SalesItems salesItem) {
+        EditText txtCatLabel = ((EditText)findViewById(R.id.txtCatLabel));
+
+        txtCatLabel.setText(salesItem.label);
+        selected_image_uri = salesItem.pictureUrl;
+
+        ImageView iv = ((ImageView)findViewById(R.id.imgCategoryPicture));
+        Uri uri = Uri.parse(salesItem.pictureUrl);
+        iv.setImageURI(uri);
+    }
+
     private static List<SalesItems> salesItemsList;
 
     public static List<SalesItems> getCurrentSalesItemsList() {
@@ -153,6 +183,27 @@ public class AdminActivity extends AppCompatActivity
             salesItemsList = db.salesItemsDao().getAll();
         }
 
+        /*
+         * First re-populate the drop down box of main categories to select.
+         */
+        Spinner spnParentCategories = (Spinner)findViewById(R.id.spnParentCategories);
+
+        String[] adapterCols=new String[]{"item_label"};
+        int[] adapterRowViews=new int[]{android.R.id.text1};
+
+        SimpleCursorAdapter scaParentCategories = new SimpleCursorAdapter(
+                this,
+                android.R.layout.simple_spinner_dropdown_item,//android.R.layout.simple_spinner_item
+                db.salesItemsDao().loadTopCategoriesForDropDownBox(),
+                adapterCols,
+                adapterRowViews,
+                0);
+
+        spnParentCategories.setAdapter(scaParentCategories);
+
+        /*
+         * Now populate the admin fragment with the list of available sales items
+         */
         AdmSalesItemsListFragment fragment = new AdmSalesItemsListFragment();
 
         getSupportFragmentManager().beginTransaction()
