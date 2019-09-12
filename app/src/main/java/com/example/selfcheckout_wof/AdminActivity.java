@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
@@ -36,7 +37,7 @@ import java.util.List;
  */
 public class AdminActivity extends AppCompatActivity
         implements AdmSalesItemsListFragment.OnFragmentInteractionListener,
-        EditSalesItemFragment.OnFragmentInteractionListener {
+        EditSalesItemFragment.OnFragmentInteractionListener, AdapterView.OnItemSelectedListener {
 
     /*
      * A static reference to itself so that we can access it from elsewhere
@@ -85,6 +86,12 @@ public class AdminActivity extends AppCompatActivity
          */
         self = this;
         setContentView(R.layout.activity_admin);
+
+        /*
+         * Setting up listener for a spinner that we'll later use to select parent categories.
+         */
+        Spinner spnParentCategories = (Spinner)findViewById(R.id.spnParentCategories);
+        spnParentCategories.setOnItemSelectedListener(this);
     }
 
     /**
@@ -120,7 +127,7 @@ public class AdminActivity extends AppCompatActivity
     /**
      * ID of the selected parent category for this entry.
      */
-    int selected_parent_category = -1;
+    long selected_parent_category = -1;
 
     /**
      * This is what happens when we press the "Add main category" button
@@ -209,6 +216,32 @@ public class AdminActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.adm_sales_items_list_container, fragment)
                 .commit();
+    }
+
+    /**
+     * Upons selecting a parent category, we need to remember its id
+     *
+     * @param parent
+     * @param view
+     * @param pos
+     * @param id
+     */
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view,
+                               int pos, long id) {
+        // An item was selected. You can retrieve the selected item using
+        // parent.getItemAtPosition(pos)
+        selected_parent_category = id;
+    }
+
+    /**
+     * When nothing is selected, we want the parent category to be -1
+     *
+     * @param parent
+     */
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        selected_parent_category = -1;
     }
 
     /**
