@@ -5,6 +5,7 @@ import android.content.Context;
 import com.example.selfcheckout_wof.AdminActivity;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
 import com.example.selfcheckout_wof.data.AppDatabase;
+import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
 
 /**
@@ -69,17 +70,16 @@ public class AdmSalesItemAction {
 
         final AppDatabase db = adminActivity.getDBInstance(context);
         /**
-         * Have to do it in a separate thread because Room doesn't allow running
+         * Deleting a sales item and updating the sales item list in the admin
+         * section in a separate thread because Room doesn't allow running
          * db stuff on the main thread.
          */
-        Thread t = new Thread(new Runnable() {
+        DBThread.addTask(new Runnable() {
             @Override
             public void run() {
                 db.salesItemsDao().deleteByID(salesItem.si_id);
-                adminActivity.updateSalesItemsListView();
+                //adminActivity.updateSalesItemsListView();
             }
         });
-
-        t.start();
     }
 }

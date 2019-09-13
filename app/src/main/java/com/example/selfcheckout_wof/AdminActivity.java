@@ -24,6 +24,7 @@ import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
 import com.example.selfcheckout_wof.data.AppDatabase;
+import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
 
 import java.util.List;
@@ -103,17 +104,15 @@ public class AdminActivity extends AppCompatActivity
         super.onResume();
 
         /**
-         * Have to do it in a separate thread because Room doesn't allow running
-         * db stuff on the main thread.
+         * Updating the admin list of sales items in a separate thread because
+         * Room doesn't allow running db stuff on the main thread.
          */
-        Thread t = new Thread(new Runnable() {
+        DBThread.addTask(new Runnable() {
             @Override
             public void run() {
                 updateSalesItemsListView();
             }
         });
-
-        t.start();
     }
 
     /**
@@ -140,18 +139,16 @@ public class AdminActivity extends AppCompatActivity
         final AppDatabase db = getDBInstance(getApplicationContext());
 
         /**
-         * Have to do it in a separate thread because Room doesn't allow running
-         * db stuff on the main thread.
+         * Adding a sales item and updating list in a separate thread because
+         * Room doesn't allow running db stuff on the main thread.
          */
-        Thread t = new Thread(new Runnable() {
+        DBThread.addTask(new Runnable() {
             @Override
             public void run() {
                 db.salesItemsDao().insertAll(SalesItems.createTopCategory(mainCatText, selected_image_uri));
                 updateSalesItemsListView();
             }
         });
-
-        t.start();
     }
 
     /**
@@ -181,10 +178,11 @@ public class AdminActivity extends AppCompatActivity
      * After we've added or removed sales items, we'll want to update
      * the fragment, where we're showing them. This function will do that.
      *
-     * It is also public, because we'll want to include in AdmSalesItemAction,
-     * which we'll create in AdmSalesItemsListFragment and pass to AdmSalesItemView.
+     * It is also public, because we'll want to use it in AdmSalesItemAction
+     * (when deleting a sales item), which we'll create in AdmSalesItemsListFragment
+     * and pass to AdmSalesItemView.
      */
-    public void updateSalesItemsListView() {
+    private void updateSalesItemsListView() {
         final AppDatabase db = getDBInstance(getApplicationContext());
         if (db != null) {
             salesItemsList = db.salesItemsDao().getAll();
@@ -193,12 +191,12 @@ public class AdminActivity extends AppCompatActivity
         /*
          * First re-populate the drop down box of main categories to select.
          */
-        Spinner spnParentCategories = (Spinner)findViewById(R.id.spnParentCategories);
+        final Spinner spnParentCategories = (Spinner)findViewById(R.id.spnParentCategories);
 
         String[] adapterCols=new String[]{"item_label"};
         int[] adapterRowViews=new int[]{android.R.id.text1};
 
-        SimpleCursorAdapter scaParentCategories = new SimpleCursorAdapter(
+        final SimpleCursorAdapter scaParentCategories = new SimpleCursorAdapter(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,//android.R.layout.simple_spinner_item
                 db.salesItemsDao().loadTopCategoriesForDropDownBox(),
@@ -206,7 +204,12 @@ public class AdminActivity extends AppCompatActivity
                 adapterRowViews,
                 0);
 
-        spnParentCategories.setAdapter(scaParentCategories);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                spnParentCategories.setAdapter(scaParentCategories);
+            }
+        });
 
         /*
          * Now populate the admin fragment with the list of available sales items
@@ -219,7 +222,7 @@ public class AdminActivity extends AppCompatActivity
     }
 
     /**
-     * Upons selecting a parent category, we need to remember its id
+     * Upon selecting a parent category, we need to remember its id
      *
      * @param parent
      * @param view
