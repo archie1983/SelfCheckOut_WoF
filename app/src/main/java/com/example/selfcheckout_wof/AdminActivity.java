@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +23,7 @@ import android.widget.Spinner;
 
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
+import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
@@ -129,6 +131,11 @@ public class AdminActivity extends AppCompatActivity
     long selected_parent_category = -1;
 
     /**
+     * Selected SalesItems object
+     */
+    SalesItems selectedSalesItem = null;
+
+    /**
      * This is what happens when we press the "Add main category" button
      *
      * @param view
@@ -145,10 +152,35 @@ public class AdminActivity extends AppCompatActivity
         DBThread.addTask(new Runnable() {
             @Override
             public void run() {
-                db.salesItemsDao().insertAll(SalesItems.createTopCategory(mainCatText, selected_image_uri));
+                db.salesItemsDao().insertAll(
+                        SalesItems.createTopCategory(mainCatText,
+                                selected_image_uri,
+                                selected_parent_category)
+                );
                 updateSalesItemsListView();
             }
         });
+
+        ((EditText)findViewById(R.id.txtCatLabel)).setText("");
+    }
+
+    /**
+     * This is what happens when we press the "Delete category" button
+     *
+     * @param view
+     */
+    public void onDeleteCategory(View view) {
+        final Button btnDeleteCategory = (Button)findViewById(R.id.btnDeleteCategory);
+
+        AdmSalesItemAction action = new AdmSalesItemAction(selectedSalesItem, this);
+        action.deleteSalesItem();
+
+        /*
+         * In the end make the delete button disappear if there's nothing to delete
+         */
+        btnDeleteCategory.setEnabled(false);
+        btnDeleteCategory.setVisibility(View.INVISIBLE);
+        selectedSalesItem = null;
     }
 
     /**
@@ -158,16 +190,71 @@ public class AdminActivity extends AppCompatActivity
      * @param salesItem
      */
     public void loadExistingSalesItemForEdit(SalesItems salesItem) {
+        selectedSalesItem = salesItem;
+
+        /*
+         * Label
+         */
         EditText txtCatLabel = ((EditText)findViewById(R.id.txtCatLabel));
-
         txtCatLabel.setText(salesItem.label);
-        selected_image_uri = salesItem.pictureUrl;
 
+        /*
+         * Image
+         */
+        selected_image_uri = salesItem.pictureUrl;
         ImageView iv = ((ImageView)findViewById(R.id.imgCategoryPicture));
         Uri uri = Uri.parse(salesItem.pictureUrl);
         iv.setImageURI(uri);
+
+        /*
+         * Parent category
+         */
+        final Spinner spnParentCategories = (Spinner)findViewById(R.id.spnParentCategories);
+
+        /*
+         * First we'll find the parent sales item that we need to display in the spinner
+         */
+        SalesItems siToDisplayInSpinner = null;
+
+        for (SalesItems si : salesItemsList) {
+            if (si.si_id == salesItem.parentCategoryId) {
+                siToDisplayInSpinner = si;
+            }
+        }
+
+        /*
+         * Now we want its index. The index in the spinner will be almost the same
+         * as in the salesItemsParents collection, because they're populated in a
+         * similar way.
+         *
+         * "Similar way" here means, that the cursor for the spinner gets the
+         * categories, that don't have parents AND one extra dummy category called
+         * "NO PARENT", which is the first one (so index 0).
+         *
+         * The salesItemsParents list gets just the categories that don't have parents.
+         * So if we get here: salesItemsParents.indexOf(siToDisplayInSpinner) == -1, then
+         * we actually want the 0 index category (the dummy one) displayed. If we get
+         * any other index, then we want to display here the category, whose index is
+         * 1 higher.
+         */
+        spnParentCategories.setSelection(salesItemsParents.indexOf(siToDisplayInSpinner) + 1);
+
+        /*
+         * We'll also want the "delete category" button available
+         */
+        final Button btnDeleteCategory = (Button)findViewById(R.id.btnDeleteCategory);
+        btnDeleteCategory.setEnabled(true);
+        btnDeleteCategory.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * A collection of the sales items parents that we have at any given time.
+     */
+    private static List<SalesItems> salesItemsParents;
+
+    /**
+     * A collection of the sales items that we have at any given time.
+     */
     private static List<SalesItems> salesItemsList;
 
     public static List<SalesItems> getCurrentSalesItemsList() {
@@ -195,6 +282,8 @@ public class AdminActivity extends AppCompatActivity
 
         String[] adapterCols=new String[]{"item_label"};
         int[] adapterRowViews=new int[]{android.R.id.text1};
+
+        salesItemsParents = db.salesItemsDao().loadTopCategories();
 
         final SimpleCursorAdapter scaParentCategories = new SimpleCursorAdapter(
                 this,

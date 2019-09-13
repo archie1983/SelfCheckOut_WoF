@@ -11,5 +11,6 @@
     <string name="choose_cat_img">Choose Category Image</string>
     <string name="btnEditSalesItem">Edit</string>
     <string name="lblParentCategory">Parent Category: </string>
+    <string name="btnDeleteCategory">Delete Category</string>
 
 </resources>

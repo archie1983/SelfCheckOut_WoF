@@ -17,7 +17,12 @@ public interface SalesItemsDao {
     @Query("SELECT * FROM salesitems WHERE parent_category=-1")
     List<SalesItems> loadTopCategories();
 
-    @Query("SELECT si_id as _id, item_label FROM salesitems WHERE parent_category=-1")
+    /**
+     * This cursor contains one extra dummy category called "NO PARENT". This is important as the rest
+     * of the code expects that.
+     * @return
+     */
+    @Query("select -1 as _id, 'NO PARENT' as item_label union all SELECT si_id as _id, item_label FROM salesitems WHERE parent_category=-1")
     Cursor loadTopCategoriesForDropDownBox();
 
     @Query("SELECT * FROM salesitems WHERE parent_category=:parentId")

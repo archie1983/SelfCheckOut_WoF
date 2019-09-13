@@ -1,5 +1,6 @@
 package com.example.selfcheckout_wof.data;
 
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -34,7 +35,7 @@ public class SalesItems {
     public int numberOfMultiSelectableItems;
 
     @ColumnInfo(name = "parent_category")
-    public int parentCategoryId;
+    public long parentCategoryId;
 
     @ColumnInfo(name = "price")
     public int price;
@@ -45,15 +46,46 @@ public class SalesItems {
      * @param label
      * @return
      */
-    public static SalesItems createTopCategory(String label, String pictureUrl) {
+    public static SalesItems createTopCategory(String label, String pictureUrl, long parentCategoryId) {
         SalesItems s = new SalesItems();
         s.label = label;
         s.description = "";
         s.numberOfMultiSelectableItems = 1;
-        s.parentCategoryId = -1;
+        s.parentCategoryId = parentCategoryId;
         s.price = 0;
         s.pictureUrl = pictureUrl;
 
         return s;
+    }
+
+    /**
+     * The ID coming from DB is already guaranteed unique
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        return si_id;
+    }
+
+    /**
+     * When comparing two SalesItems objects, the only thing that
+     * matters is their ID (at least at the time of writing)
+     *
+     * @param obj
+     * @return
+     */
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (this == obj) return true;
+        if (obj == null) return false;
+        if (getClass() != obj.getClass()) return false;
+
+        SalesItems other = (SalesItems) obj;
+
+        if (si_id == other.si_id) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

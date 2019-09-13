@@ -69,6 +69,14 @@ tools:context=".AdminActivity">
         android:text="@string/btnAddMainCategory" />
 
 
+    <Button
+        android:id="@+id/btnDeleteCategory"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:onClick="onDeleteCategory"
+        android:text="@string/btnDeleteCategory"
+        android:visibility="visible" />
 
     <fragment
         android:id="@+id/adm_sales_items_list_container"
