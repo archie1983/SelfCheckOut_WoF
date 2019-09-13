@@ -182,7 +182,7 @@ public class AdminActivity extends AppCompatActivity
      * (when deleting a sales item), which we'll create in AdmSalesItemsListFragment
      * and pass to AdmSalesItemView.
      */
-    private void updateSalesItemsListView() {
+    public void updateSalesItemsListView() {
         final AppDatabase db = getDBInstance(getApplicationContext());
         if (db != null) {
             salesItemsList = db.salesItemsDao().getAll();

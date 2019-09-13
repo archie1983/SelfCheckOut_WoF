@@ -78,7 +78,7 @@ public class AdmSalesItemAction {
             @Override
             public void run() {
                 db.salesItemsDao().deleteByID(salesItem.si_id);
-                //adminActivity.updateSalesItemsListView();
+                adminActivity.updateSalesItemsListView();
             }
         });
     }
