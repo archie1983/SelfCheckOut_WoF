@@ -41,12 +41,33 @@ public class SalesItems {
     public int price;
 
     /**
+     * A copy constructor - useful when updating a sales item.
+     *
+     * @param salesItem
+     */
+    public SalesItems(SalesItems salesItem) {
+        this.pictureUrl = salesItem.pictureUrl;
+        this.label = salesItem.label;
+        this.si_id = salesItem.si_id;
+        this.price = salesItem.price;
+        this.parentCategoryId = salesItem.parentCategoryId;
+        this.description = salesItem.description;
+        this.numberOfMultiSelectableItems = salesItem.numberOfMultiSelectableItems;
+    }
+
+    /**
+     * Ordinary constructor to discern it from the copy constructor
+     */
+    public SalesItems() {
+    }
+
+    /**
      * A static method for creating a top level category
      *
      * @param label
      * @return
      */
-    public static SalesItems createTopCategory(String label, String pictureUrl, long parentCategoryId) {
+    public static SalesItems createCategory(String label, String pictureUrl, long parentCategoryId) {
         SalesItems s = new SalesItems();
         s.label = label;
         s.description = "";

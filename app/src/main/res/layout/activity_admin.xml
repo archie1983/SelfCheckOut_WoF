@@ -62,10 +62,10 @@ tools:context=".AdminActivity">
     </LinearLayout>
 
     <Button
-        android:id="@+id/btnAddCategory"
+        android:id="@+id/btnAddOrEditCategory"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:onClick="onAddMainCategory"
+        android:onClick="onAddOrEditMainCategory"
         android:text="@string/btnAddMainCategory" />
 
 

@@ -6,6 +6,7 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -33,6 +34,9 @@ public interface SalesItemsDao {
 
     @Delete
     void delete(SalesItems salesItem);
+
+    @Update
+    void update(SalesItems salesItem);
 
     @Query("DELETE FROM salesitems WHERE si_id=:salesItem_id")
     void deleteByID(int salesItem_id);

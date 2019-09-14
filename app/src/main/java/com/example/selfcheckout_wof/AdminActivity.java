@@ -6,18 +6,13 @@ import androidx.room.Room;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ResourceCursorAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
@@ -140,28 +135,94 @@ public class AdminActivity extends AppCompatActivity
      *
      * @param view
      */
-    public void onAddMainCategory(View view) {
+    public void onAddOrEditMainCategory(View view) {
         final String mainCatText = ((EditText)findViewById(R.id.txtCatLabel)).getText().toString();
 
         final AppDatabase db = getDBInstance(getApplicationContext());
 
-        /**
-         * Adding a sales item and updating list in a separate thread because
-         * Room doesn't allow running db stuff on the main thread.
+        /*
+         * If we have a loaded sales item, then we want to update it with the new
+         * values, otherwise we want to create a new one.
          */
-        DBThread.addTask(new Runnable() {
-            @Override
-            public void run() {
-                db.salesItemsDao().insertAll(
-                        SalesItems.createTopCategory(mainCatText,
-                                selected_image_uri,
-                                selected_parent_category)
-                );
-                updateSalesItemsListView();
-            }
-        });
+        if (selectedSalesItem != null) {
+            /**
+             * Saving changes to a sales item and updating list in a separate thread because
+             * Room doesn't allow running db stuff on the main thread.
+             */
+            selectedSalesItem.label = mainCatText;
+            selectedSalesItem.pictureUrl = selected_image_uri;
+            selectedSalesItem.parentCategoryId = selected_parent_category;
 
+            /*
+             * Creating a copy of the modified sales item, because we're passing
+             * it to a thread, which may well execute after the modified sales item
+             * has already been nulled
+             */
+            final SalesItems tmp_salesItem = new SalesItems(selectedSalesItem);
+
+            DBThread.addTask(new Runnable() {
+                @Override
+                public void run() {
+
+                    db.salesItemsDao().update(tmp_salesItem);
+                    updateSalesItemsListView();
+                }
+            });
+        } else {
+            /**
+             * Adding a sales item and updating list in a separate thread because
+             * Room doesn't allow running db stuff on the main thread.
+             */
+            DBThread.addTask(new Runnable() {
+                @Override
+                public void run() {
+                    db.salesItemsDao().insertAll(
+                            SalesItems.createCategory(mainCatText,
+                                    selected_image_uri,
+                                    selected_parent_category)
+                    );
+                    updateSalesItemsListView();
+                }
+            });
+        }
+
+        clearSalesItemEditFields();
+    }
+
+    /**
+     * Clears the Sales Item edit fields.
+     */
+    private void clearSalesItemEditFields() {
+        /*
+         * Category name
+         */
         ((EditText)findViewById(R.id.txtCatLabel)).setText("");
+
+        /*
+         * Parent category
+         */
+        final Spinner spnParentCategories = (Spinner)findViewById(R.id.spnParentCategories);
+        spnParentCategories.setSelection(0);
+        selected_parent_category = -1;
+
+        /*
+         * Selected sales item (category)
+         */
+        selectedSalesItem = null;
+
+        /*
+         * Image
+         */
+        selected_image_uri = "";
+        ImageView iv = ((ImageView)findViewById(R.id.imgCategoryPicture));
+        iv.setImageResource(R.drawable.dragndrop);
+
+        /*
+         * The "save sales item (or category)" button now needs to be called "Add category"
+         * and not "Save category"
+         */
+        final Button btnAddOrEditCategory = (Button)findViewById(R.id.btnAddOrEditCategory);
+        btnAddOrEditCategory.setText(R.string.btnAddMainCategory);
     }
 
     /**
@@ -180,7 +241,8 @@ public class AdminActivity extends AppCompatActivity
          */
         btnDeleteCategory.setEnabled(false);
         btnDeleteCategory.setVisibility(View.INVISIBLE);
-        selectedSalesItem = null;
+
+        clearSalesItemEditFields();
     }
 
     /**
@@ -245,6 +307,13 @@ public class AdminActivity extends AppCompatActivity
         final Button btnDeleteCategory = (Button)findViewById(R.id.btnDeleteCategory);
         btnDeleteCategory.setEnabled(true);
         btnDeleteCategory.setVisibility(View.VISIBLE);
+
+        /*
+         * The "Add category" button needs to now be called "Save category" as we're
+         * in edit mode
+         */
+        final Button btnAddOrEditCategory = (Button)findViewById(R.id.btnAddOrEditCategory);
+        btnAddOrEditCategory.setText(R.string.btnSaveCategory);
     }
 
     /**
