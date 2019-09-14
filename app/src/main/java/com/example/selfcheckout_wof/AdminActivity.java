@@ -163,7 +163,6 @@ public class AdminActivity extends AppCompatActivity
             DBThread.addTask(new Runnable() {
                 @Override
                 public void run() {
-
                     db.salesItemsDao().update(tmp_salesItem);
                     updateSalesItemsListView();
                 }
@@ -265,8 +264,13 @@ public class AdminActivity extends AppCompatActivity
          */
         selected_image_uri = salesItem.pictureUrl;
         ImageView iv = ((ImageView)findViewById(R.id.imgCategoryPicture));
-        Uri uri = Uri.parse(salesItem.pictureUrl);
-        iv.setImageURI(uri);
+
+        if (selected_image_uri != null && !selected_image_uri.equals("")) {
+            Uri uri = Uri.parse(salesItem.pictureUrl);
+            iv.setImageURI(uri);
+        } else {
+            iv.setImageResource(R.drawable.dragndrop);
+        }
 
         /*
          * Parent category

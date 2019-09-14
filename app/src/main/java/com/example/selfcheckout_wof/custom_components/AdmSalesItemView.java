@@ -179,8 +179,17 @@ public class AdmSalesItemView extends LinearLayout {
      */
     private ImageView createImgFromFile(String path) {
         ImageView iv = new ImageView(getContext());
-        Uri uri = Uri.parse(path);
-        iv.setImageURI(uri);
+
+        /*
+         * If not image given, then putting in the default thumbnail,
+         * otherwise use the exact picture.
+         */
+        if (path != null && !path.equals("")) {
+            Uri uri = Uri.parse(path);
+            iv.setImageURI(uri);
+        } else {
+            iv.setImageResource(R.drawable.dragndrop);
+        }
 
         LayoutParams layoutParams_iv = new LayoutParams(
                 LayoutParams.MATCH_PARENT, // imageView width
