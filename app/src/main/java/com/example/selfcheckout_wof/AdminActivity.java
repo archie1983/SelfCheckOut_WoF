@@ -24,6 +24,8 @@ import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -188,6 +190,10 @@ public class AdminActivity extends AppCompatActivity
         clearSalesItemEditFields();
     }
 
+    public void onCancelCategoryEdit(View view) {
+        clearSalesItemEditFields();
+    }
+
     /**
      * Clears the Sales Item edit fields.
      */
@@ -222,6 +228,13 @@ public class AdminActivity extends AppCompatActivity
          */
         final Button btnAddOrEditCategory = (Button)findViewById(R.id.btnAddOrEditCategory);
         btnAddOrEditCategory.setText(R.string.btnAddMainCategory);
+
+        /*
+         * In the end make the delete button disappear if there's nothing to delete
+         */
+        final Button btnDeleteCategory = (Button)findViewById(R.id.btnDeleteCategory);
+        btnDeleteCategory.setEnabled(false);
+        btnDeleteCategory.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -230,16 +243,8 @@ public class AdminActivity extends AppCompatActivity
      * @param view
      */
     public void onDeleteCategory(View view) {
-        final Button btnDeleteCategory = (Button)findViewById(R.id.btnDeleteCategory);
-
         AdmSalesItemAction action = new AdmSalesItemAction(selectedSalesItem, this);
         action.deleteSalesItem();
-
-        /*
-         * In the end make the delete button disappear if there's nothing to delete
-         */
-        btnDeleteCategory.setEnabled(false);
-        btnDeleteCategory.setVisibility(View.INVISIBLE);
 
         clearSalesItemEditFields();
     }
@@ -345,7 +350,25 @@ public class AdminActivity extends AppCompatActivity
     public void updateSalesItemsListView() {
         final AppDatabase db = getDBInstance(getApplicationContext());
         if (db != null) {
-            salesItemsList = db.salesItemsDao().getAll();
+            //salesItemsList = db.salesItemsDao().getAll();
+            salesItemsList = db.salesItemsDao().loadTopCategories();
+
+            /*
+             * Now we'll combine the top categories with the sub categories
+             * in a depth-first style hierarchical structure.
+             */
+            ArrayList<SalesItems> tmp = new ArrayList<>(salesItemsList);
+            for (SalesItems si : salesItemsList) {
+                List<SalesItems> subCategories = db.salesItemsDao().loadSubCategory(si.si_id);
+                int indexOfTopCategory = tmp.indexOf(si);
+                if (indexOfTopCategory < tmp.size() - 1) {
+                    tmp.addAll(indexOfTopCategory + 1, subCategories);
+                } else {
+                    tmp.addAll(subCategories);
+                }
+            }
+
+            salesItemsList = tmp;
         }
 
         /*

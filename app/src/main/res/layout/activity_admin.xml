@@ -20,63 +20,89 @@ tools:context=".AdminActivity">
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnChooseCatImg"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center_horizontal|center_vertical"
-            android:onClick="onCategoryPictureSelect"
-            android:text="@string/choose_cat_img" />
-
-        <ImageView
-            android:id="@+id/imgCategoryPicture"
-            android:layout_width="120dp"
-            android:layout_height="90dp"
-            android:layout_weight="1"
-            android:contentDescription="@string/choose_cat_img"
-            app:srcCompat="@drawable/dragndrop" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/lblParentCategory"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/lblParentCategory" />
-
-        <Spinner
-            android:id="@+id/spnParentCategories"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:spinnerMode="dropdown" />
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lblParentCategory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/lblParentCategory" />
+
+                <Spinner
+                    android:id="@+id/spnParentCategories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btnChooseCatImg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:onClick="onCategoryPictureSelect"
+                    android:text="@string/choose_cat_img" />
+
+                <ImageView
+                    android:id="@+id/imgCategoryPicture"
+                    android:layout_width="120dp"
+                    android:layout_height="90dp"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/choose_cat_img"
+                    app:srcCompat="@drawable/dragndrop" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/btnAddOrEditCategory"
+                android:layout_width="@dimen/adm_btn_width"
+                android:layout_height="wrap_content"
+                android:onClick="onAddOrEditMainCategory"
+                android:text="@string/btnAddMainCategory" />
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="@dimen/adm_btn_width"
+                android:layout_height="wrap_content"
+                android:onClick="onCancelCategoryEdit"
+                android:text="@string/btnCancel" />
+
+            <Button
+                android:id="@+id/btnDeleteCategory"
+                android:layout_width="@dimen/adm_btn_width"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:onClick="onDeleteCategory"
+                android:text="@string/btnDeleteCategory"
+                android:visibility="visible" />
+        </LinearLayout>
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnAddOrEditCategory"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:onClick="onAddOrEditMainCategory"
-        android:text="@string/btnAddMainCategory" />
-
-
-    <Button
-        android:id="@+id/btnDeleteCategory"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        android:enabled="false"
-        android:onClick="onDeleteCategory"
-        android:text="@string/btnDeleteCategory"
-        android:visibility="visible" />
 
     <fragment
         android:id="@+id/adm_sales_items_list_container"

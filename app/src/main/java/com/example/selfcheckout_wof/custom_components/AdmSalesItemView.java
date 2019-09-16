@@ -91,6 +91,15 @@ public class AdmSalesItemView extends LinearLayout {
         removeAllViews();
         setOrientation(LinearLayout.HORIZONTAL);
 
+        /*
+         * If this is a subcategory, then add an indent
+         */
+        if (salesItem.parentCategoryId > -1) {
+            TextView tvLabel = new TextView(getContext());
+            tvLabel.setText("     ");
+            addView(tvLabel);
+        }
+
         TextView tvLabel = new TextView(getContext());
         tvLabel.setText(salesItem.label);
         addView(tvLabel);
