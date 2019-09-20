@@ -8,15 +8,6 @@ android:layout_height="match_parent"
 android:orientation="vertical"
 tools:context=".AdminActivity">
 
-    <EditText
-        android:id="@+id/txtCatLabel"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="@string/enter_cat_label"
-        android:importantForAutofill="no"
-        android:inputType="text" />
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -27,25 +18,23 @@ tools:context=".AdminActivity">
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/txtCatLabel"
+                android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:ems="10"
+                android:hint="@string/enter_item_label"
+                android:importantForAutofill="no"
+                android:inputType="text" />
 
-                <TextView
-                    android:id="@+id/lblParentCategory"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/lblParentCategory" />
-
-                <Spinner
-                    android:id="@+id/spnParentCategories"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:spinnerMode="dropdown" />
-
-            </LinearLayout>
+            <EditText
+                android:id="@+id/txtDescription"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/enter_item_description"
+                android:importantForAutofill="no"
+                android:inputType="text" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -70,6 +59,53 @@ tools:context=".AdminActivity">
                     android:contentDescription="@string/choose_cat_img"
                     app:srcCompat="@drawable/dragndrop" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/lblParentCategory"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/lblParentCategory" />
+
+                <Spinner
+                    android:id="@+id/spnParentCategories"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/txtPrice"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/enter_item_price"
+                android:importantForAutofill="no"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/txtPage"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/enter_item_page"
+                android:importantForAutofill="no"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/txtMultiChoiceNumber"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/enter_item_multi_choice_number"
+                android:importantForAutofill="no"
+                android:inputType="number" />
         </LinearLayout>
 
         <LinearLayout
@@ -101,13 +137,12 @@ tools:context=".AdminActivity">
                 android:visibility="visible" />
         </LinearLayout>
 
+        <fragment
+            android:id="@+id/adm_sales_items_list_container"
+            android:name="com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_adm_sales_items_list" />
     </LinearLayout>
 
-
-    <fragment
-        android:id="@+id/adm_sales_items_list_container"
-        android:name="com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        tools:layout="@layout/fragment_adm_sales_items_list" />
 </LinearLayout>

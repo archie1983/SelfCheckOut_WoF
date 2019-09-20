@@ -121,8 +121,8 @@ public class AdmSalesItemView extends LinearLayout {
         layoutParams_image.topMargin = 20;
         layoutParams_image.setMarginStart(8);
         layoutParams_image.gravity = Gravity.CENTER;
-        layoutParams_image.height = 200;
-        layoutParams_image.width = 250;
+        layoutParams_image.height = 100;
+        layoutParams_image.width = 125;
 
         /*
          * for image
@@ -356,10 +356,7 @@ public class AdmSalesItemView extends LinearLayout {
                 /*
                  * First un-select all items, then select this one
                  */
-                for (AdmSalesItemView av : allItems) {
-                    av.setSelected(false);
-                }
-
+                unselectAllSelectedItems();
                 setSelected(true);
             }
         });
@@ -384,6 +381,16 @@ public class AdmSalesItemView extends LinearLayout {
         btnEditThisItem.setLayoutParams(layoutParams_btn);
         // Set the button padding
         btnEditThisItem.setPadding(5,5,5,5);
+    }
+
+    /**
+     * Unselects all selected items (should only be 1 max, but it makes sure
+     * that nothing is selected)
+     */
+    public static void unselectAllSelectedItems() {
+        for (AdmSalesItemView av : allItems) {
+            av.setSelected(false);
+        }
     }
 
     /**

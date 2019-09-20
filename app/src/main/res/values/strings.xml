@@ -8,7 +8,11 @@
     <string name="btnAddMainCategory">Add Category</string>
     <string name="btnSaveCategory">Save Category</string>
     <string name="txtItemLabel">Label</string>
-    <string name="enter_cat_label">Enter Category Label</string>
+    <string name="enter_item_label">Enter Item Label</string>
+    <string name="enter_item_price">Price in Pennies</string>
+    <string name="enter_item_page">Page</string>
+    <string name="enter_item_multi_choice_number">Multi choice number</string>
+    <string name="enter_item_description">Item Description</string>
     <string name="choose_cat_img">Choose Category Image</string>
     <string name="btnEditSalesItem">Edit</string>
     <string name="lblParentCategory">Parent Category: </string>

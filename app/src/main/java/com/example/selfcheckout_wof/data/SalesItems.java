@@ -76,15 +76,22 @@ public class SalesItems {
      * @param label
      * @return
      */
-    public static SalesItems createCategory(String label, String pictureUrl, long parentCategoryId) {
+    public static SalesItems createCategory(String label,
+                                            String pictureUrl,
+                                            long parentCategoryId,
+                                            String description,
+                                            int numberOfMultiSelectableItems,
+                                            long price,
+                                            int page
+    ) {
         SalesItems s = new SalesItems();
         s.label = label;
-        s.description = "";
-        s.numberOfMultiSelectableItems = 1;
+        s.description = description;
+        s.numberOfMultiSelectableItems = numberOfMultiSelectableItems;
         s.parentCategoryId = parentCategoryId;
-        s.price = 0;
+        s.price = price;
         s.pictureUrl = pictureUrl;
-        s.page = 1;
+        s.page = page;
 
         return s;
     }

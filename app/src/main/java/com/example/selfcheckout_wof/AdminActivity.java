@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
+import com.example.selfcheckout_wof.custom_components.AdmSalesItemView;
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
@@ -138,7 +139,29 @@ public class AdminActivity extends AppCompatActivity
      * @param view
      */
     public void onAddOrEditMainCategory(View view) {
-        final String mainCatText = ((EditText)findViewById(R.id.txtCatLabel)).getText().toString();
+        String mainCatText = ((EditText)findViewById(R.id.txtCatLabel)).getText().toString();
+        String itemDescription = ((EditText)findViewById(R.id.txtDescription)).getText().toString();
+
+        long price;
+        try {
+            price = Long.parseLong(((EditText)findViewById(R.id.txtPrice)).getText().toString());
+        } catch (NumberFormatException exc) {
+            price = 0;
+        }
+
+        int page;
+        try {
+            page = Integer.parseInt(((EditText)findViewById(R.id.txtPage)).getText().toString());
+        } catch (NumberFormatException exc) {
+            page = 1;
+        }
+
+        int multi_choice_number;
+        try {
+            multi_choice_number = Integer.parseInt(((EditText)findViewById(R.id.txtMultiChoiceNumber)).getText().toString());
+        } catch (NumberFormatException exc) {
+            multi_choice_number = 1;
+        }
 
         final AppDatabase db = getDBInstance(getApplicationContext());
 
@@ -154,6 +177,10 @@ public class AdminActivity extends AppCompatActivity
             selectedSalesItem.label = mainCatText;
             selectedSalesItem.pictureUrl = selected_image_uri;
             selectedSalesItem.parentCategoryId = selected_parent_category;
+            selectedSalesItem.numberOfMultiSelectableItems = multi_choice_number;
+            selectedSalesItem.price = price;
+            selectedSalesItem.page = page;
+            selectedSalesItem.description = itemDescription;
 
             /*
              * Creating a copy of the modified sales item, because we're passing
@@ -170,6 +197,13 @@ public class AdminActivity extends AppCompatActivity
                 }
             });
         } else {
+            final SalesItems newSalesItem = SalesItems.createCategory(mainCatText,
+                    selected_image_uri,
+                    selected_parent_category,
+                    itemDescription,
+                    multi_choice_number,
+                    price,
+                    page);
             /**
              * Adding a sales item and updating list in a separate thread because
              * Room doesn't allow running db stuff on the main thread.
@@ -178,9 +212,7 @@ public class AdminActivity extends AppCompatActivity
                 @Override
                 public void run() {
                     db.salesItemsDao().insertAll(
-                            SalesItems.createCategory(mainCatText,
-                                    selected_image_uri,
-                                    selected_parent_category)
+                            newSalesItem
                     );
                     updateSalesItemsListView();
                 }
@@ -199,9 +231,13 @@ public class AdminActivity extends AppCompatActivity
      */
     private void clearSalesItemEditFields() {
         /*
-         * Category name
+         * Category name and other text fields
          */
         ((EditText)findViewById(R.id.txtCatLabel)).setText("");
+        ((EditText)findViewById(R.id.txtMultiChoiceNumber)).setText("");
+        ((EditText)findViewById(R.id.txtPage)).setText("");
+        ((EditText)findViewById(R.id.txtPrice)).setText("");
+        ((EditText)findViewById(R.id.txtDescription)).setText("");
 
         /*
          * Parent category
@@ -235,6 +271,11 @@ public class AdminActivity extends AppCompatActivity
         final Button btnDeleteCategory = (Button)findViewById(R.id.btnDeleteCategory);
         btnDeleteCategory.setEnabled(false);
         btnDeleteCategory.setVisibility(View.INVISIBLE);
+
+        /*
+         * Now makes sure that all items are un-selected
+         */
+        AdmSalesItemView.unselectAllSelectedItems();
     }
 
     /**
@@ -263,6 +304,30 @@ public class AdminActivity extends AppCompatActivity
          */
         EditText txtCatLabel = ((EditText)findViewById(R.id.txtCatLabel));
         txtCatLabel.setText(salesItem.label);
+
+        /*
+         * price
+         */
+        EditText txtPrice = ((EditText)findViewById(R.id.txtPrice));
+        txtPrice.setText(salesItem.price + "");
+
+        /*
+         * page
+         */
+        EditText txtPage = ((EditText)findViewById(R.id.txtPage));
+        txtPage.setText(salesItem.page + "");
+
+        /*
+         * description
+         */
+        EditText txtDescription = ((EditText)findViewById(R.id.txtDescription));
+        txtDescription.setText(salesItem.description);
+
+        /*
+         * number of multi selectable items on the page
+         */
+        EditText txtMultiChoiceNumber = ((EditText)findViewById(R.id.txtMultiChoiceNumber));
+        txtMultiChoiceNumber.setText(salesItem.numberOfMultiSelectableItems + "");
 
         /*
          * Image
