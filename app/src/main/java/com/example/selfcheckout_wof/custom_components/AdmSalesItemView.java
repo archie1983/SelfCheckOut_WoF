@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
@@ -409,9 +410,22 @@ public class AdmSalesItemView extends LinearLayout {
          */
         if (path != null && !path.equals("")) {
             Uri uri = Uri.parse(path);
-            iv.setImageURI(uri);
+            //iv.setImageURI(uri);
+            /*
+             * Using Glide here instead of just: iv.setImageURI(uri);
+             * Glide loads the image rescaled to just what's needed instead of the full
+             * image and that saves a lot of memory.
+             */
+            Glide.with(this).load(uri).into(iv);
         } else {
-            iv.setImageResource(R.drawable.dragndrop);
+            //iv.setImageResource(R.drawable.dragndrop);
+            /*
+             * Using Glide here instead of just: iv.setImageResource(R.drawable.dragndrop);
+             * Glide loads the image rescaled to just what's needed instead of the full
+             * image and that saves a lot of memory.
+             */
+            Glide.with(this).load(R.drawable.dragndrop).into(iv);
+
         }
 
         iv.setLayoutParams(layoutParams_image);

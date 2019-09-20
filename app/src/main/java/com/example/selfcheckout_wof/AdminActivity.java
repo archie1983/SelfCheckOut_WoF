@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
+import com.bumptech.glide.Glide;
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemView;
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
@@ -337,9 +338,17 @@ public class AdminActivity extends AppCompatActivity
 
         if (selected_image_uri != null && !selected_image_uri.equals("")) {
             Uri uri = Uri.parse(salesItem.pictureUrl);
-            iv.setImageURI(uri);
+            //iv.setImageURI(uri);
+            /*
+             * Using Glide to save memory for image loads
+             */
+            Glide.with(this).load(uri).into(iv);
         } else {
-            iv.setImageResource(R.drawable.dragndrop);
+            /*
+             * Using Glide to save memory for image loads
+             */
+            Glide.with(this).load(R.drawable.dragndrop).into(iv);
+            //iv.setImageResource(R.drawable.dragndrop);
         }
 
         /*
@@ -571,7 +580,11 @@ public class AdminActivity extends AppCompatActivity
                 //Log.i(TAG, "Uri: " + uri.toString());
                 //showImage(uri);
                 ImageView iv = ((ImageView)findViewById(R.id.imgCategoryPicture));
-                iv.setImageURI(uri);
+                //iv.setImageURI(uri);
+                /*
+                 * Using Glide to save memory for image loads
+                 */
+                Glide.with(this).load(uri).into(iv);
                 selected_image_uri = uri.toString();
             }
         }
