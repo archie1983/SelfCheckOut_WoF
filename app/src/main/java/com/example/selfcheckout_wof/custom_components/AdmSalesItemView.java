@@ -29,6 +29,7 @@ import com.example.selfcheckout_wof.data.SalesItems;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.ArrayList;
 
 /**
  * A custom view for displaying a sales item for admin purposes (view, update, delete)
@@ -38,6 +39,13 @@ public class AdmSalesItemView extends LinearLayout {
      * A flag of whether the item represented by this component is selected or not
      */
     private boolean selected;
+
+    /**
+     * In order to mark the selected admin list item, we'll need to keep
+     * track of all of them and null this collection upon creating a header,
+     * because that's where we normally start creating the admin list items.
+     */
+    private static ArrayList<AdmSalesItemView> allItems = new ArrayList<>();
 
     /**
      * We'll have unified formatting for the fields (and the headings)
@@ -50,6 +58,9 @@ public class AdmSalesItemView extends LinearLayout {
             , layoutParams_image_hdr
             , layoutParams_btn_hdr;
 
+    /**
+     * Initialising the layout parameters for components (formatting)
+     */
     static {
         layoutParams_label = new LayoutParams(
                 LayoutParams.MATCH_PARENT,
@@ -186,6 +197,12 @@ public class AdmSalesItemView extends LinearLayout {
      * @return
      */
     private void createHeader() {
+        /*
+         * since we're creating a header, we'll be creating ordinary AdmSalesItemView
+         * objects soon and we'll need a clear collection for them.
+         */
+        allItems = new ArrayList<>();
+
         removeAllViews();
         setOrientation(LinearLayout.HORIZONTAL);
 
@@ -250,6 +267,7 @@ public class AdmSalesItemView extends LinearLayout {
          */
         if (si != null) {
             setSalesItem(si, action);
+            allItems.add(this);
         } else {
             createHeader();
         }
@@ -334,8 +352,15 @@ public class AdmSalesItemView extends LinearLayout {
             @Override
             public void onClick(View view) {
                 action.selectSalesItemForEdit();
-                //setSelected(true);
-                //action.deleteSalesItem();
+
+                /*
+                 * First un-select all items, then select this one
+                 */
+                for (AdmSalesItemView av : allItems) {
+                    av.setSelected(false);
+                }
+
+                setSelected(true);
             }
         });
 
