@@ -443,4 +443,8 @@ public class AdmSalesItemView extends LinearLayout {
             setBackgroundColor(Color.WHITE);
         }
     }
+
+    public void setHeaderBackground() {
+        setBackgroundColor(ContextCompat.getColor(getContext(), R.color.admin_items_header));
+    }
 }

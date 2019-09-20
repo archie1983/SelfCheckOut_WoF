@@ -101,7 +101,9 @@ public class AdmSalesItemsListFragment extends Fragment {
              * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
              * when it's populated.
              */
-            itemListRows.addView(new AdmSalesItemView(getContext()));
+            AdmSalesItemView header = new AdmSalesItemView(getContext());
+            header.setHeaderBackground();
+            itemListRows.addView(header);
         }
 
         return rootView;
