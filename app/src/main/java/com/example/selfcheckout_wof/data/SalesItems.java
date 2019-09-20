@@ -38,7 +38,15 @@ public class SalesItems {
     public long parentCategoryId;
 
     @ColumnInfo(name = "price")
-    public int price;
+    public long price;
+
+    /**
+     * What page to put the sales item on, when browsing items under the main category.
+     * After clicking on the main category, the first page (or group) of sub categories
+     * will be shown, then user can go to further pages by pressing a button.
+     */
+    @ColumnInfo(name = "page")
+    public int page;
 
     /**
      * A copy constructor - useful when updating a sales item.
@@ -53,6 +61,7 @@ public class SalesItems {
         this.parentCategoryId = salesItem.parentCategoryId;
         this.description = salesItem.description;
         this.numberOfMultiSelectableItems = salesItem.numberOfMultiSelectableItems;
+        this.page = salesItem.page;
     }
 
     /**
@@ -75,6 +84,7 @@ public class SalesItems {
         s.parentCategoryId = parentCategoryId;
         s.price = 0;
         s.pictureUrl = pictureUrl;
+        s.page = 1;
 
         return s;
     }

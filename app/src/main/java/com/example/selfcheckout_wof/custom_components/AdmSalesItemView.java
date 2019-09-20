@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextPaint;
@@ -22,9 +23,12 @@ import androidx.core.content.ContextCompat;
 
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
+import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.SalesItems;
 
 import java.io.File;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 
 /**
  * A custom view for displaying a sales item for admin purposes (view, update, delete)
@@ -34,6 +38,111 @@ public class AdmSalesItemView extends LinearLayout {
      * A flag of whether the item represented by this component is selected or not
      */
     private boolean selected;
+
+    /**
+     * We'll have unified formatting for the fields (and the headings)
+     */
+    private static LayoutParams layoutParams_label
+            , layoutParams_btn
+            , layoutParams_price
+            , layoutParams_page
+            , layoutParams_image
+            , layoutParams_image_hdr;
+
+    static {
+        layoutParams_label = new LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT
+        );
+
+        // Set margins for text view
+        layoutParams_label.bottomMargin = 8;
+        layoutParams_label.setMarginEnd(8);
+        layoutParams_label.topMargin = 20;
+        layoutParams_label.setMarginStart(8);
+        layoutParams_label.gravity = Gravity.CENTER;
+        //layoutParams_label.height = 200;
+        layoutParams_label.width = 250;
+
+        /*
+         * for price
+         */
+        layoutParams_price = new LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT
+        );
+
+        layoutParams_price.bottomMargin = 8;
+        layoutParams_price.setMarginEnd(8);
+        layoutParams_price.topMargin = 20;
+        layoutParams_price.setMarginStart(8);
+        layoutParams_price.gravity = Gravity.CENTER;
+        //layoutParams_price.height = 200;
+        layoutParams_price.width = 75;
+
+        /*
+         * for page
+         */
+        layoutParams_page = new LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT
+        );
+
+        layoutParams_page.bottomMargin = 8;
+        layoutParams_page.setMarginEnd(8);
+        layoutParams_page.topMargin = 20;
+        layoutParams_page.setMarginStart(8);
+        layoutParams_page.gravity = Gravity.CENTER;
+        //layoutParams_page.height = 200;
+        layoutParams_page.width = 75;
+
+        /*
+         * for image
+         */
+        layoutParams_image = new LayoutParams(
+                LayoutParams.MATCH_PARENT, // imageView width
+                LayoutParams.WRAP_CONTENT // imageView height
+        );
+
+        layoutParams_image.bottomMargin = 8;
+        layoutParams_image.setMarginEnd(8);
+        layoutParams_image.topMargin = 20;
+        layoutParams_image.setMarginStart(8);
+        layoutParams_image.gravity = Gravity.CENTER;
+        layoutParams_image.height = 200;
+        layoutParams_image.width = 250;
+
+        /*
+         * for image
+         */
+        layoutParams_image_hdr = new LayoutParams(
+                LayoutParams.MATCH_PARENT, // imageView width
+                LayoutParams.WRAP_CONTENT // imageView height
+        );
+
+        layoutParams_image_hdr.bottomMargin = 8;
+        layoutParams_image_hdr.setMarginEnd(8);
+        layoutParams_image_hdr.topMargin = 20;
+        layoutParams_image_hdr.setMarginStart(8);
+        layoutParams_image_hdr.gravity = Gravity.CENTER;
+        //layoutParams_image_hdr.height = 200;
+        layoutParams_image_hdr.width = 250;
+
+        /*
+         * And a separate formatting for the buttons
+         */
+        layoutParams_btn = new LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT
+        );
+
+        // Set margins for button
+        layoutParams_btn.bottomMargin = 8;
+        layoutParams_btn.setMarginEnd(8);
+        layoutParams_btn.topMargin = 20;
+        layoutParams_btn.setMarginStart(8);
+        layoutParams_btn.gravity = Gravity.CENTER;
+    }
 
     public AdmSalesItemView(Context context) {
         super(context);
@@ -56,6 +165,61 @@ public class AdmSalesItemView extends LinearLayout {
     }
 
     /**
+     * Creates a header for the table of admin list items
+     * @return
+     */
+    public void createHeader() {
+        removeAllViews();
+        setOrientation(LinearLayout.HORIZONTAL);
+
+        /*
+         * Now label
+         */
+        TextView tvLabel = new TextView(getContext());
+        tvLabel.setText("Label");
+        addView(tvLabel);
+        tvLabel.setLayoutParams(layoutParams_label);
+        tvLabel.setPadding(5,5,5,5);
+
+        /*
+         * Now page
+         */
+        TextView tvPage = new TextView(getContext());
+        tvPage.setText("Page");
+        addView(tvPage);
+        tvPage.setLayoutParams(layoutParams_page);
+        tvPage.setPadding(5,5,5,5);
+
+        /*
+         * Now price
+         */
+        TextView tvPrice = new TextView(getContext());
+        tvPrice.setTypeface(null, Typeface.BOLD);
+        tvPrice.setText("Price");
+        addView(tvPrice);
+        tvPrice.setLayoutParams(layoutParams_price);
+        tvPrice.setPadding(5,5,5,5);
+
+        /*
+         * Now image
+         */
+        TextView tvImage = new TextView(getContext());
+        tvImage.setText("Image");
+        addView(tvImage);
+        tvImage.setLayoutParams(layoutParams_image_hdr);
+        tvImage.setPadding(5,5,5,5);
+
+        /*
+         * Now a button to allow edit or delete.
+         */
+        TextView tvButton = new TextView(getContext());
+        tvButton.setText(" ");
+        addView(tvButton);
+        tvButton.setLayoutParams(layoutParams_btn);
+        tvButton.setPadding(5,5,5,5);
+    }
+
+    /**
      * Initialises the component.
      *
      * @param si SalesItems data to display
@@ -69,6 +233,8 @@ public class AdmSalesItemView extends LinearLayout {
          */
         if (si != null) {
             setSalesItem(si, action);
+        } else {
+            createHeader();
         }
 
         /*
@@ -96,17 +262,38 @@ public class AdmSalesItemView extends LinearLayout {
          */
         if (salesItem.parentCategoryId > -1) {
             TextView tvLabel = new TextView(getContext());
-            tvLabel.setText("     ");
+            tvLabel.setText("          ");
             addView(tvLabel);
+            ImageView ivIndent = new ImageView(getContext());
+            ivIndent.setImageResource(R.drawable.hierarchy_arrow);
+            addView(ivIndent);
         }
 
+        /*
+         * Now label
+         */
         TextView tvLabel = new TextView(getContext());
         tvLabel.setText(salesItem.label);
         addView(tvLabel);
 
-        TextView tvUri = new TextView(getContext());
-        tvUri.setText(salesItem.pictureUrl);
-        addView(tvUri);
+        /*
+         * Now page
+         */
+        TextView tvPage = new TextView(getContext());
+        tvPage.setText(salesItem.page + "");
+        addView(tvPage);
+
+        /*
+         * Now price
+         */
+        TextView tvPrice = new TextView(getContext());
+        tvPrice.setTypeface(null, Typeface.BOLD);
+        tvPrice.setText(Formatting.formatCash(salesItem.price));
+        addView(tvPrice);
+
+//        TextView tvUri = new TextView(getContext());
+//        tvUri.setText(salesItem.pictureUrl);
+//        addView(tvUri);
 
         /*
          * Now image
@@ -130,6 +317,7 @@ public class AdmSalesItemView extends LinearLayout {
             @Override
             public void onClick(View view) {
                 action.selectSalesItemForEdit();
+                //setSelected(true);
                 //action.deleteSalesItem();
             }
         });
@@ -137,42 +325,19 @@ public class AdmSalesItemView extends LinearLayout {
         /*
          * Lastly formatting of the text views- just visual formatting below this line
          */
-        LayoutParams layoutParams_tv = new LayoutParams(
-                LayoutParams.MATCH_PARENT, // imageView width
-                LayoutParams.WRAP_CONTENT // imageView height
-        );
-
-        // Set margins for text view
-        layoutParams_tv.bottomMargin = 8;
-        layoutParams_tv.setMarginEnd(8);
-        layoutParams_tv.topMargin = 20;
-        layoutParams_tv.setMarginStart(8);
-        layoutParams_tv.gravity = Gravity.CENTER;
-        layoutParams_tv.height = 200;
-        layoutParams_tv.width = 250;
-
-        tvLabel.setLayoutParams(layoutParams_tv);
+        tvLabel.setLayoutParams(layoutParams_label);
         // Set the text view content padding
         tvLabel.setPadding(5,5,5,5);
 
-        tvUri.setLayoutParams(layoutParams_tv);
-        // Set the text view content padding
-        tvUri.setPadding(5,5,5,5);
+        tvPage.setLayoutParams(layoutParams_page);
+        tvPage.setPadding(5,5,5,5);
 
-        /*
-         * And a separate formatting for the buttons
-         */
-        LayoutParams layoutParams_btn = new LayoutParams(
-                LayoutParams.MATCH_PARENT, // imageView width
-                LayoutParams.WRAP_CONTENT // imageView height
-        );
+        tvPrice.setLayoutParams(layoutParams_price);
+        tvPrice.setPadding(5,5,5,5);
 
-        // Set margins for button
-        layoutParams_btn.bottomMargin = 8;
-        layoutParams_btn.setMarginEnd(8);
-        layoutParams_btn.topMargin = 20;
-        layoutParams_btn.setMarginStart(8);
-        layoutParams_btn.gravity = Gravity.CENTER;
+//        tvUri.setLayoutParams(layoutParams_label);
+//        // Set the text view content padding
+//        tvUri.setPadding(5,5,5,5);
 
         btnEditThisItem.setLayoutParams(layoutParams_btn);
         // Set the button padding
@@ -200,22 +365,7 @@ public class AdmSalesItemView extends LinearLayout {
             iv.setImageResource(R.drawable.dragndrop);
         }
 
-        LayoutParams layoutParams_iv = new LayoutParams(
-                LayoutParams.MATCH_PARENT, // imageView width
-                LayoutParams.WRAP_CONTENT // imageView height
-        );
-//        // Set the card view content padding
-//        cvThisGUI.setContentPadding(5,5,5,5);
-        // Set margins for card view
-        layoutParams_iv.bottomMargin = 8;
-        layoutParams_iv.setMarginEnd(8);
-        layoutParams_iv.topMargin = 20;
-        layoutParams_iv.setMarginStart(8);
-        layoutParams_iv.gravity = Gravity.CENTER;
-        layoutParams_iv.height = 200;
-        layoutParams_iv.width = 250;
-
-        iv.setLayoutParams(layoutParams_iv);
+        iv.setLayoutParams(layoutParams_image);
 
         return iv;
     }

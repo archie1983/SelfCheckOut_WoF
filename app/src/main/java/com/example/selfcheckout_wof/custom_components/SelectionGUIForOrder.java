@@ -12,6 +12,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
+import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
 import java.text.DecimalFormat;
@@ -171,20 +172,10 @@ public class SelectionGUIForOrder extends LinearLayout {
         /**
          * Now a TextView for price
          */
-        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        symbols.setGroupingSeparator(',');
-        symbols.setDecimalSeparator('.');
-
-        /**
-         * Money format
-         */
-        DecimalFormat decimalFormat = new DecimalFormat("£ #,##0.00", symbols);
-        String price = decimalFormat.format(pgItemToDisplay.getPrice() / 100.0);
-
         TextView tvPrice = new TextView(context);
         tvPrice.setTypeface(null, Typeface.BOLD);
         tvPrice.setLayoutParams(layoutParams_desc);
-        tvPrice.setText(price);
+        tvPrice.setText(Formatting.formatCash(pgItemToDisplay.getPrice()));
         this.addView(tvPrice);
 
         /*
