@@ -47,7 +47,8 @@ public class AdmSalesItemView extends LinearLayout {
             , layoutParams_price
             , layoutParams_page
             , layoutParams_image
-            , layoutParams_image_hdr;
+            , layoutParams_image_hdr
+            , layoutParams_btn_hdr;
 
     static {
         layoutParams_label = new LayoutParams(
@@ -142,6 +143,22 @@ public class AdmSalesItemView extends LinearLayout {
         layoutParams_btn.topMargin = 20;
         layoutParams_btn.setMarginStart(8);
         layoutParams_btn.gravity = Gravity.CENTER;
+
+        /*
+         * And a separate formatting for the buttons
+         */
+        layoutParams_btn_hdr = new LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.WRAP_CONTENT
+        );
+
+        // Set margins for button
+        layoutParams_btn_hdr.bottomMargin = 8;
+        layoutParams_btn_hdr.setMarginEnd(8);
+        layoutParams_btn_hdr.topMargin = 20;
+        layoutParams_btn_hdr.setMarginStart(8);
+        layoutParams_btn_hdr.gravity = Gravity.CENTER;
+        layoutParams_btn_hdr.width = 150;
     }
 
     public AdmSalesItemView(Context context) {
@@ -168,7 +185,7 @@ public class AdmSalesItemView extends LinearLayout {
      * Creates a header for the table of admin list items
      * @return
      */
-    public void createHeader() {
+    private void createHeader() {
         removeAllViews();
         setOrientation(LinearLayout.HORIZONTAL);
 
@@ -215,7 +232,7 @@ public class AdmSalesItemView extends LinearLayout {
         TextView tvButton = new TextView(getContext());
         tvButton.setText(" ");
         addView(tvButton);
-        tvButton.setLayoutParams(layoutParams_btn);
+        tvButton.setLayoutParams(layoutParams_btn_hdr);
         tvButton.setPadding(5,5,5,5);
     }
 

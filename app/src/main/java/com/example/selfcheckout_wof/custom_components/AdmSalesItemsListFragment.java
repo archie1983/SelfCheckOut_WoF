@@ -82,11 +82,6 @@ public class AdmSalesItemsListFragment extends Fragment {
         LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
         //itemListRows.removeAllViews();
 
-        /*
-         * Adding a headers' row
-         */
-        itemListRows.addView(new AdmSalesItemView(getContext()));
-
         List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
         if (sales_items != null) {
             for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
@@ -100,6 +95,13 @@ public class AdmSalesItemsListFragment extends Fragment {
                                 new AdmSalesItemAction(si, getContext()),
                                 getContext()));
             }
+        } else {
+            /*
+             * Adding a headers' row. For some reason it looks like this method is called
+             * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
+             * when it's populated.
+             */
+            itemListRows.addView(new AdmSalesItemView(getContext()));
         }
 
         return rootView;
