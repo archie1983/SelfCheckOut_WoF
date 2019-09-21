@@ -5,4 +5,6 @@
     <color name="colorAccent">#D81B60</color>
     <color name="selected_goods">#F70783</color>
     <color name="admin_items_header">#F5F598</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>
