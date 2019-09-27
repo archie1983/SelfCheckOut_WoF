@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface PurchasableGoods {
     //public static List<PurchasableGoods> getItemsAsList();
-    public int getPrice();
+    public long getPrice();
     public String getDescription();
     public String getLabel();
 
@@ -19,4 +19,11 @@ public interface PurchasableGoods {
      * @return
      */
     public int getImage_resource();
+
+    /**
+     * Returns the image URI path that we want displayed for this purchasable goods item.
+     *
+     * @return
+     */
+    public String getImage_path();
 }

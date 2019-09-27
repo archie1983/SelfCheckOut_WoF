@@ -3,13 +3,24 @@ package com.example.selfcheckout_wof.custom_components;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Build;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.AppCompatCheckBox;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
@@ -111,9 +122,28 @@ public class SelectionGUIForOrder extends LinearLayout {
          * be a background of a LinearLayout inside the Cardview.
          */
         final CardView cvThisGUI = new CardView(context);
-        LinearLayout vlCardViewContent = new LinearLayout(context);
+        final LinearLayout vlCardViewContent = new LinearLayout(context);
         cvThisGUI.addView(vlCardViewContent);
-        vlCardViewContent.setBackgroundResource(pgItemToDisplay.getImage_resource());
+        //vlCardViewContent.setBackgroundResource(pgItemToDisplay.getImage_resource());
+        /*
+         * Creating an URI from the image path and using Glide to put it into
+         * the background of the linear layout.
+         */
+        Uri uri = Uri.parse(pgItemToDisplay.getImage_path());
+        Glide.with(this)
+                .load(uri)
+                .into(new CustomTarget<Drawable>() {
+                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        vlCardViewContent.setBackground(resource);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                    }
+                });
 
         this.addView(cvThisGUI);
 

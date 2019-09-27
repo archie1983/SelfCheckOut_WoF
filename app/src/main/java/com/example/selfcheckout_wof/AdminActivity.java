@@ -58,7 +58,7 @@ public class AdminActivity extends AppCompatActivity
     /**
      * A reference to the database. We'll initialise it in the getDBInstance(...) function
      */
-    private AppDatabase db_instance = null;
+    private static AppDatabase db_instance = null;
 
     /**
      * Returns the database instance. This function has to be public,
@@ -69,7 +69,7 @@ public class AdminActivity extends AppCompatActivity
      * @param context
      * @return
      */
-    public AppDatabase getDBInstance(Context context) {
+    public static AppDatabase getDBInstance(Context context) {
         if (db_instance == null) {
             db_instance = Room.databaseBuilder(context,
                     AppDatabase.class, "sales-items").build();

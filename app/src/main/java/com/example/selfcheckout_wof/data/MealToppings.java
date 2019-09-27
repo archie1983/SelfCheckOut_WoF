@@ -31,11 +31,11 @@ public enum MealToppings implements PurchasableGoods{
     /*
      * Price of the meal base in PENNIES (hence it's an int and not a double)
      */
-    public int price = 0;
+    public long price = 0;
 
     int image_resource = 0;
 
-    MealToppings(int image_resource, String label, String description, int price) {
+    MealToppings(int image_resource, String label, String description, long price) {
         this.image_resource = image_resource;
         this.description = description;
         this.label = label;
@@ -47,7 +47,7 @@ public enum MealToppings implements PurchasableGoods{
     }
 
     @Override
-    public int getPrice() {
+    public long getPrice() {
         return price;
     }
 
@@ -64,5 +64,15 @@ public enum MealToppings implements PurchasableGoods{
     @Override
     public int getImage_resource() {
         return image_resource;
+    }
+
+    /**
+     * Returns the image URI path that we want displayed for this purchasable goods item.
+     *
+     * @return
+     */
+    @Override
+    public String getImage_path() {
+        return null;
     }
 }

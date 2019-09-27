@@ -18,7 +18,7 @@ import androidx.room.PrimaryKey;
  * SalesItems entry, that can then be stored into the db.
  */
 @Entity
-public class SalesItems {
+public class SalesItems implements PurchasableGoods {
     @PrimaryKey(autoGenerate = true)
     public int si_id;
 
@@ -125,5 +125,40 @@ public class SalesItems {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public long getPrice() {
+        return price;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Returns the image that we want displayed for this purchasable goods item.
+     *
+     * @return
+     */
+    @Override
+    public int getImage_resource() {
+        return 0;
+    }
+
+    /**
+     * Returns the image URI path that we want displayed for this purchasable goods item.
+     *
+     * @return
+     */
+    @Override
+    public String getImage_path() {
+        return pictureUrl;
     }
 }
