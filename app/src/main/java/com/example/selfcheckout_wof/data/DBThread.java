@@ -1,6 +1,7 @@
 package com.example.selfcheckout_wof.data;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * A thread that we'll use to access the Room database functions. Room stipulates
@@ -40,7 +41,10 @@ public class DBThread extends Thread {
      * @param task
      */
     public static void addTask(Runnable task) {
-        tasks.add(task);
+        //synchronized (tasks) {
+            tasks.add(task);
+        //}
+
         startThread();
     }
 
@@ -63,12 +67,21 @@ public class DBThread extends Thread {
     @Override
     public void run() {
         while (hasToRun) {
-            while (!tasks.isEmpty()) {
-                for (Runnable r : tasks) {
-                    r.run();
-                    tasks.remove(r);
+            //synchronized (tasks) {
+                while (!tasks.isEmpty()) {
+//                    Iterator<Runnable> it = tasks.iterator();
+//                    while (it.hasNext()) {
+//                        Runnable task_to_run = it.next();
+//                        task_to_run.run();
+//                        it.remove();
+//                    }
+                    for (Runnable r : tasks) {
+                        r.run();
+                        tasks.remove(r);
+                    }
                 }
-            }
+            //}
+
 
             /*
              * yield

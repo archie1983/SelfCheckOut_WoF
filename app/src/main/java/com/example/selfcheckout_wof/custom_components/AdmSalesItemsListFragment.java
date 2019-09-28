@@ -32,14 +32,15 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class AdmSalesItemsListFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    // the fragment initialization parameter
+    private static final String ARG_HDR_FLAG = "hdr";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    /**
+     * A flag of whether this fragment should only display a header row instead of data.
+     */
+    private boolean isHeader = false;
+
+    private boolean isInstantiated = true;
 
     private OnFragmentInteractionListener mListener;
 
@@ -51,16 +52,15 @@ public class AdmSalesItemsListFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param isHeader_ A flag of whether this fragment is supposed to only show the header line
+     *                 and no data.
      * @return A new instance of fragment AdmSalesItemsListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdmSalesItemsListFragment newInstance(String param1, String param2) {
+    public static AdmSalesItemsListFragment newInstance(boolean isHeader_) {
         AdmSalesItemsListFragment fragment = new AdmSalesItemsListFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putBoolean(ARG_HDR_FLAG, isHeader_);
         fragment.setArguments(args);
         return fragment;
     }
@@ -69,8 +69,8 @@ public class AdmSalesItemsListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            isHeader = getArguments().getBoolean(ARG_HDR_FLAG);
+            isInstantiated = true;
         }
     }
 
@@ -81,8 +81,8 @@ public class AdmSalesItemsListFragment extends Fragment {
         final View rootView = inflater.inflate(R.layout.fragment_adm_sales_items_list, container, false);
 
         itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
-
-        loadData();
+        //Thread.dumpStack();
+        //loadData();
 
         return rootView;
     }
@@ -90,49 +90,57 @@ public class AdmSalesItemsListFragment extends Fragment {
     LinearLayout itemListRows = null;
 
     private void loadData() {
+        if (!isInstantiated) {
+            return;
+        }
         //LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
         itemListRows.removeAllViews();
-
-        System.out.println("Here1");
 
         /*
          * Adding a headers' row. For some reason it looks like this method is called
          * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
          * when it's populated.
          */
-        AdmSalesItemView header = new AdmSalesItemView(getContext());
-        header.setHeaderBackground();
-        itemListRows.addView(header);
-
-        List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
-        if (sales_items != null) {
+        if (isHeader) {
+            AdmSalesItemView header = new AdmSalesItemView(getContext());
+            header.setHeaderBackground();
+            itemListRows.addView(header);
+        } else {
             /*
-             * Adding a headers' row. For some reason it looks like this method is called
-             * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
-             * when it's populated.
+             * Ensuring that we have something in the items list
              */
+            //AdminActivity.getInstance().loadSalesItemsList();
+            List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
+            if (AdminActivity.getCurrentSalesItemsList() != null) {
+                /*
+                 * Adding a headers' row. For some reason it looks like this method is called
+                 * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
+                 * when it's populated.
+                 */
 //            header = new AdmSalesItemView(getContext());
 //            header.setHeaderBackground();
 //            itemListRows.addView(header);
 
-            for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
-                /*
-                 * Creating a new admin sales item view and an action pertaining to that view
-                 * and then adding that view to the collection of rows.
-                 */
-                itemListRows.addView(
-                        new AdmSalesItemView(
-                                si,
-                                new AdmSalesItemAction(si, getContext()),
-                                getContext()));
+                for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
+                    /*
+                     * Creating a new admin sales item view and an action pertaining to that view
+                     * and then adding that view to the collection of rows.
+                     */
+                    itemListRows.addView(
+                            new AdmSalesItemView(
+                                    si,
+                                    new AdmSalesItemAction(si, getContext()),
+                                    getContext()));
+                }
             }
+            System.out.println("Here1 " + isInstantiated + " " + isHeader + " " + (sales_items == null ? "null" : sales_items.size()));
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        //loadData();
+        loadData();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
