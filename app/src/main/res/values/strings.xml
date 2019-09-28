@@ -20,7 +20,7 @@
     <string name="btnCancel">Cancel</string>
 
     <string name="title_activity_sales">SalesActivity</string>
-    <string name="dummy_button">Dummy Button</string>
+    <string name="btnGoToAdmin">Admin Section</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

@@ -79,11 +79,42 @@ public class AdmSalesItemsListFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_adm_sales_items_list, container, false);
-        LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
-        //itemListRows.removeAllViews();
+
+        itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
+
+        loadData();
+
+        return rootView;
+    }
+
+    LinearLayout itemListRows = null;
+
+    private void loadData() {
+        //LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
+        itemListRows.removeAllViews();
+
+        System.out.println("Here1");
+
+        /*
+         * Adding a headers' row. For some reason it looks like this method is called
+         * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
+         * when it's populated.
+         */
+        AdmSalesItemView header = new AdmSalesItemView(getContext());
+        header.setHeaderBackground();
+        itemListRows.addView(header);
 
         List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
         if (sales_items != null) {
+            /*
+             * Adding a headers' row. For some reason it looks like this method is called
+             * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
+             * when it's populated.
+             */
+//            header = new AdmSalesItemView(getContext());
+//            header.setHeaderBackground();
+//            itemListRows.addView(header);
+
             for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
                 /*
                  * Creating a new admin sales item view and an action pertaining to that view
@@ -95,18 +126,13 @@ public class AdmSalesItemsListFragment extends Fragment {
                                 new AdmSalesItemAction(si, getContext()),
                                 getContext()));
             }
-        } else {
-            /*
-             * Adding a headers' row. For some reason it looks like this method is called
-             * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
-             * when it's populated.
-             */
-            AdmSalesItemView header = new AdmSalesItemView(getContext());
-            header.setHeaderBackground();
-            itemListRows.addView(header);
         }
+    }
 
-        return rootView;
+    @Override
+    public void onResume() {
+        super.onResume();
+        //loadData();
     }
 
     // TODO: Rename method, update argument and hook method into UI event

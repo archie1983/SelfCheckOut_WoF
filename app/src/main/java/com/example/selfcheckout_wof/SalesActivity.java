@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
@@ -39,6 +40,8 @@ public class SalesActivity extends AppCompatActivity {
      * user interaction before hiding the system UI.
      */
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+
+    private AppCompatActivity thisActivity = null;
 
     /**
      * Some older devices needs a small delay between UI widget updates
@@ -94,6 +97,7 @@ public class SalesActivity extends AppCompatActivity {
             if (AUTO_HIDE) {
                 delayedHide(AUTO_HIDE_DELAY_MILLIS);
             }
+
             return false;
         }
     };
@@ -108,7 +112,6 @@ public class SalesActivity extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.vContentLayout);
 
-
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +123,20 @@ public class SalesActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.btnGoToAdmin).setOnTouchListener(mDelayHideTouchListener);
+
+//        findViewById(R.id.btnGoToAdmin).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent showAdminActivity = new Intent(thisActivity, AdminActivity.class);
+//                startActivity(showAdminActivity);
+//            }
+//        });
+    }
+
+    public void onGoToAdminClick(View view) {
+        Intent showAdminActivity = new Intent(this, AdminActivity.class);
+        startActivity(showAdminActivity);
     }
 
     @Override
@@ -133,6 +149,8 @@ public class SalesActivity extends AppCompatActivity {
         delayedHide(100);
 
         displayPage(1);
+
+        thisActivity = this;
     }
 
     /**
@@ -176,11 +194,11 @@ public class SalesActivity extends AppCompatActivity {
                      * putting in there horizontal layouts and adding a calculated number
                      * of items in each of the horizontal layouts (rows)
                      */
-                    LinearLayout vContentLayout = (LinearLayout)findViewById(R.id.vContentLayout);
+                    final LinearLayout vContentLayout = (LinearLayout)findViewById(R.id.vContentLayout);
                     int items_displayed = 0;
 
                     while (item_count > items_displayed) {
-                        LinearLayout hItemsRow = new LinearLayout(getApplicationContext());
+                        final LinearLayout hItemsRow = new LinearLayout(getApplicationContext());
                         hItemsRow.setOrientation(LinearLayout.HORIZONTAL);
 
                         for (int cnt = 0; cnt < number_of_items_per_row; cnt++) {
@@ -201,7 +219,12 @@ public class SalesActivity extends AppCompatActivity {
                             );
                             items_displayed++;
                         }
-                        vContentLayout.addView(hItemsRow);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                vContentLayout.addView(hItemsRow);
+                            }
+                        });
                     }
                 }
             }
