@@ -148,11 +148,21 @@ tools:context=".AdminActivity">
             android:name="com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_adm_sales_items_list" /-->
+            tools:layout="@layout/fragment_adm_sales_items_list" />
 
         <fragment
             android:id="@+id/adm_sales_items_list_container"
             android:name="com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_adm_sales_items_list" /-->
+
+        <FrameLayout android:id="@+id/adm_sales_items_list_hdr_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_adm_sales_items_list" />
+
+        <FrameLayout android:id="@+id/adm_sales_items_list_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout="@layout/fragment_adm_sales_items_list" />

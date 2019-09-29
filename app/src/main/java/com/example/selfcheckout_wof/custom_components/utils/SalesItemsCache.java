@@ -133,6 +133,16 @@ public class SalesItemsCache extends Application {
     }
 
     /**
+     * Returns a cached version of sales items list if it's available.
+     * If not, it returns null. This is useful when we can't create
+     * a new DBThread task because it's already nested into one.
+     * @return
+     */
+    public List<SalesItems> getCachedSalesItemsList() {
+        return salesItemsList;
+    }
+
+    /**
      * Returns a cached version of sales items parents if it's available.
      * If not, then it first reads the list and then returns it.
      * @return

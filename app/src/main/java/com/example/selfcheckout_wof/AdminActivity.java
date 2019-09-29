@@ -60,6 +60,8 @@ public class AdminActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        displayAvailableSalesItemsForEdit();
+
         /*
          * We could initialise the self reference in a constructor- the singelton
          * way, but it's probably ok at least for now to set it here instead.
@@ -72,18 +74,6 @@ public class AdminActivity extends AppCompatActivity
          */
         Spinner spnParentCategories = (Spinner)findViewById(R.id.spnParentCategories);
         spnParentCategories.setOnItemSelectedListener(this);
-
-//
-//        /**
-//         * Updating the admin list of sales items in a separate thread because
-//         * Room doesn't allow running db stuff on the main thread.
-//         */
-//        DBThread.addTask(new Runnable() {
-//            @Override
-//            public void run() {
-//                updateSalesItemsListView();
-//            }
-//        });
     }
 
     /**
@@ -183,12 +173,13 @@ public class AdminActivity extends AppCompatActivity
             DBThread.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    db.salesItemsDao().update(tmp_salesItem);
-                    updateSalesItemsListView();
+                db.salesItemsDao().update(tmp_salesItem);
+                updateSalesItemsListView();
                 }
             });
         } else {
-            final SalesItems newSalesItem = SalesItems.createCategory(mainCatText,
+            final SalesItems newSalesItem = SalesItems.createCategory(
+                    mainCatText,
                     selected_image_uri,
                     selected_parent_category,
                     itemDescription,
@@ -202,10 +193,10 @@ public class AdminActivity extends AppCompatActivity
             DBThread.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    db.salesItemsDao().insertAll(
-                            newSalesItem
-                    );
-                    updateSalesItemsListView();
+                db.salesItemsDao().insertAll(
+                    newSalesItem
+                );
+                updateSalesItemsListView();
                 }
             });
         }
@@ -396,6 +387,10 @@ public class AdminActivity extends AppCompatActivity
      * It is also public, because we'll want to use it in AdmSalesItemAction
      * (when deleting a sales item), which we'll create in AdmSalesItemsListFragment
      * and pass to AdmSalesItemView.
+     *
+     * NOTE: This method must be wrappped in a DBThread task, because it uses DB access.
+     * The reason why it is not done so in the body of this method is to give more
+     * flexibility in scheduling this task.
      */
     public void updateSalesItemsListView() {
         SalesItemsCache.getInstance().forceLoadSalesItemsList();
@@ -422,48 +417,36 @@ public class AdminActivity extends AppCompatActivity
                 spnParentCategories.setAdapter(scaParentCategories);
             }
         });
+        displayAvailableSalesItemsForEdit();
+    }
 
+    /**
+     * Creates (or reloads) the two fragments, that I have for displaying existing sales items
+     * in a list that can be used to pick items for edit.
+     */
+    private void displayAvailableSalesItemsForEdit(){
         /*
-         * Now populate the admin fragment with the list of available sales items
+         * Populate the admin fragment with the list of available sales items.
+         * If we have already have an existing data fragment, then take that and reload its data.
+         * If not, then we have to create a new data fragment and also a new header fragment.
          */
-//        FragmentManager fm = getSupportFragmentManager();
-//        AdmSalesItemsListFragment header_fragment = AdmSalesItemsListFragment.newInstance(true);
-        AdmSalesItemsListFragment data_fragment = AdmSalesItemsListFragment.newInstance(false);
-//            fm.beginTransaction()
-//                    .replace(R.id.adm_sales_items_list_container, fragment, "adm_si_list")
-//                    .commit();
-//        fm.beginTransaction()
-//                .replace(R.id.adm_sales_items_list_hdr_container, header_fragment, "adm_si_hdr")
-//                .commit();
+        FragmentManager fm = getSupportFragmentManager();
+        AdmSalesItemsListFragment data_fragment = (AdmSalesItemsListFragment)fm.findFragmentByTag("adm_si_list");
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.adm_sales_items_list_container, data_fragment)
+        if (data_fragment != null) {
+            data_fragment.loadData();
+        } else {
+            AdmSalesItemsListFragment header_fragment = AdmSalesItemsListFragment.newInstance(true);
+            data_fragment = AdmSalesItemsListFragment.newInstance(false);
+
+            fm.beginTransaction()
+                .add(R.id.adm_sales_items_list_hdr_container, header_fragment, "adm_si_hdr")
                 .commit();
 
-
-//        AdmSalesItemsListFragment data_fragment = (AdmSalesItemsListFragment)fm.findFragmentByTag("adm_si_list");
-//        if (data_fragment != null) {
-//            final AdmSalesItemsListFragment f_data_fragment = data_fragment;
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    f_data_fragment.loadData();
-//                }
-//            });
-//        } else {
-//            AdmSalesItemsListFragment header_fragment = AdmSalesItemsListFragment.newInstance(true);
-//            data_fragment = AdmSalesItemsListFragment.newInstance(false);
-////            fm.beginTransaction()
-////                    .replace(R.id.adm_sales_items_list_container, fragment, "adm_si_list")
-////                    .commit();
-//            fm.beginTransaction()
-//                    .replace(R.id.adm_sales_items_list_hdr_container, header_fragment, "adm_si_hdr")
-//                    .commit();
-//
-//            fm.beginTransaction()
-//                    .replace(R.id.adm_sales_items_list_container, data_fragment, "adm_si_list")
-//                    .commit();
-//        }
+            fm.beginTransaction()
+                .add(R.id.adm_sales_items_list_container, data_fragment, "adm_si_list")
+                .commit();
+        }
     }
 
     /**

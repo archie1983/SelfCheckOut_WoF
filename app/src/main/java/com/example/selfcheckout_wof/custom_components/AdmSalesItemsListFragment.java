@@ -22,6 +22,7 @@ import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
 
+import java.text.RuleBasedCollator;
 import java.util.List;
 
 /**
@@ -85,20 +86,28 @@ public class AdmSalesItemsListFragment extends Fragment {
 
         itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
         //Thread.dumpStack();
-        //loadData();
+        loadData();
 
         return rootView;
     }
 
     LinearLayout itemListRows = null;
 
-    private void loadData() {
+    /**
+     * Loads data into the fragment.
+     */
+    public void loadData() {
         if (!isInstantiated) {
             return;
         }
 
         //LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
-        itemListRows.removeAllViews();
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                itemListRows.removeAllViews();
+            }
+        });
 
         /*
          * Adding a headers' row. For some reason it looks like this method is called
@@ -106,57 +115,43 @@ public class AdmSalesItemsListFragment extends Fragment {
          * when it's populated.
          */
         if (isHeader) {
-            AdmSalesItemView header = new AdmSalesItemView(getContext());
+            final AdmSalesItemView header = new AdmSalesItemView(getContext());
             header.setHeaderBackground();
-            itemListRows.addView(header);
-        } else {
-            /*
-             * Ensuring that we have something in the items list
-             */
-            //AdminActivity.getInstance().loadSalesItemsList();
-            DBThread.addTask(new Runnable() {
+            getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    List<SalesItems> sales_items = SalesItemsCache.getInstance().getSalesItemsList();
-                    if (sales_items != null) {
-                        /*
-                         * Adding a headers' row. For some reason it looks like this method is called
-                         * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
-                         * when it's populated.
-                         */
-//            header = new AdmSalesItemView(getContext());
-//            header.setHeaderBackground();
-//            itemListRows.addView(header);
-
-                        for (final SalesItems si : SalesItemsCache.getInstance().getSalesItemsList()) {
-                            /*
-                             * Creating a new admin sales item view and an action pertaining to that view
-                             * and then adding that view to the collection of rows.
-                             */
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    itemListRows.addView(
-                                            new AdmSalesItemView(
-                                                    si,
-                                                    new AdmSalesItemAction(si, getContext()),
-                                                    getContext()));
-                                }
-                            });
-                        }
-                    }
-                    System.out.println("Here1 " + isInstantiated + " " + isHeader + " " + (sales_items == null ? "null" : sales_items.size()));
+                    itemListRows.addView(header);
                 }
             });
-
+        } else {
+            List<SalesItems> sales_items = SalesItemsCache.getInstance().getCachedSalesItemsList();
+            if (sales_items != null) {
+                for (final SalesItems si : sales_items) {
+                    /*
+                     * Creating a new admin sales item view and an action pertaining to that view
+                     * and then adding that view to the collection of rows.
+                     */
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            itemListRows.addView(
+                                new AdmSalesItemView(
+                                    si,
+                                    new AdmSalesItemAction(si, getContext()),
+                                    getContext()));
+                        }
+                    });
+                }
+            }
+            System.out.println("Here1 " + isInstantiated + " " + isHeader + " " + (sales_items == null ? "null" : sales_items.size()));
         }
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadData();
-    }
+//
+//    @Override
+//    public void onResume() {
+//        super.onResume();
+//        loadData();
+//    }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
