@@ -23,6 +23,7 @@ import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
+import com.example.selfcheckout_wof.custom_components.utils.AdmSalesItemsListHeaderFragment;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
@@ -41,6 +42,7 @@ import java.util.List;
  */
 public class AdminActivity extends AppCompatActivity
         implements AdmSalesItemsListFragment.OnFragmentInteractionListener,
+        AdmSalesItemsListHeaderFragment.OnFragmentInteractionListener,
         EditSalesItemFragment.OnFragmentInteractionListener, AdapterView.OnItemSelectedListener {
 
     /*
@@ -434,9 +436,13 @@ public class AdminActivity extends AppCompatActivity
         AdmSalesItemsListFragment data_fragment = (AdmSalesItemsListFragment)fm.findFragmentByTag("adm_si_list");
 
         if (data_fragment != null) {
-            data_fragment.loadData();
+            //data_fragment.loadData();
+            data_fragment = AdmSalesItemsListFragment.newInstance(false);
+            fm.beginTransaction()
+                    .replace(R.id.adm_sales_items_list_container, data_fragment, "adm_si_list")
+                    .commit();
         } else {
-            AdmSalesItemsListFragment header_fragment = AdmSalesItemsListFragment.newInstance(true);
+            AdmSalesItemsListHeaderFragment header_fragment = AdmSalesItemsListHeaderFragment.newInstance(true);
             data_fragment = AdmSalesItemsListFragment.newInstance(false);
 
             fm.beginTransaction()

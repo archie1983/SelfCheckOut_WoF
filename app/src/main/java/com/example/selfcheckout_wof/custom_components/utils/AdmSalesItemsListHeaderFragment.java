@@ -1,28 +1,20 @@
-package com.example.selfcheckout_wof.custom_components;
+package com.example.selfcheckout_wof.custom_components.utils;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.selfcheckout_wof.AdminActivity;
+import androidx.fragment.app.Fragment;
+
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.AdmSalesItemView;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
-import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
-import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
-import com.example.selfcheckout_wof.data.AppDatabase;
-import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
 
-import java.text.RuleBasedCollator;
 import java.util.List;
 
 /**
@@ -30,12 +22,12 @@ import java.util.List;
  * purposes (add, remove, view)
  *
  * Activities that contain this fragment must implement the
- * {@link AdmSalesItemsListFragment.OnFragmentInteractionListener} interface
+ * {@link AdmSalesItemsListHeaderFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link AdmSalesItemsListFragment#newInstance} factory method to
+ * Use the {@link AdmSalesItemsListHeaderFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdmSalesItemsListFragment extends Fragment {
+public class AdmSalesItemsListHeaderFragment extends Fragment {
     // the fragment initialization parameter
     private static final String ARG_HDR_FLAG = "hdr";
 
@@ -48,7 +40,7 @@ public class AdmSalesItemsListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public AdmSalesItemsListFragment() {
+    public AdmSalesItemsListHeaderFragment() {
         // Required empty public constructor
     }
 
@@ -61,8 +53,8 @@ public class AdmSalesItemsListFragment extends Fragment {
      * @return A new instance of fragment AdmSalesItemsListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdmSalesItemsListFragment newInstance(boolean isHeader_) {
-        AdmSalesItemsListFragment fragment = new AdmSalesItemsListFragment();
+    public static AdmSalesItemsListHeaderFragment newInstance(boolean isHeader_) {
+        AdmSalesItemsListHeaderFragment fragment = new AdmSalesItemsListHeaderFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARG_HDR_FLAG, isHeader_);
         fragment.setArguments(args);
