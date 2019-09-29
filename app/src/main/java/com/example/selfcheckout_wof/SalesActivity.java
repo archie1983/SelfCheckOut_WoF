@@ -16,6 +16,7 @@ import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.SelectionGUIForOrder;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
+import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
@@ -169,63 +170,49 @@ public class SalesActivity extends AppCompatActivity {
         DBThread.addTask(new Runnable() {
             @Override
             public void run() {
-                final AppDatabase db = AdminActivity.getDBInstance(getApplicationContext());
-                List<SalesItems> salesItemsList;
-                if (db != null) {
+                List<SalesItems> salesItemsList = SalesItemsCache.getInstance().getSalesItemsPage(page_number);
+                int item_count = salesItemsList.size();
+                /*
+                 * making sure that the row size will be as close as possible to the column count
+                 */
+                int number_of_items_per_row = (int) Math.ceil(Math.sqrt(item_count));
 
-                    /*
-                     * if page number is less than one, then we want the top categories
-                     * otherwise we want the specified page.
-                     */
-                    if (page_number < 1) {
-                        salesItemsList = db.salesItemsDao().loadTopCategories();
-                    } else {
-                        salesItemsList = db.salesItemsDao().loadPage(page_number);
+                /*
+                 * We'll find the layout where we want to put the items and start
+                 * putting in there horizontal layouts and adding a calculated number
+                 * of items in each of the horizontal layouts (rows)
+                 */
+                final LinearLayout vContentLayout = (LinearLayout)findViewById(R.id.vContentLayout);
+                int items_displayed = 0;
+
+                while (item_count > items_displayed) {
+                    final LinearLayout hItemsRow = new LinearLayout(getApplicationContext());
+                    hItemsRow.setOrientation(LinearLayout.HORIZONTAL);
+
+                    for (int cnt = 0; cnt < number_of_items_per_row; cnt++) {
+                        /*
+                         * Because each SalesItems item is a PurchasableGoods (implements the interface),
+                         * we can use it as PurchasableGoods and pass into the constructor
+                         * of SelectionGUIForOrder.
+                         */
+                        final PurchasableGoods pg = salesItemsList.get(items_displayed);
+                        hItemsRow.addView(
+                                new SelectionGUIForOrder(
+                                        pg,
+                                        new ActionForSelectionGUI(pg),
+                                        false,
+                                        false,
+                                        getApplicationContext()
+                                )
+                        );
+                        items_displayed++;
                     }
-
-                    int item_count = salesItemsList.size();
-                    /*
-                     * making sure that the row size will be as close as possible to the column count
-                     */
-                    int number_of_items_per_row = (int) Math.ceil(Math.sqrt(item_count));
-
-                    /*
-                     * We'll find the layout where we want to put the items and start
-                     * putting in there horizontal layouts and adding a calculated number
-                     * of items in each of the horizontal layouts (rows)
-                     */
-                    final LinearLayout vContentLayout = (LinearLayout)findViewById(R.id.vContentLayout);
-                    int items_displayed = 0;
-
-                    while (item_count > items_displayed) {
-                        final LinearLayout hItemsRow = new LinearLayout(getApplicationContext());
-                        hItemsRow.setOrientation(LinearLayout.HORIZONTAL);
-
-                        for (int cnt = 0; cnt < number_of_items_per_row; cnt++) {
-                            /*
-                             * Because each SalesItems item is a PurchasableGoods (implements the interface),
-                             * we can use it as PurchasableGoods and pass into the constructor
-                             * of SelectionGUIForOrder.
-                             */
-                            final PurchasableGoods pg = salesItemsList.get(items_displayed);
-                            hItemsRow.addView(
-                                    new SelectionGUIForOrder(
-                                            pg,
-                                            new ActionForSelectionGUI(pg),
-                                            false,
-                                            false,
-                                            getApplicationContext()
-                                    )
-                            );
-                            items_displayed++;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            vContentLayout.addView(hItemsRow);
                         }
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                vContentLayout.addView(hItemsRow);
-                            }
-                        });
-                    }
+                    });
                 }
             }
         });

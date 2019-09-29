@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.example.selfcheckout_wof.AdminActivity;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
+import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
@@ -68,7 +69,7 @@ public class AdmSalesItemAction {
             return;
         }
 
-        final AppDatabase db = adminActivity.getDBInstance(context);
+        final AppDatabase db = SalesItemsCache.getDBInstance();
         /**
          * Deleting a sales item and updating the sales item list in the admin
          * section in a separate thread because Room doesn't allow running

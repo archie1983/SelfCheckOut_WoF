@@ -23,6 +23,7 @@ import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
+import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
@@ -44,8 +45,7 @@ public class AdminActivity extends AppCompatActivity
 
     /*
      * A static reference to itself so that we can access it from elsewhere
-     * in the application and call functions like getDBInstance(...)
-     * and updateSalesItemsListView().
+     * in the application and call functions like updateSalesItemsListView().
      */
     private static AdminActivity self = null;
 
@@ -54,29 +54,6 @@ public class AdminActivity extends AppCompatActivity
             throw new AdminActivityNotReady();
         }
         return self;
-    }
-
-    /**
-     * A reference to the database. We'll initialise it in the getDBInstance(...) function
-     */
-    private static AppDatabase db_instance = null;
-
-    /**
-     * Returns the database instance. This function has to be public,
-     * because we will be accessing AdminActivity in a static context
-     * and then using this function to get db instance so that we can
-     * use db functionality elsewhere in application.
-     *
-     * @param context
-     * @return
-     */
-    public static AppDatabase getDBInstance(Context context) {
-        if (db_instance == null) {
-            db_instance = Room.databaseBuilder(context,
-                    AppDatabase.class, "sales-items").build();
-        }
-
-        return db_instance;
     }
 
     @Override
@@ -177,7 +154,7 @@ public class AdminActivity extends AppCompatActivity
             multi_choice_number = 1;
         }
 
-        final AppDatabase db = getDBInstance(getApplicationContext());
+        final AppDatabase db = SalesItemsCache.getDBInstance();
 
         /*
          * If we have a loaded sales item, then we want to update it with the new
@@ -316,19 +293,19 @@ public class AdminActivity extends AppCompatActivity
         /*
          * Label
          */
-        EditText txtCatLabel = ((EditText)findViewById(R.id.txtCatLabel));
+        EditText txtCatLabel = findViewById(R.id.txtCatLabel);
         txtCatLabel.setText(salesItem.label);
 
         /*
          * price
          */
-        EditText txtPrice = ((EditText)findViewById(R.id.txtPrice));
+        EditText txtPrice = findViewById(R.id.txtPrice);
         txtPrice.setText(salesItem.price + "");
 
         /*
          * page
          */
-        EditText txtPage = ((EditText)findViewById(R.id.txtPage));
+        EditText txtPage = findViewById(R.id.txtPage);
         txtPage.setText(salesItem.page + "");
 
         /*
@@ -374,7 +351,7 @@ public class AdminActivity extends AppCompatActivity
          */
         SalesItems siToDisplayInSpinner = null;
 
-        for (SalesItems si : salesItemsList) {
+        for (SalesItems si : SalesItemsCache.getInstance().getSalesItemsList()) {
             if (si.si_id == salesItem.parentCategoryId) {
                 siToDisplayInSpinner = si;
             }
@@ -395,7 +372,7 @@ public class AdminActivity extends AppCompatActivity
          * any other index, then we want to display here the category, whose index is
          * 1 higher.
          */
-        spnParentCategories.setSelection(salesItemsParents.indexOf(siToDisplayInSpinner) + 1);
+        spnParentCategories.setSelection(SalesItemsCache.getInstance().getSalesItemsParents().indexOf(siToDisplayInSpinner) + 1);
 
         /*
          * We'll also want the "delete category" button available
@@ -413,47 +390,6 @@ public class AdminActivity extends AppCompatActivity
     }
 
     /**
-     * A collection of the sales items parents that we have at any given time.
-     */
-    private static List<SalesItems> salesItemsParents;
-
-    /**
-     * A collection of the sales items that we have at any given time.
-     */
-    private static List<SalesItems> salesItemsList;
-
-    public static List<SalesItems> getCurrentSalesItemsList() {
-        return salesItemsList;
-    }
-
-    public AppDatabase loadSalesItemsList() {
-        final AppDatabase db = getDBInstance(getApplicationContext());
-        if (db != null) {
-            //salesItemsList = db.salesItemsDao().getAll();
-            salesItemsList = db.salesItemsDao().loadTopCategories();
-
-            /*
-             * Now we'll combine the top categories with the sub categories
-             * in a depth-first style hierarchical structure.
-             */
-            ArrayList<SalesItems> tmp = new ArrayList<>(salesItemsList);
-            for (SalesItems si : salesItemsList) {
-                List<SalesItems> subCategories = db.salesItemsDao().loadSubCategory(si.si_id);
-                int indexOfTopCategory = tmp.indexOf(si);
-                if (indexOfTopCategory < tmp.size() - 1) {
-                    tmp.addAll(indexOfTopCategory + 1, subCategories);
-                } else {
-                    tmp.addAll(subCategories);
-                }
-            }
-
-            salesItemsList = tmp;
-        }
-
-        return db;
-    }
-
-    /**
      * After we've added or removed sales items, we'll want to update
      * the fragment, where we're showing them. This function will do that.
      *
@@ -462,7 +398,7 @@ public class AdminActivity extends AppCompatActivity
      * and pass to AdmSalesItemView.
      */
     public void updateSalesItemsListView() {
-        AppDatabase db = loadSalesItemsList();
+        SalesItemsCache.getInstance().forceLoadSalesItemsList();
 
         /*
          * First re-populate the drop down box of main categories to select.
@@ -472,12 +408,10 @@ public class AdminActivity extends AppCompatActivity
         String[] adapterCols=new String[]{"item_label"};
         int[] adapterRowViews=new int[]{android.R.id.text1};
 
-        salesItemsParents = db.salesItemsDao().loadTopCategories();
-
         final SimpleCursorAdapter scaParentCategories = new SimpleCursorAdapter(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,//android.R.layout.simple_spinner_item
-                db.salesItemsDao().loadTopCategoriesForDropDownBox(),
+                SalesItemsCache.getInstance().getSalesItemsParentsForDropDownBox(),
                 adapterCols,
                 adapterRowViews,
                 0);

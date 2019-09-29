@@ -41,9 +41,9 @@ public class DBThread extends Thread {
      * @param task
      */
     public static void addTask(Runnable task) {
-        //synchronized (tasks) {
+        synchronized (tasks) {
             tasks.add(task);
-        //}
+        }
 
         startThread();
     }
@@ -67,20 +67,20 @@ public class DBThread extends Thread {
     @Override
     public void run() {
         while (hasToRun) {
-            //synchronized (tasks) {
+            synchronized (tasks) {
                 while (!tasks.isEmpty()) {
-//                    Iterator<Runnable> it = tasks.iterator();
-//                    while (it.hasNext()) {
-//                        Runnable task_to_run = it.next();
-//                        task_to_run.run();
-//                        it.remove();
-//                    }
-                    for (Runnable r : tasks) {
-                        r.run();
-                        tasks.remove(r);
+                    Iterator<Runnable> it = tasks.iterator();
+                    while (it.hasNext()) {
+                        Runnable task_to_run = it.next();
+                        task_to_run.run();
+                        it.remove();
                     }
+//                    for (Runnable r : tasks) {
+//                        r.run();
+//                        tasks.remove(r);
+//                    }
                 }
-            //}
+            }
 
 
             /*

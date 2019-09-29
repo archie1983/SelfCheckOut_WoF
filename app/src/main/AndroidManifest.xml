@@ -3,6 +3,7 @@
     package="com.example.selfcheckout_wof">
 
     <application
+        android:name=".custom_components.utils.SalesItemsCache"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

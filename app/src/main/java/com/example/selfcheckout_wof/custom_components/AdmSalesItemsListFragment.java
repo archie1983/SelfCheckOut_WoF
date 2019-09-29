@@ -16,7 +16,10 @@ import android.widget.TextView;
 import com.example.selfcheckout_wof.AdminActivity;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
+import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
+import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.AppDatabase;
+import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
 
 import java.util.List;
@@ -93,6 +96,7 @@ public class AdmSalesItemsListFragment extends Fragment {
         if (!isInstantiated) {
             return;
         }
+
         //LinearLayout itemListRows = ((LinearLayout)rootView.findViewById(R.id.vAdmSalesItemsListRows));
         itemListRows.removeAllViews();
 
@@ -110,30 +114,41 @@ public class AdmSalesItemsListFragment extends Fragment {
              * Ensuring that we have something in the items list
              */
             //AdminActivity.getInstance().loadSalesItemsList();
-            List<SalesItems> sales_items = AdminActivity.getCurrentSalesItemsList();
-            if (AdminActivity.getCurrentSalesItemsList() != null) {
-                /*
-                 * Adding a headers' row. For some reason it looks like this method is called
-                 * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
-                 * when it's populated.
-                 */
+            DBThread.addTask(new Runnable() {
+                @Override
+                public void run() {
+                    List<SalesItems> sales_items = SalesItemsCache.getInstance().getSalesItemsList();
+                    if (sales_items != null) {
+                        /*
+                         * Adding a headers' row. For some reason it looks like this method is called
+                         * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
+                         * when it's populated.
+                         */
 //            header = new AdmSalesItemView(getContext());
 //            header.setHeaderBackground();
 //            itemListRows.addView(header);
 
-                for (SalesItems si : AdminActivity.getCurrentSalesItemsList()) {
-                    /*
-                     * Creating a new admin sales item view and an action pertaining to that view
-                     * and then adding that view to the collection of rows.
-                     */
-                    itemListRows.addView(
-                            new AdmSalesItemView(
-                                    si,
-                                    new AdmSalesItemAction(si, getContext()),
-                                    getContext()));
+                        for (final SalesItems si : SalesItemsCache.getInstance().getSalesItemsList()) {
+                            /*
+                             * Creating a new admin sales item view and an action pertaining to that view
+                             * and then adding that view to the collection of rows.
+                             */
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    itemListRows.addView(
+                                            new AdmSalesItemView(
+                                                    si,
+                                                    new AdmSalesItemAction(si, getContext()),
+                                                    getContext()));
+                                }
+                            });
+                        }
+                    }
+                    System.out.println("Here1 " + isInstantiated + " " + isHeader + " " + (sales_items == null ? "null" : sales_items.size()));
                 }
-            }
-            System.out.println("Here1 " + isInstantiated + " " + isHeader + " " + (sales_items == null ? "null" : sales_items.size()));
+            });
+
         }
     }
 
