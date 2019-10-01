@@ -2,10 +2,8 @@ package com.example.selfcheckout_wof;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.room.Room;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,15 +21,10 @@ import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
-import com.example.selfcheckout_wof.custom_components.utils.AdmSalesItemsListHeaderFragment;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Activity for managing sales items (adding, removing, listing).
@@ -42,7 +35,6 @@ import java.util.List;
  */
 public class AdminActivity extends AppCompatActivity
         implements AdmSalesItemsListFragment.OnFragmentInteractionListener,
-        AdmSalesItemsListHeaderFragment.OnFragmentInteractionListener,
         EditSalesItemFragment.OnFragmentInteractionListener, AdapterView.OnItemSelectedListener {
 
     /*
@@ -442,7 +434,7 @@ public class AdminActivity extends AppCompatActivity
                     .replace(R.id.adm_sales_items_list_container, data_fragment, "adm_si_list")
                     .commit();
         } else {
-            AdmSalesItemsListHeaderFragment header_fragment = AdmSalesItemsListHeaderFragment.newInstance(true);
+            AdmSalesItemsListFragment header_fragment = AdmSalesItemsListFragment.newInstance(true);
             data_fragment = AdmSalesItemsListFragment.newInstance(false);
 
             fm.beginTransaction()
