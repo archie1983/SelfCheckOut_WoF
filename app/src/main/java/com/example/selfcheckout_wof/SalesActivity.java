@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -173,9 +174,13 @@ public class SalesActivity extends AppCompatActivity {
                 List<SalesItems> salesItemsList = SalesItemsCache.getInstance().getSalesItemsPage(page_number);
                 int item_count = salesItemsList.size();
                 /*
-                 * making sure that the row size will be as close as possible to the column count
+                 * making sure that the row size will be as close as possible to the column count,
+                 * but no more than 4. 4 items in a row is max, that the screen can show atm.
                  */
                 int number_of_items_per_row = (int) Math.ceil(Math.sqrt(item_count));
+                if (number_of_items_per_row > 4) {
+                    number_of_items_per_row = 4;
+                }
 
                 /*
                  * We'll find the layout where we want to put the items and start
@@ -188,6 +193,7 @@ public class SalesActivity extends AppCompatActivity {
                 while (item_count > items_displayed) {
                     final LinearLayout hItemsRow = new LinearLayout(getApplicationContext());
                     hItemsRow.setOrientation(LinearLayout.HORIZONTAL);
+                    hItemsRow.setGravity(Gravity.CENTER);
 
                     for (int cnt = 0; cnt < number_of_items_per_row; cnt++) {
                         /*
