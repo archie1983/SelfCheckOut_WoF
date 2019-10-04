@@ -18,9 +18,11 @@
     <string name="lblParentCategory">Parent Category: </string>
     <string name="btnDeleteCategory">Delete Category</string>
     <string name="btnCancel">Cancel</string>
+    <string name="btnPreviousPage">Previous</string>
+    <string name="btnNextPage">Next</string>
+    <string name="btnStartAgain">Start Again</string>
 
     <string name="title_activity_sales">SalesActivity</string>
     <string name="btnGoToAdmin">Admin Section</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

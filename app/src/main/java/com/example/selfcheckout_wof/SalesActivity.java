@@ -4,33 +4,22 @@ import android.annotation.SuppressLint;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.LinearLayout;
 
-import com.example.selfcheckout_wof.R;
-import com.example.selfcheckout_wof.custom_components.SelectionGUIForOrder;
-import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
-import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
-import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
-import com.example.selfcheckout_wof.data.AppDatabase;
-import com.example.selfcheckout_wof.data.DBThread;
-import com.example.selfcheckout_wof.data.PurchasableGoods;
-import com.example.selfcheckout_wof.data.SalesItems;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.example.selfcheckout_wof.custom_components.SalesProcessNavigationFragment;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class SalesActivity extends AppCompatActivity {
+public class SalesActivity extends AppCompatActivity
+        implements SalesProcessNavigationFragment.OnFragmentInteractionListener {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -110,9 +99,14 @@ public class SalesActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_sales);
 
+        /*
+         * When we create this activity, we start with the base page
+         */
+        displayAvailableSalesItemsForEdit(0);
+
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.vContentLayout);
+        mContentView = findViewById(R.id.frmSalesItemsListBrowse);
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -136,6 +130,25 @@ public class SalesActivity extends AppCompatActivity {
 //        });
     }
 
+    /**
+     * Creates (or reloads) the two fragments, that I have for displaying sales items
+     * navigation buttons and sales items selection page.
+     */
+    private void displayAvailableSalesItemsForEdit(int pageNumber){
+        FragmentManager fm = getSupportFragmentManager();
+
+        SalesProcessNavigationFragment navigationFragment = SalesProcessNavigationFragment.newInstance(pageNumber, true);
+        SalesProcessNavigationFragment dataFragment = SalesProcessNavigationFragment.newInstance(pageNumber, false);
+
+        fm.beginTransaction()
+                .replace(R.id.frmSalesItemsListNavigation, navigationFragment, "si_nav")
+                .commit();
+
+        fm.beginTransaction()
+                .replace(R.id.frmSalesItemsListBrowse, dataFragment, "si_list")
+                .commit();
+    }
+
     public void onGoToAdminClick(View view) {
         Intent showAdminActivity = new Intent(this, AdminActivity.class);
         startActivity(showAdminActivity);
@@ -150,78 +163,7 @@ public class SalesActivity extends AppCompatActivity {
         // are available.
         delayedHide(100);
 
-        displayPage(1);
-
         thisActivity = this;
-    }
-
-    /**
-     * Displays the requrested page of sales items. It tries
-     * to create as uniform grid as possible.
-     *
-     * If page_number < 1, then displaying main categories.
-     *
-     * @param page_number
-     */
-    private void displayPage(final int page_number) {
-        /**
-         * Updating the admin list of sales items in a separate thread because
-         * Room doesn't allow running db stuff on the main thread.
-         */
-        DBThread.addTask(new Runnable() {
-            @Override
-            public void run() {
-                List<SalesItems> salesItemsList = SalesItemsCache.getInstance().getSalesItemsPage(page_number);
-                int item_count = salesItemsList.size();
-                /*
-                 * making sure that the row size will be as close as possible to the column count,
-                 * but no more than 4. 4 items in a row is max, that the screen can show atm.
-                 */
-                int number_of_items_per_row = (int) Math.ceil(Math.sqrt(item_count));
-                if (number_of_items_per_row > 4) {
-                    number_of_items_per_row = 4;
-                }
-
-                /*
-                 * We'll find the layout where we want to put the items and start
-                 * putting in there horizontal layouts and adding a calculated number
-                 * of items in each of the horizontal layouts (rows)
-                 */
-                final LinearLayout vContentLayout = (LinearLayout)findViewById(R.id.vContentLayout);
-                int items_displayed = 0;
-
-                while (item_count > items_displayed) {
-                    final LinearLayout hItemsRow = new LinearLayout(getApplicationContext());
-                    hItemsRow.setOrientation(LinearLayout.HORIZONTAL);
-                    hItemsRow.setGravity(Gravity.CENTER);
-
-                    for (int cnt = 0; cnt < number_of_items_per_row; cnt++) {
-                        /*
-                         * Because each SalesItems item is a PurchasableGoods (implements the interface),
-                         * we can use it as PurchasableGoods and pass into the constructor
-                         * of SelectionGUIForOrder.
-                         */
-                        final PurchasableGoods pg = salesItemsList.get(items_displayed);
-                        hItemsRow.addView(
-                                new SelectionGUIForOrder(
-                                        pg,
-                                        new ActionForSelectionGUI(pg),
-                                        false,
-                                        false,
-                                        getApplicationContext()
-                                )
-                        );
-                        items_displayed++;
-                    }
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            vContentLayout.addView(hItemsRow);
-                        }
-                    });
-                }
-            }
-        });
     }
 
     private void toggle() {
@@ -265,5 +207,12 @@ public class SalesActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void onFragmentInteraction(SalesProcessNavigationFragment.SalesProcesses process, int pageNumber) {
+        if (process == SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE) {
+            displayAvailableSalesItemsForEdit(pageNumber);
+        }
     }
 }
