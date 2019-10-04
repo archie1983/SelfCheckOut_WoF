@@ -18,8 +18,8 @@ public interface SalesItemsDao {
     @Query("SELECT * FROM salesitems WHERE parent_category=-1")
     List<SalesItems> loadTopCategories();
 
-    @Query("SELECT * FROM salesitems WHERE page=:page")
-    List<SalesItems> loadPage(int page);
+    @Query("SELECT * FROM salesitems WHERE page=:page AND parent_category=:parent")
+    List<SalesItems> loadPage(int page, int parent);
 
     /**
      * This cursor contains one extra dummy category called "NO PARENT". This is important as the rest

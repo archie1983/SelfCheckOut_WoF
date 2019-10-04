@@ -170,10 +170,11 @@ public class SalesItemsCache extends Application {
      * Returns a page of sales items. Pages are set up in the admin section.
      * This is typically to display in user section (selecting items for sale).
      *
-     * @param page_number
+     * @param page_number page we want to load.
+     * @param parent_id parent ID, which pages we want to load.
      * @return
      */
-    public List<SalesItems> getSalesItemsPage(int page_number) {
+    public List<SalesItems> getSalesItemsPage(int page_number, int parent_id) {
         List<SalesItems> result = null;
         final AppDatabase db = getDBInstance();
         if (db != null) {
@@ -184,7 +185,7 @@ public class SalesItemsCache extends Application {
             if (page_number < 1) {
                 result = db.salesItemsDao().loadTopCategories();
             } else {
-                result = db.salesItemsDao().loadPage(page_number);
+                result = db.salesItemsDao().loadPage(page_number, parent_id);
             }
         }
         return result;

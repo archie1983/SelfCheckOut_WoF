@@ -102,6 +102,15 @@ public class SalesItems implements PurchasableGoods {
      */
     @Override
     public int hashCode() {
+        return getID();
+    }
+
+    /**
+     * For the purposes of clarity we have getID() which is equivalent to hashCode()
+     * @return
+     */
+    @Override
+    public int getID() {
         return si_id;
     }
 

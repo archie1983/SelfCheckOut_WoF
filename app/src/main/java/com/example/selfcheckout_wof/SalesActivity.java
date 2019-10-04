@@ -102,7 +102,7 @@ public class SalesActivity extends AppCompatActivity
         /*
          * When we create this activity, we start with the base page
          */
-        displayAvailableSalesItemsForEdit(0);
+        displayAvailableSalesItemsForEdit(0, 0);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
@@ -134,11 +134,14 @@ public class SalesActivity extends AppCompatActivity
      * Creates (or reloads) the two fragments, that I have for displaying sales items
      * navigation buttons and sales items selection page.
      */
-    private void displayAvailableSalesItemsForEdit(int pageNumber){
+    private void displayAvailableSalesItemsForEdit(int pageNumber, int parentID){
         FragmentManager fm = getSupportFragmentManager();
 
-        SalesProcessNavigationFragment navigationFragment = SalesProcessNavigationFragment.newInstance(pageNumber, true);
-        SalesProcessNavigationFragment dataFragment = SalesProcessNavigationFragment.newInstance(pageNumber, false);
+        SalesProcessNavigationFragment navigationFragment =
+                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, true);
+
+        SalesProcessNavigationFragment dataFragment =
+                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, false);
 
         fm.beginTransaction()
                 .replace(R.id.frmSalesItemsListNavigation, navigationFragment, "si_nav")
@@ -210,9 +213,9 @@ public class SalesActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(SalesProcessNavigationFragment.SalesProcesses process, int pageNumber) {
+    public void onFragmentInteraction(SalesProcessNavigationFragment.SalesProcesses process, int pageNumber, int parentId) {
         if (process == SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE) {
-            displayAvailableSalesItemsForEdit(pageNumber);
+            displayAvailableSalesItemsForEdit(pageNumber, parentId);
         }
     }
 }

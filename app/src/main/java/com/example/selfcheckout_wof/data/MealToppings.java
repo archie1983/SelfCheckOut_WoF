@@ -75,4 +75,14 @@ public enum MealToppings implements PurchasableGoods{
     public String getImage_path() {
         return null;
     }
+
+    /**
+     * ID of the purchasable goods.
+     *
+     * @return
+     */
+    @Override
+    public int getID() {
+        return 0;
+    }
 }

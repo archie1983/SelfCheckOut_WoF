@@ -26,4 +26,10 @@ public interface PurchasableGoods {
      * @return
      */
     public String getImage_path();
+
+    /**
+     * ID of the purchasable goods.
+     * @return
+     */
+    public int getID();
 }

@@ -34,11 +34,17 @@ public class SalesProcessNavigationFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_PAGE_NUM
     private static final String ARG_PAGE_NUM = "ARG_PAGE_NUM";
     private static final String ARG_BTNS_OR_ITEMS = "ARG_BTNS_OR_ITEMS";
+    private static final String ARG_PARENT_ID = "ARG_PARENT_ID";
 
     /*
      * page number in the db that we want to navigate to.
      */
     private int page_number;
+
+    /*
+     * parent ID in the db, which pages we want to load.
+     */
+    private int parent_ID;
 
     /*
      * A flag of whether we'll be rendering page navigation buttons
@@ -63,14 +69,17 @@ public class SalesProcessNavigationFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param pageNumber Page number that we want to navigate to.
-     * @param btns_or_items A flag of whether we want the buttons or the actual items displayed.
+     * @param btnsOrItems A flag of whether we want the buttons or the actual items displayed.
+     * @param parentID Parent ID, which pages we want.
      * @return A new instance of fragment SalesProcessNavigationFragment.
      */
-    public static SalesProcessNavigationFragment newInstance(int pageNumber, boolean btns_or_items) {
+    public static SalesProcessNavigationFragment newInstance(int pageNumber, int parentID, boolean btnsOrItems) {
         SalesProcessNavigationFragment fragment = new SalesProcessNavigationFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE_NUM, pageNumber);
-        args.putBoolean(ARG_BTNS_OR_ITEMS, btns_or_items);
+        args.putBoolean(ARG_BTNS_OR_ITEMS, btnsOrItems);
+        args.putInt(ARG_PARENT_ID, parentID);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,6 +90,7 @@ public class SalesProcessNavigationFragment extends Fragment {
         if (getArguments() != null) {
             page_number = getArguments().getInt(ARG_PAGE_NUM);
             btns_or_items = getArguments().getBoolean(ARG_BTNS_OR_ITEMS);
+            parent_ID = getArguments().getInt(ARG_PARENT_ID);
         }
     }
 
@@ -121,21 +131,24 @@ public class SalesProcessNavigationFragment extends Fragment {
                 btnNextPage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        requestPageLoad(page_number + 1);
+                        requestPageLoad(page_number + 1, parent_ID);
                     }
                 });
 
                 btnPreviousPage.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        requestPageLoad(page_number - 1);
+                        requestPageLoad(page_number - 1, parent_ID);
                     }
                 });
 
                 btnStartAgain.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        requestPageLoad(0);
+                        /*
+                         * no parent ID required if we want base page.
+                         */
+                        requestPageLoad(0, 0);
                     }
                 });
             }
@@ -167,7 +180,7 @@ public class SalesProcessNavigationFragment extends Fragment {
         DBThread.addTask(new Runnable() {
             @Override
             public void run() {
-                List<SalesItems> salesItemsList = SalesItemsCache.getInstance().getSalesItemsPage(page_number);
+                List<SalesItems> salesItemsList = SalesItemsCache.getInstance().getSalesItemsPage(page_number, parent_ID);
                 int item_count = salesItemsList.size();
                 /*
                  * making sure that the row size will be as close as possible to the column count,
@@ -197,15 +210,20 @@ public class SalesProcessNavigationFragment extends Fragment {
                          * of SelectionGUIForOrder.
                          */
                         final PurchasableGoods pg = salesItemsList.get(items_displayed);
-
-
-
                         final ActionForSelectionGUI action;
+
+                        /*
+                         * If this is base page, then we want the page load subcategories
+                         * of the item clicked.
+                         *
+                         * Otherwise we want to select the categories and add them to the
+                         * meal.
+                         */
                         if (page_number == 0) {
                             action = new ActionForSelectionGUI(pg) {
                                 @Override
                                 public boolean onSelected() {
-                                    requestPageLoad(page_number + 1);
+                                    requestPageLoad(page_number + 1, pg.getID());
                                     return true;
                                 }
 
@@ -217,9 +235,6 @@ public class SalesProcessNavigationFragment extends Fragment {
                         } else {
                             action = new ActionForSelectionGUI(pg);
                         }
-
-
-
 
                         hItemsRow.addView(
                                 new SelectionGUIForOrder(
@@ -249,9 +264,9 @@ public class SalesProcessNavigationFragment extends Fragment {
      *
      * @param pageNumber
      */
-    private void requestPageLoad(int pageNumber) {
+    private void requestPageLoad(int pageNumber, int parentId) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(SalesProcesses.LOAD_PAGE, pageNumber);
+            mListener.onFragmentInteraction(SalesProcesses.LOAD_PAGE, pageNumber, parentId);
         }
     }
 
@@ -290,6 +305,6 @@ public class SalesProcessNavigationFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(SalesProcesses process, int pageNumber);
+        void onFragmentInteraction(SalesProcesses process, int pageNumber, int parentId);
     }
 }
