@@ -85,4 +85,14 @@ public enum MealToppings implements PurchasableGoods{
     public int getID() {
         return 0;
     }
+
+    @Override
+    public int getParentID() {
+        return 0;
+    }
+
+    @Override
+    public int getNumberOfMultiSelectableItems() {
+        return 0;
+    }
 }

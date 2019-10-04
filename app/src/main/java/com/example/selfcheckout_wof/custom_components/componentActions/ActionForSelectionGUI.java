@@ -47,14 +47,14 @@ public class ActionForSelectionGUI {
      */
     private boolean addSelectedItem(PurchasableGoods pgSelectedItem) {
         /*
-         * First figuring out what main cactegory does this goods item belong to.
+         * First finding out what parent category does this goods item belong to.
          */
-        MainCategories mc = MainCategories.itemBelongsToThisMainCategory(pgSelectedItem);
+        int parentId = pgSelectedItem.getParentID();
 
         /*
          * How many of this category items can we have selected?
          */
-        int maxSelectedItemsInThisCategory = mc.numberOfMultiSelectableItems();
+        int maxSelectedItemsInThisCategory = pgSelectedItem.getNumberOfMultiSelectableItems();
 
         /*
          * How many do we have selected?
@@ -64,7 +64,7 @@ public class ActionForSelectionGUI {
         Iterator<PurchasableGoods> it = UsersSelectedChoice.getCurrentlySelectedItems();
         while (it.hasNext()) {
             PurchasableGoods pg = it.next();
-            if (pg.getClass() == pgSelectedItem.getClass()) {
+            if (pg.getParentID() == parentId) {
                 currentSelectedItemsInThisCategory++;
             }
         }
@@ -90,14 +90,12 @@ public class ActionForSelectionGUI {
          * as that is where we got it from for the first fragment. We will use it
          * again for the users choice fragment.
          */
-        if (ItemListActivity.getInstance() == null) {
-            return false;
-        } else if (addSelectedItem(pgForTheseActions)) {
-            updateInvoice();
+        if (addSelectedItem(pgForTheseActions)) {
+            //updateInvoice();
             return true;
+        } else {
+            return false;
         }
-
-        return false;
     }
 
     /**
@@ -107,24 +105,24 @@ public class ActionForSelectionGUI {
      */
     public boolean onDeSelected() {
         if (removeSelectedItem(pgForTheseActions)) {
-            updateInvoice();
+            //updateInvoice();
             return true;
         } else {
             return false;
         }
     }
 
-    /**
-     * After we've added or removed the goods item successfully,
-     * we'll update the user's selected choice on the right hand side.
-     * The selected choices will eventually form the invoice and will be sent
-     * to the chef for cooking.
-     */
-    private void updateInvoice() {
-        UsersChoiceFragment fragment = new UsersChoiceFragment();
-
-        ItemListActivity.getInstance().getSupportFragmentManager().beginTransaction()
-                .replace(R.id.users_choice_container, fragment)
-                .commit();
-    }
+//    /**
+//     * After we've added or removed the goods item successfully,
+//     * we'll update the user's selected choice on the right hand side.
+//     * The selected choices will eventually form the invoice and will be sent
+//     * to the chef for cooking.
+//     */
+//    private void updateInvoice() {
+//        UsersChoiceFragment fragment = new UsersChoiceFragment();
+//
+//        ItemListActivity.getInstance().getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.users_choice_container, fragment)
+//                .commit();
+//    }
 }

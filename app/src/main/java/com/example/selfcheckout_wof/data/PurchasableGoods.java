@@ -32,4 +32,16 @@ public interface PurchasableGoods {
      * @return
      */
     public int getID();
+
+    /**
+     * Parent ID of the purchasable goods.
+     * @return
+     */
+    public int getParentID();
+
+    /**
+     * How many items simultaneously (with the same parent) can be selected with this one
+     * @return
+     */
+    public int getNumberOfMultiSelectableItems();
 }

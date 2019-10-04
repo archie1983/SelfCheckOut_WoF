@@ -115,6 +115,15 @@ public class SalesItems implements PurchasableGoods {
     }
 
     /**
+     * Parent ID of the purchasable goods.
+     * @return
+     */
+    @Override
+    public int getParentID() {
+        return (int)parentCategoryId;
+    }
+
+    /**
      * When comparing two SalesItems objects, the only thing that
      * matters is their ID (at least at the time of writing)
      *
@@ -169,5 +178,14 @@ public class SalesItems implements PurchasableGoods {
     @Override
     public String getImage_path() {
         return pictureUrl;
+    }
+
+    /**
+     * How many items simultaneously (with the same parent) can be selected with this one
+     * @return
+     */
+    @Override
+    public int getNumberOfMultiSelectableItems() {
+        return numberOfMultiSelectableItems;
     }
 }

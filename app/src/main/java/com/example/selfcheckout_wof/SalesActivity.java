@@ -102,7 +102,7 @@ public class SalesActivity extends AppCompatActivity
         /*
          * When we create this activity, we start with the base page
          */
-        displayAvailableSalesItemsForEdit(0, 0);
+        displayAvailableSalesItemsForEdit(0, 0, false);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
@@ -133,15 +133,19 @@ public class SalesActivity extends AppCompatActivity
     /**
      * Creates (or reloads) the two fragments, that I have for displaying sales items
      * navigation buttons and sales items selection page.
+     * @param pageNumber page number to load
+     * @param parentID parent, whose page to load
+     * @param seeMeal a flag of whether user needs to be shown the actual meal instead of a
+     *                page with items to select.
      */
-    private void displayAvailableSalesItemsForEdit(int pageNumber, int parentID){
+    private void displayAvailableSalesItemsForEdit(int pageNumber, int parentID, boolean seeMeal){
         FragmentManager fm = getSupportFragmentManager();
 
         SalesProcessNavigationFragment navigationFragment =
-                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, true);
+                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, true, seeMeal);
 
         SalesProcessNavigationFragment dataFragment =
-                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, false);
+                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, false, seeMeal);
 
         fm.beginTransaction()
                 .replace(R.id.frmSalesItemsListNavigation, navigationFragment, "si_nav")
@@ -215,7 +219,9 @@ public class SalesActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(SalesProcessNavigationFragment.SalesProcesses process, int pageNumber, int parentId) {
         if (process == SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE) {
-            displayAvailableSalesItemsForEdit(pageNumber, parentId);
+            displayAvailableSalesItemsForEdit(pageNumber, parentId, false);
+        } else if (process == SalesProcessNavigationFragment.SalesProcesses.SEE_MEAL) {
+            displayAvailableSalesItemsForEdit(pageNumber, parentId, true);
         }
     }
 }

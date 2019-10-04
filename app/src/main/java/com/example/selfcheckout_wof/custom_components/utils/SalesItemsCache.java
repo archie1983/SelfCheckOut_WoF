@@ -15,7 +15,6 @@ import android.database.Cursor;
 import androidx.room.Room;
 
 import com.example.selfcheckout_wof.data.AppDatabase;
-import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
 
 import java.util.ArrayList;
@@ -187,6 +186,26 @@ public class SalesItemsCache extends Application {
             } else {
                 result = db.salesItemsDao().loadPage(page_number, parent_id);
             }
+        }
+        return result;
+    }
+
+    /**
+     * Returns number of salesitems on a given page. This is useful when deciding
+     * whether next step is to show user the created meal (if returned 0) or the
+     * next page (if returned more than 0).
+     *
+     * If databse is not accessible, this returns -1.
+     *
+     * @param page_number
+     * @param parent_id
+     * @return
+     */
+    public int getNumberOfItemsInPage(int page_number, int parent_id) {
+        int result = -1;
+        final AppDatabase db = getDBInstance();
+        if (db != null) {
+            result = db.salesItemsDao().numberOfItemsInPage(page_number, parent_id);
         }
         return result;
     }

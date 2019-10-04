@@ -21,6 +21,9 @@ public interface SalesItemsDao {
     @Query("SELECT * FROM salesitems WHERE page=:page AND parent_category=:parent")
     List<SalesItems> loadPage(int page, int parent);
 
+    @Query("SELECT count(si_id) FROM salesitems WHERE page=:page AND parent_category=:parent")
+    int numberOfItemsInPage(int page, int parent);
+
     /**
      * This cursor contains one extra dummy category called "NO PARENT". This is important as the rest
      * of the code expects that.
