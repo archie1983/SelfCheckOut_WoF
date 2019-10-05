@@ -152,6 +152,7 @@ public class SalesProcessNavigationFragment extends Fragment {
          * If we're showing the base page, then we don't want navigation buttons, because
          * user has to choose what base category they want
          */
+        System.out.println("PGNM: " + page_number);
         if (page_number == 0) {
             salesItemsNavigationView.setVisibility(View.INVISIBLE);
         } else {

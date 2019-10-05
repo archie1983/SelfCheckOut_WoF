@@ -127,23 +127,41 @@ public class SelectionGUIForOrder extends LinearLayout {
         //vlCardViewContent.setBackgroundResource(pgItemToDisplay.getImage_resource());
         /*
          * Creating an URI from the image path and using Glide to put it into
-         * the background of the linear layout.
+         * the background of the linear layout. If image has not been set, then
+         * loading the default image.
          */
-        Uri uri = Uri.parse(pgItemToDisplay.getImage_path());
-        Glide.with(this)
-                .load(uri)
-                .into(new CustomTarget<Drawable>() {
-                    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                    @Override
-                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                        vlCardViewContent.setBackground(resource);
-                    }
+        if (pgItemToDisplay.getImage_path().equals("")) {
+            Glide.with(this)
+                    .load(R.drawable.dragndrop)
+                    .into(new CustomTarget<Drawable>() {
+                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            vlCardViewContent.setBackground(resource);
+                        }
 
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
 
-                    }
-                });
+                        }
+                    });
+        } else {
+            Uri uri = Uri.parse(pgItemToDisplay.getImage_path());
+            Glide.with(this)
+                    .load(uri)
+                    .into(new CustomTarget<Drawable>() {
+                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                        @Override
+                        public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                            vlCardViewContent.setBackground(resource);
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                        }
+                    });
+        }
 
         this.addView(cvThisGUI);
 

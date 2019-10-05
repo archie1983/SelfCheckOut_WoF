@@ -149,7 +149,6 @@ public class AdmSalesItemsListFragment extends Fragment {
                     });
                 }
             }
-            System.out.println("Here1 " + isInstantiated + " " + isHeader + " " + (sales_items == null ? "null" : sales_items.size()));
         }
     }
 //
