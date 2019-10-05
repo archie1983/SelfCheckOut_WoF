@@ -18,7 +18,6 @@ import android.widget.Spinner;
 import com.bumptech.glide.Glide;
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemView;
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
-import com.example.selfcheckout_wof.custom_components.EditSalesItemFragment;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
@@ -35,7 +34,7 @@ import com.example.selfcheckout_wof.data.SalesItems;
  */
 public class AdminActivity extends AppCompatActivity
         implements AdmSalesItemsListFragment.OnFragmentInteractionListener,
-        EditSalesItemFragment.OnFragmentInteractionListener, AdapterView.OnItemSelectedListener {
+        AdapterView.OnItemSelectedListener {
 
     /*
      * A static reference to itself so that we can access it from elsewhere
