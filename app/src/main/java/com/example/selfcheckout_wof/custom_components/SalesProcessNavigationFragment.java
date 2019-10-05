@@ -155,8 +155,10 @@ public class SalesProcessNavigationFragment extends Fragment {
         System.out.println("PGNM: " + page_number);
         if (page_number == 0) {
             salesItemsNavigationView.setVisibility(View.INVISIBLE);
+            System.out.println("VSB: INVISIBLE");
         } else {
             salesItemsNavigationView.setVisibility(View.VISIBLE);
+            System.out.println("VSB: VISIBLE");
             btnPreviousPage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -170,6 +172,7 @@ public class SalesProcessNavigationFragment extends Fragment {
                     /*
                      * no parent ID required if we want base page.
                      */
+                    UsersSelectedChoice.clearUsersSelection();
                     requestPageLoad(0, 0);
                 }
             });

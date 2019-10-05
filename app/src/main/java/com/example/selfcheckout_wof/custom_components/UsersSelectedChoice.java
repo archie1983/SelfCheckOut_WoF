@@ -43,4 +43,11 @@ public class UsersSelectedChoice {
     public static synchronized boolean itemIsSelected(PurchasableGoods purchasableGoods) {
         return currentlySelectedGoods.contains(purchasableGoods);
     }
+
+    /**
+     * Clears user's selection.
+     */
+    public static synchronized void clearUsersSelection() {
+        currentlySelectedGoods.clear();
+    }
 }
