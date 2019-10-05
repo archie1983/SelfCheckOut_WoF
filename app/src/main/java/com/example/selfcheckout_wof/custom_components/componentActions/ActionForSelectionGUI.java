@@ -1,15 +1,8 @@
 package com.example.selfcheckout_wof.custom_components.componentActions;
 
-import android.os.Bundle;
-
-import com.example.selfcheckout_wof.ItemListActivity;
-import com.example.selfcheckout_wof.R;
-import com.example.selfcheckout_wof.custom_components.UsersChoiceFragment;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
-import com.example.selfcheckout_wof.data.MainCategories;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 /**
@@ -40,31 +33,27 @@ public class ActionForSelectionGUI {
 
     /**
      * Checks if we can still add a goods item belonging to its parent category
-     * and adds it if it's possible.
+     * on the current page and adds it if it's possible.
      *
      * @param pgSelectedItem
      * @return
      */
     private boolean addSelectedItem(PurchasableGoods pgSelectedItem) {
         /*
-         * First finding out what parent category does this goods item belong to.
-         */
-        int parentId = pgSelectedItem.getParentID();
-
-        /*
          * How many of this category items can we have selected?
          */
         int maxSelectedItemsInThisCategory = pgSelectedItem.getNumberOfMultiSelectableItems();
 
         /*
-         * How many do we have selected?
+         * How many do we have selected on this page?
          */
         int currentSelectedItemsInThisCategory = 0;
 
         Iterator<PurchasableGoods> it = UsersSelectedChoice.getCurrentlySelectedItems();
         while (it.hasNext()) {
             PurchasableGoods pg = it.next();
-            if (pg.getParentID() == parentId) {
+            if (pg.getParentID() == pgSelectedItem.getParentID() &&
+                    pg.getPage() == pgSelectedItem.getPage()) {
                 currentSelectedItemsInThisCategory++;
             }
         }

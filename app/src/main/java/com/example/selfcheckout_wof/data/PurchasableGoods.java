@@ -44,4 +44,10 @@ public interface PurchasableGoods {
      * @return
      */
     public int getNumberOfMultiSelectableItems();
+
+    /**
+     * The page that this item belongs to
+     * @return
+     */
+    public int getPage();
 }

@@ -188,4 +188,14 @@ public class SalesItems implements PurchasableGoods {
     public int getNumberOfMultiSelectableItems() {
         return numberOfMultiSelectableItems;
     }
+
+    /**
+     * The page that this item belongs to
+     *
+     * @return
+     */
+    @Override
+    public int getPage() {
+        return page;
+    }
 }
