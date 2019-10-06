@@ -9,7 +9,7 @@
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
-    <FrameLayout
+    <!--FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true">
@@ -34,13 +34,13 @@
                 android:text="@string/btnGoToAdmin" />
 
         </LinearLayout>
-    </FrameLayout>
+    </FrameLayout-->
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
+        android:orientation="vertical"
+        android:fitsSystemWindows="true">
         <FrameLayout android:id="@+id/frmSalesItemsListNavigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
