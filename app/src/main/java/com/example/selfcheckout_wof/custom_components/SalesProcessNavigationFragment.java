@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
+import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
@@ -64,7 +65,7 @@ public class SalesProcessNavigationFragment extends Fragment {
      * Elements on the fragment (both navigation and data fragments), that we will need to use
      */
     private LinearLayout vContentLayout, salesItemsNavigationView;
-    private Button btnPreviousPage, btnNextPage, btnStartAgain;
+    private Button btnPreviousPage, btnNextPage, btnStartAgain, btnAddToOrder;
 
     private OnFragmentInteractionListener mListener;
 
@@ -123,8 +124,10 @@ public class SalesProcessNavigationFragment extends Fragment {
              * If user needs to be shown the selected meal, then we'll have one layout to load,
              * but for browsing the item in a page there will be a different one.
              */
+            System.out.println("HER! " + seeMeal);
             if (seeMeal) {
                 rootView = inflater.inflate(R.layout.fragment_sales_process_see_meal, container, false);
+                btnAddToOrder = rootView.findViewById(R.id.btnAddToOrder);
             } else {
                 rootView = inflater.inflate(R.layout.fragment_sales_process_browse, container, false);
             }
@@ -152,13 +155,13 @@ public class SalesProcessNavigationFragment extends Fragment {
          * If we're showing the base page, then we don't want navigation buttons, because
          * user has to choose what base category they want
          */
-        System.out.println("PGNM: " + page_number);
+        //System.out.println("PGNM: " + page_number);
         if (page_number == 0) {
             salesItemsNavigationView.setVisibility(View.INVISIBLE);
-            System.out.println("VSB: INVISIBLE");
+            //System.out.println("VSB: INVISIBLE");
         } else {
             salesItemsNavigationView.setVisibility(View.VISIBLE);
-            System.out.println("VSB: VISIBLE");
+            //System.out.println("VSB: VISIBLE");
             btnPreviousPage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -208,6 +211,16 @@ public class SalesProcessNavigationFragment extends Fragment {
                 }
             });
         }
+
+        /*
+         * If we're looking at the selected meal, then we don't want the
+         * "Next" button.
+         */
+        if (seeMeal) {
+            btnNextPage.setVisibility(View.INVISIBLE);
+        } else {
+            btnNextPage.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -224,13 +237,36 @@ public class SalesProcessNavigationFragment extends Fragment {
          * of user's choice
          */
         if (seeMeal) {
+            int mealTotal = 0;
             Iterator<PurchasableGoods> it = UsersSelectedChoice.getCurrentlySelectedItems();
             while (it.hasNext()) {
                 PurchasableGoods pg = it.next();
                 final TextView newItem = new TextView(getContext());
-                newItem.setText(pg.getLabel() + " " + pg.getPrice());
+                newItem.setText(pg.getLabel() +
+                        " " +
+                        Formatting.formatCash(pg.getPrice())
+                );
+                mealTotal += pg.getPrice();
                 vContentLayout.addView(newItem);
             }
+
+            final TextView newItem = new TextView(getContext());
+            newItem.setText("Total: " +
+                    Formatting.formatCash(mealTotal)
+            );
+            newItem.setTextAppearance(R.style.mealTotal);
+            vContentLayout.addView(newItem);
+
+            /*
+             * If we're looking at the selected meal, then we want
+             * functionality for the "Add to Order" button.
+             */
+            btnAddToOrder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
         } else {
             getActivity().runOnUiThread(new Runnable() {
                 @Override

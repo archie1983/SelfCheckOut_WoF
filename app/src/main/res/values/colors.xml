@@ -7,4 +7,5 @@
     <color name="admin_items_header">#F5F598</color>
 
     <color name="black_overlay">#66000000</color>
+    <color name="redText">#E73232</color>
 </resources>

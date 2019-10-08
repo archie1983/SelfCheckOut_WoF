@@ -11,34 +11,47 @@ import java.util.Iterator;
  * many items in a category can be selected.
  */
 public class UsersSelectedChoice {
-    /*
-     * Here we will store what user has selected.
+    /**
+     * Here we will store what user has selected in the current selection.
      */
-    private static ArrayList<PurchasableGoods> currentlySelectedGoods = new ArrayList<PurchasableGoods>();
+    private static ArrayList<PurchasableGoods> currentlySelectedGoods = new ArrayList<>();
 
-    /*
+    /**
+     * Here we will store the whole order, that consists of user's selected meals
+     * (arraylists of PurchasableGoods)- so really an arraylist of arralists.
+     */
+    private static ArrayList<ArrayList<PurchasableGoods>> currentOrder = new ArrayList<>();
+
+    /**
      * Adding items to the list in a synchronised, tightly controlled way
+     * @param purchasableGoods
+     * @return
      */
     public static synchronized boolean addGoodsItem(PurchasableGoods purchasableGoods) {
         return currentlySelectedGoods.add(purchasableGoods);
     }
 
-    /*
+    /**
      * Removing items from the list in a synchronised, tightly controlled way
+     * @param purchasableGoods
+     * @return
      */
     public static synchronized boolean removeGoodsItem(PurchasableGoods purchasableGoods) {
         return currentlySelectedGoods.remove(purchasableGoods);
     }
 
-    /*
+    /**
      * Returns an iterator for currently selected items.
+     * @return
      */
     public static synchronized Iterator<PurchasableGoods> getCurrentlySelectedItems() {
         return currentlySelectedGoods.iterator();
     }
 
-    /*
+    /**
      * Returns a flag of whether the given purchasable goods item has been selected or not
+     * @param purchasableGoods
+     * @return
      */
     public static synchronized boolean itemIsSelected(PurchasableGoods purchasableGoods) {
         return currentlySelectedGoods.contains(purchasableGoods);

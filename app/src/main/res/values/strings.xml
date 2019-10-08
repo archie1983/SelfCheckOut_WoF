@@ -17,6 +17,7 @@
     <string name="btnPreviousPage">Previous</string>
     <string name="btnNextPage">Next</string>
     <string name="btnStartAgain">Start Again</string>
+    <string name="btnAddToOrder">Add To Order</string>
 
     <string name="title_activity_sales">SalesActivity</string>
     <string name="btnGoToAdmin">Admin Section</string>
