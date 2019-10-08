@@ -26,9 +26,6 @@ import com.example.selfcheckout_wof.custom_components.componentActions.ActionFor
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-
 /**
  * A component to allow user to make a selection of an item that they want
  * to add to the order. This will probably end up being a GUI with a checkbox,

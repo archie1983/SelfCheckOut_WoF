@@ -237,25 +237,7 @@ public class SalesProcessNavigationFragment extends Fragment {
          * of user's choice
          */
         if (seeMeal) {
-            int mealTotal = 0;
-            Iterator<PurchasableGoods> it = UsersSelectedChoice.getCurrentlySelectedItems();
-            while (it.hasNext()) {
-                PurchasableGoods pg = it.next();
-                final TextView newItem = new TextView(getContext());
-                newItem.setText(pg.getLabel() +
-                        " " +
-                        Formatting.formatCash(pg.getPrice())
-                );
-                mealTotal += pg.getPrice();
-                vContentLayout.addView(newItem);
-            }
-
-            final TextView newItem = new TextView(getContext());
-            newItem.setText("Total: " +
-                    Formatting.formatCash(mealTotal)
-            );
-            newItem.setTextAppearance(R.style.mealTotal);
-            vContentLayout.addView(newItem);
+            vContentLayout.addView(new SelectedMealView(getContext(), UsersSelectedChoice.getCurrentlySelectedItems()));
 
             /*
              * If we're looking at the selected meal, then we want
@@ -264,6 +246,11 @@ public class SalesProcessNavigationFragment extends Fragment {
             btnAddToOrder.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    UsersSelectedChoice.addCurrentMealToOrder();
+                    /*
+                     * Here we need to ask user if they'd like to add more meals
+                     * or drinks or go to checkout.
+                     */
 
                 }
             });

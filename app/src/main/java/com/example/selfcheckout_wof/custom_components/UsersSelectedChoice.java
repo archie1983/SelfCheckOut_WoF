@@ -14,7 +14,7 @@ public class UsersSelectedChoice {
     /**
      * Here we will store what user has selected in the current selection.
      */
-    private static ArrayList<PurchasableGoods> currentlySelectedGoods = new ArrayList<>();
+    private static ArrayList<PurchasableGoods> currentMeal = new ArrayList<>();
 
     /**
      * Here we will store the whole order, that consists of user's selected meals
@@ -28,7 +28,7 @@ public class UsersSelectedChoice {
      * @return
      */
     public static synchronized boolean addGoodsItem(PurchasableGoods purchasableGoods) {
-        return currentlySelectedGoods.add(purchasableGoods);
+        return currentMeal.add(purchasableGoods);
     }
 
     /**
@@ -37,7 +37,7 @@ public class UsersSelectedChoice {
      * @return
      */
     public static synchronized boolean removeGoodsItem(PurchasableGoods purchasableGoods) {
-        return currentlySelectedGoods.remove(purchasableGoods);
+        return currentMeal.remove(purchasableGoods);
     }
 
     /**
@@ -45,7 +45,7 @@ public class UsersSelectedChoice {
      * @return
      */
     public static synchronized Iterator<PurchasableGoods> getCurrentlySelectedItems() {
-        return currentlySelectedGoods.iterator();
+        return currentMeal.iterator();
     }
 
     /**
@@ -54,13 +54,41 @@ public class UsersSelectedChoice {
      * @return
      */
     public static synchronized boolean itemIsSelected(PurchasableGoods purchasableGoods) {
-        return currentlySelectedGoods.contains(purchasableGoods);
+        return currentMeal.contains(purchasableGoods);
     }
 
     /**
      * Clears user's selection.
      */
     public static synchronized void clearUsersSelection() {
-        currentlySelectedGoods.clear();
+        /*
+         * We're creating a new ArrayList instead of just currentMeal.clear(),
+         * because we may still have this arraylist in the order and therefore
+         * we don't want to clear it, but just simply forget about it in terms
+         * of meal.
+         */
+        currentMeal = new ArrayList<>();
+    }
+
+    /**
+     * Adds the current meal to order.
+     */
+    public static synchronized void addCurrentMealToOrder() {
+        currentOrder.add(currentMeal);
+    }
+
+    /**
+     * Adds the current meal to order.
+     */
+    public static synchronized void clearOrder() {
+        currentOrder = new ArrayList<>();
+    }
+
+    /**
+     * Returns an iterator for currently selected items.
+     * @return
+     */
+    public static synchronized Iterator<ArrayList<PurchasableGoods>> getCurrentOrder() {
+        return currentOrder.iterator();
     }
 }
