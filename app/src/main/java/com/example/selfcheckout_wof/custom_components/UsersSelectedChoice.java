@@ -60,7 +60,7 @@ public class UsersSelectedChoice {
     /**
      * Clears user's selection.
      */
-    public static synchronized void clearUsersSelection() {
+    public static synchronized void clearCurrentMeal() {
         /*
          * We're creating a new ArrayList instead of just currentMeal.clear(),
          * because we may still have this arraylist in the order and therefore

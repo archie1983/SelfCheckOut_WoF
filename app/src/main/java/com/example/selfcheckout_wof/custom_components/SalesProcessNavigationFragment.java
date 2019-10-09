@@ -1,7 +1,6 @@
 package com.example.selfcheckout_wof.custom_components;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,17 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
-import com.example.selfcheckout_wof.custom_components.utils.Formatting;
+import com.example.selfcheckout_wof.custom_components.utils.PopupQuestions;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.example.selfcheckout_wof.data.SalesItems;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -175,7 +172,7 @@ public class SalesProcessNavigationFragment extends Fragment {
                     /*
                      * no parent ID required if we want base page.
                      */
-                    UsersSelectedChoice.clearUsersSelection();
+                    UsersSelectedChoice.clearCurrentMeal();
                     requestPageLoad(0, 0);
                 }
             });
@@ -251,7 +248,25 @@ public class SalesProcessNavigationFragment extends Fragment {
                      * Here we need to ask user if they'd like to add more meals
                      * or drinks or go to checkout.
                      */
-
+                    PopupQuestions.doYouWantToContinueShoppingOrCheckout(
+                            getContext(),
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    /*
+                                     * Here we need to open the checkout activity and
+                                     * start up the card reader.
+                                     */
+                                }
+                            },
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    UsersSelectedChoice.clearCurrentMeal();
+                                    requestPageLoad(0, 0);
+                                }
+                            }
+                    );
                 }
             });
         } else {
