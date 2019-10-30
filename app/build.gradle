@@ -50,4 +50,6 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+
+    api("com.paypal.retail:here-sdk-debug:$PAYPAL_HERE_PUBLISH_VERSION@aar") { transitive = true }
 }

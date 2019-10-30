@@ -1,4 +1,5 @@
 <resources>
+    <string name="ok">OK</string>
     <string name="app_name">SelfCheckOut_WoF</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="btnAddMainCategory">Add Category</string>
@@ -18,9 +19,14 @@
     <string name="btnNextPage">Next</string>
     <string name="btnStartAgain">Start Again</string>
     <string name="btnAddToOrder">Add To Order</string>
+    <string name="btnManageData">Manage Data</string>
 
     <string name="title_activity_sales">SalesActivity</string>
     <string name="btnGoToAdmin">Admin Section</string>
+
+    <string name="txtMerchantEmail">PayPalHere Account: </string>
+    <string name="paypal_error_title">Error</string>
+    <string name="paypal_error_initialize_msg">Failed to set AccessToken. Please try after clearing the data/cache of the application.</string>
 
     <string name="title_activity_ttttttttt_fullscreen">tttttttttFullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
