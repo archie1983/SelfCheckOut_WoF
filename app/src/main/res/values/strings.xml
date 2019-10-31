@@ -20,10 +20,11 @@
     <string name="btnStartAgain">Start Again</string>
     <string name="btnAddToOrder">Add To Order</string>
     <string name="btnManageData">Manage Data</string>
+    <string name="btnLoginPaypal">Log in to PayPal</string>
 
     <string name="title_activity_sales">SalesActivity</string>
     <string name="btnGoToAdmin">Admin Section</string>
-
+    <string name="btnStartSales">Start Sales</string>
     <string name="txtMerchantEmail">PayPalHere Account: </string>
     <string name="paypal_error_title">Error</string>
     <string name="paypal_error_initialize_msg">Failed to set AccessToken. Please try after clearing the data/cache of the application.</string>

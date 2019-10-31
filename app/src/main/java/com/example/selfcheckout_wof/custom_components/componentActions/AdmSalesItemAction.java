@@ -3,6 +3,7 @@ package com.example.selfcheckout_wof.custom_components.componentActions;
 import android.content.Context;
 
 import com.example.selfcheckout_wof.AdminActivity;
+import com.example.selfcheckout_wof.DataAdminActivity;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.AppDatabase;
@@ -28,14 +29,14 @@ public class AdmSalesItemAction {
      * Loads the selected sales item into the appropriate fields in the AdminActvity form.
      */
     public void selectSalesItemForEdit() {
-        final AdminActivity adminActivity;
+        final DataAdminActivity adminActivity;
 
         /*
          * First check that we even have an instance of the AdminActivity
          * active right now because we'll need it for everything else.
          */
         try {
-            adminActivity = AdminActivity.getInstance();
+            adminActivity = DataAdminActivity.getInstance();
         } catch (AdminActivityNotReady exc) {
             /*
              * If Admin activity has not yet been opened, then we have no business
@@ -52,14 +53,14 @@ public class AdmSalesItemAction {
      * Deletes an admin sales item from the db and reloads the sales items admin view.
      */
     public void deleteSalesItem() {
-        final AdminActivity adminActivity;
+        final DataAdminActivity adminActivity;
 
         /*
          * First check that we even have an instance of the AdminActivity
          * active right now because we'll need it for everything else.
          */
         try {
-            adminActivity = AdminActivity.getInstance();
+            adminActivity = DataAdminActivity.getInstance();
         } catch (AdminActivityNotReady exc) {
             /*
              * If Admin activity has not yet been opened, then we have no business

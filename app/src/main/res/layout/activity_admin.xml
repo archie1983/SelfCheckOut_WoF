@@ -14,7 +14,21 @@
             android:onClick="onManageData"
             android:text="@string/btnManageData" />
 
-        <TextView
+    <Button
+        android:id="@+id/btnLogInPaypal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onLogInPayPal"
+        android:text="@string/btnLoginPaypal" />
+
+    <Button
+        android:id="@+id/btnStartSales"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onStartSales"
+        android:text="@string/btnStartSales" />
+
+    <TextView
             android:id="@+id/merchant_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

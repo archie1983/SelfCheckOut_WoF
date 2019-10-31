@@ -35,9 +35,30 @@ public class AdminActivity extends AppCompatActivity {
         progress = (ProgressBar)findViewById(R.id.progress);
     }
 
+    /**
+     * "Manage Data" button press
+     * @param view
+     */
     public void onManageData(View view) {
         Intent showDataAdminActivity = new Intent(this, DataAdminActivity.class);
         startActivity(showDataAdminActivity);
+    }
+
+    /**
+     * "Start Sales" button press
+     * @param view
+     */
+    public void onStartSales(View view) {
+        Intent showSalesActivity = new Intent(this, SalesActivity.class);
+        startActivity(showSalesActivity);
+    }
+
+    /**
+     * "Log in to PayPal" button press
+     * @param view
+     */
+    public void onLogInPayPal(View view) {
+        initPaypalHere();
     }
 
     private static final String LOG_TAG = AdminActivity.class.getSimpleName();
@@ -52,14 +73,13 @@ public class AdminActivity extends AppCompatActivity {
      * (getApplicationContext()) rather than just the activity, because this method
      * will likely be called many times during normal operation fo the app.
      *
-     * @param context
      */
-    public void initPaypalHere(final Context context)
+    public void initPaypalHere()
     {
         try
         {
             AppInfo info = new AppInfo("SelfCheckOut_WoF", "1.0", "01");
-            RetailSDK.initialize(context, new RetailSDK.AppState()
+            RetailSDK.initialize(getApplicationContext(), new RetailSDK.AppState()
             {
                 @Override
                 public Activity getCurrentActivity()
@@ -82,7 +102,7 @@ public class AdminActivity extends AppCompatActivity {
                     AdminActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
                             builder.setMessage("Insecure network. Please join a secure network and open the app again")
                                     .setCancelable(true)
                                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -246,7 +266,7 @@ public class AdminActivity extends AppCompatActivity {
                     cancelProgressbar();
 
                     final TextView txtMerchantEmail = (TextView) findViewById(R.id.merchant_email);
-                    txtMerchantEmail.setText(R.string.txtMerchantEmail + merchant.getEmailAddress());
+                    txtMerchantEmail.setText(getResources().getString(R.string.txtMerchantEmail) + merchant.getEmailAddress());
                 }
             });
         }
