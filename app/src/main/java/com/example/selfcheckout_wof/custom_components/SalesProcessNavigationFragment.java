@@ -20,6 +20,8 @@ import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.example.selfcheckout_wof.data.SalesItems;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -36,6 +38,7 @@ public class SalesProcessNavigationFragment extends Fragment {
     private static final String ARG_BTNS_OR_ITEMS = "ARG_BTNS_OR_ITEMS";
     private static final String ARG_PARENT_ID = "ARG_PARENT_ID";
     private static final String ARG_SEE_MEAL = "ARG_SEE_MEAL";
+    private static final String ARG_SEE_ORDER = "ARG_SEE_ORDER";
 
     /*
      * page number in the db that we want to navigate to.
@@ -47,16 +50,21 @@ public class SalesProcessNavigationFragment extends Fragment {
      */
     private int parent_ID;
 
-    /*
+    /**
      * A flag of whether we'll be rendering page navigation buttons
      * or the actual page of items in this fragment.
      */
     private boolean btns_or_items;
 
-    /*
+    /**
      * A flag of whether user needs to be shown meal (true) or a page of items (false)
      */
     private boolean seeMeal = false;
+
+    /**
+     * A flag of whether user wants to see the final order (true) or not (false).
+     */
+    private boolean seeOrder = false;
 
     /**
      * Elements on the fragment (both navigation and data fragments), that we will need to use
@@ -77,18 +85,34 @@ public class SalesProcessNavigationFragment extends Fragment {
      * @param pageNumber Page number that we want to navigate to.
      * @param btnsOrItems A flag of whether we want the buttons or the actual items displayed.
      * @param parentID Parent ID, which pages we want.
+     * @param process indicator of whether user needs to be shown the actual meal instead of a
+     *                page with items to select or the final order.
      * @return A new instance of fragment SalesProcessNavigationFragment.
      */
     public static SalesProcessNavigationFragment newInstance(int pageNumber,
                                                              int parentID,
                                                              boolean btnsOrItems,
-                                                             boolean seeMeal) {
+                                                             SalesProcesses process) {
         SalesProcessNavigationFragment fragment = new SalesProcessNavigationFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE_NUM, pageNumber);
         args.putBoolean(ARG_BTNS_OR_ITEMS, btnsOrItems);
         args.putInt(ARG_PARENT_ID, parentID);
-        args.putBoolean(ARG_SEE_MEAL, seeMeal);
+
+        switch (process) {
+            case LOAD_PAGE:
+                args.putBoolean(ARG_SEE_MEAL, false);
+                args.putBoolean(ARG_SEE_ORDER, false);
+                break;
+            case SEE_MEAL:
+                args.putBoolean(ARG_SEE_MEAL, true);
+                args.putBoolean(ARG_SEE_ORDER, false);
+                break;
+            case SEE_ORDER:
+                args.putBoolean(ARG_SEE_MEAL, false);
+                args.putBoolean(ARG_SEE_ORDER, true);
+                break;
+        }
 
         fragment.setArguments(args);
         return fragment;
@@ -102,6 +126,7 @@ public class SalesProcessNavigationFragment extends Fragment {
             btns_or_items = getArguments().getBoolean(ARG_BTNS_OR_ITEMS);
             parent_ID = getArguments().getInt(ARG_PARENT_ID);
             seeMeal = getArguments().getBoolean(ARG_SEE_MEAL);
+            seeOrder = getArguments().getBoolean(ARG_SEE_ORDER);
         }
     }
 
@@ -119,12 +144,15 @@ public class SalesProcessNavigationFragment extends Fragment {
         } else {
             /*
              * If user needs to be shown the selected meal, then we'll have one layout to load,
-             * but for browsing the item in a page there will be a different one.
+             * but for browsing the item in a page there will be a different one. For seeing the
+             * order we'll have the same layout as for seeing the meal, but withoug the "Add to
+             * order" button.
              */
-            System.out.println("HER! " + seeMeal);
             if (seeMeal) {
                 rootView = inflater.inflate(R.layout.fragment_sales_process_see_meal, container, false);
                 btnAddToOrder = rootView.findViewById(R.id.btnAddToOrder);
+            } else if (seeOrder) {
+                rootView = inflater.inflate(R.layout.fragment_sales_process_see_meal, container, false);
             } else {
                 rootView = inflater.inflate(R.layout.fragment_sales_process_browse, container, false);
             }
@@ -213,7 +241,7 @@ public class SalesProcessNavigationFragment extends Fragment {
          * If we're looking at the selected meal, then we don't want the
          * "Next" button.
          */
-        if (seeMeal) {
+        if (seeMeal || seeOrder) {
             btnNextPage.setVisibility(View.INVISIBLE);
         } else {
             btnNextPage.setVisibility(View.VISIBLE);
@@ -231,9 +259,14 @@ public class SalesProcessNavigationFragment extends Fragment {
     private void displayPage(final int page_number) {
         /*
          * If user needs to be shown the meal, then we'll create a representation
-         * of user's choice
+         * of user's choice. Same for seeing order or sales items selection.
          */
-        if (seeMeal) {
+        if (seeOrder) {
+            Iterator<ArrayList<PurchasableGoods>> mealsInOrder = UsersSelectedChoice.getCurrentOrder();
+            while (mealsInOrder.hasNext()) {
+                vContentLayout.addView(new SelectedMealView(getContext(), mealsInOrder.next()));
+            }
+        } else if (seeMeal) {
             vContentLayout.addView(new SelectedMealView(getContext(), UsersSelectedChoice.getCurrentlySelectedItems()));
 
             /*
@@ -254,9 +287,11 @@ public class SalesProcessNavigationFragment extends Fragment {
                                 @Override
                                 public void run() {
                                     /*
-                                     * Here we need to open the checkout activity and
-                                     * start up the card reader.
+                                     * Here we need to open show user the complete order and
+                                     * then after another confirmation show the checkout
+                                     * activity and start up the card reader.
                                      */
+                                    requestToSeeOrder(page_number, parent_ID);
                                 }
                             },
                             new Runnable() {
@@ -391,7 +426,8 @@ public class SalesProcessNavigationFragment extends Fragment {
      */
     public enum SalesProcesses {
         LOAD_PAGE,
-        SEE_MEAL;
+        SEE_MEAL,
+        SEE_ORDER;
     }
 
 
@@ -416,6 +452,20 @@ public class SalesProcessNavigationFragment extends Fragment {
      * @param parentId parent ID needed for navigation frame just like pageNumber
      */
     private void requestToSeeMeal(int pageNumber, int parentId) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(SalesProcesses.SEE_MEAL, pageNumber, parentId);
+        }
+    }
+
+    /**
+     * A function to request to see the complete order, that user has chosen.
+     * @param pageNumber number of the page - needed for navigation frame
+     *                   (even though we're going to show the selected choises
+     *                   not a page). Can be passed as 0.
+     * @param parentId parent ID needed for navigation frame just like pageNumber.
+     *                 Can be passed as 0.
+     */
+    private void requestToSeeOrder(int pageNumber, int parentId) {
         if (mListener != null) {
             mListener.onFragmentInteraction(SalesProcesses.SEE_MEAL, pageNumber, parentId);
         }

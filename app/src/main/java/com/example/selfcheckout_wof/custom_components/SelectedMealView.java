@@ -29,6 +29,16 @@ public class SelectedMealView extends LinearLayout {
     }
 
     /**
+     *
+     * @param context
+     * @param itemsInMeal
+     */
+    public SelectedMealView(Context context, ArrayList<PurchasableGoods> itemsInMeal) {
+        super(context);
+        init(itemsInMeal.iterator());
+    }
+
+    /**
      * Builds the view.
      * @param itemsInMeal
      */

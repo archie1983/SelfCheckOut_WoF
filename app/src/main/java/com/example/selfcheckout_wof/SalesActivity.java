@@ -58,7 +58,7 @@ public class SalesActivity extends AppCompatActivity
         /*
          * When we create this activity, we start with the base page
          */
-        displayAvailableSalesItemsForEdit(0, 0, false);
+        displayAvailableSalesItemsForEdit(0, 0, SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE);
 
         contentView = findViewById(R.id.frmSalesItemsListBrowse);
     }
@@ -68,17 +68,19 @@ public class SalesActivity extends AppCompatActivity
      * navigation buttons and sales items selection page.
      * @param pageNumber page number to load
      * @param parentID parent, whose page to load
-     * @param seeMeal a flag of whether user needs to be shown the actual meal instead of a
-     *                page with items to select.
+     * @param process indicator of whether user needs to be shown the actual meal instead of a
+     *                page with items to select or the final order.
      */
-    private void displayAvailableSalesItemsForEdit(int pageNumber, int parentID, boolean seeMeal){
+    private void displayAvailableSalesItemsForEdit(int pageNumber,
+                                                   int parentID,
+                                                   SalesProcessNavigationFragment.SalesProcesses process){
         final FragmentManager fm = getSupportFragmentManager();
 
         final SalesProcessNavigationFragment navigationFragment =
-                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, true, seeMeal);
+                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, true, process);
 
         final SalesProcessNavigationFragment dataFragment =
-                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, false, seeMeal);
+                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, false, process);
 
         fm.beginTransaction()
                 .replace(R.id.frmSalesItemsListNavigation, navigationFragment, "si_nav")
@@ -127,10 +129,6 @@ public class SalesActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(SalesProcessNavigationFragment.SalesProcesses process, int pageNumber, int parentId) {
-        if (process == SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE) {
-            displayAvailableSalesItemsForEdit(pageNumber, parentId, false);
-        } else if (process == SalesProcessNavigationFragment.SalesProcesses.SEE_MEAL) {
-            displayAvailableSalesItemsForEdit(pageNumber, parentId, true);
-        }
+        displayAvailableSalesItemsForEdit(pageNumber, parentId, process);
     }
 }
