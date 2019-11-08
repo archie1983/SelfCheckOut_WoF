@@ -21,6 +21,7 @@
     <string name="btnAddToOrder">Add To Order</string>
     <string name="btnManageData">Manage Data</string>
     <string name="btnLoginPaypal">Log in to PayPal</string>
+    <string name="btnExportDB">Export Database</string>
 
     <string name="title_activity_sales">SalesActivity</string>
     <string name="btnGoToAdmin">Admin Section</string>

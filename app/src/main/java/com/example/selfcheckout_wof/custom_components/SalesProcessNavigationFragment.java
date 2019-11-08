@@ -467,7 +467,7 @@ public class SalesProcessNavigationFragment extends Fragment {
      */
     private void requestToSeeOrder(int pageNumber, int parentId) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(SalesProcesses.SEE_MEAL, pageNumber, parentId);
+            mListener.onFragmentInteraction(SalesProcesses.SEE_ORDER, pageNumber, parentId);
         }
     }
 

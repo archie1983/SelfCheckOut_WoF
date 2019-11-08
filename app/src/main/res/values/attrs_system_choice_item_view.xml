@@ -1,0 +1,11 @@
+<resources>
+    <declare-styleable name="SystemChoiceItemView">
+        <attr name="systemChoiceType" format="enum">
+            <enum name="UNKNOWN" value="0"/>
+            <enum name="MANAGE_DATA" value="1"/>
+            <enum name="EXPORT_DB" value="2"/>
+            <enum name="LOGIN_PAYPAL" value="3"/>
+            <enum name="START_SALES" value="4"/>
+        </attr>
+    </declare-styleable>
+</resources>

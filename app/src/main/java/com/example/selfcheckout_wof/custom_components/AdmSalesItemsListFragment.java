@@ -60,7 +60,6 @@ public class AdmSalesItemsListFragment extends Fragment {
      *                 and no data.
      * @return A new instance of fragment AdmSalesItemsListFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static AdmSalesItemsListFragment newInstance(boolean isHeader_) {
         AdmSalesItemsListFragment fragment = new AdmSalesItemsListFragment();
         Bundle args = new Bundle();
@@ -116,9 +115,7 @@ public class AdmSalesItemsListFragment extends Fragment {
         });
 
         /*
-         * Adding a headers' row. For some reason it looks like this method is called
-         * twice-- once when AdminActivity.getCurrentSalesItemsList() == null and once
-         * when it's populated.
+         * Adding a headers' row.
          */
         if (isHeader) {
             final AdmSalesItemView header = new AdmSalesItemView(getContext());

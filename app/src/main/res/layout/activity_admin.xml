@@ -1,34 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".AdminActivity"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnManageData"
+        <LinearLayout
+            android:id="@+id/hlChoiceHolder"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onManageData"
-            android:text="@string/btnManageData" />
+            android:gravity="center"
+            android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnLogInPaypal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onLogInPayPal"
-        android:text="@string/btnLoginPaypal" />
+            <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
+                android:id="@+id/scManageData"
+                android:layout_width="260dp"
+                android:layout_height="265dp"
+                app:systemChoiceType="MANAGE_DATA" />
 
-    <Button
-        android:id="@+id/btnStartSales"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onStartSales"
-        android:text="@string/btnStartSales" />
+            <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
+                android:id="@+id/scExportData"
+                android:layout_width="260dp"
+                android:layout_height="265dp"
+                app:systemChoiceType="EXPORT_DB" />
 
-    <TextView
+            <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
+                android:id="@+id/scLoginToPayPal"
+                android:layout_width="260dp"
+                android:layout_height="265dp"
+                app:systemChoiceType="LOGIN_PAYPAL" />
+
+            <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
+                android:id="@+id/scStartSales"
+                android:layout_width="260dp"
+                android:layout_height="265dp"
+                app:systemChoiceType="START_SALES" />
+        </LinearLayout>
+
+        <TextView
             android:id="@+id/merchant_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +53,7 @@
             style="?android:attr/progressBarStyleSmall"
             android:visibility="gone"/>
 
-    <WebView
+        <WebView
             android:id="@+id/id_webView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

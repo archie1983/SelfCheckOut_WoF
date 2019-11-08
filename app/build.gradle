@@ -52,4 +52,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
     api("com.paypal.retail:here-sdk-debug:$PAYPAL_HERE_PUBLISH_VERSION@aar") { transitive = true }
+
+    implementation 'com.opencsv:opencsv:4.1'
 }
