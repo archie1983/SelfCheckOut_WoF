@@ -40,6 +40,12 @@ public class SalesProcessNavigationFragment extends Fragment {
     private static final String ARG_SEE_MEAL = "ARG_SEE_MEAL";
     private static final String ARG_SEE_ORDER = "ARG_SEE_ORDER";
 
+    /**
+     * Maximum number of itemst per row in the area where user picks
+     * their choice of food items (bases, condiments, etc.)
+     */
+    private static final int MAX_NUMBER_OF_ITEMS_PER_ROW = 3;
+
     /*
      * page number in the db that we want to navigate to.
      */
@@ -323,11 +329,12 @@ public class SalesProcessNavigationFragment extends Fragment {
                     int item_count = salesItemsList.size();
                     /*
                      * making sure that the row size will be as close as possible to the column count,
-                     * but no more than 4. 4 items in a row is max, that the screen can show atm.
+                     * but no more than MAX_NUMBER_OF_ITEMS_PER_ROW. MAX_NUMBER_OF_ITEMS_PER_ROW items
+                     * in a row is max, that the screen can show atm.
                      */
                     int number_of_items_per_row = (int) Math.ceil(Math.sqrt(item_count));
-                    if (number_of_items_per_row > 4) {
-                        number_of_items_per_row = 4;
+                    if (number_of_items_per_row > MAX_NUMBER_OF_ITEMS_PER_ROW) {
+                        number_of_items_per_row = MAX_NUMBER_OF_ITEMS_PER_ROW;
                     }
 
                     /*

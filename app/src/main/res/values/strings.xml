@@ -26,7 +26,7 @@
     <string name="title_activity_sales">SalesActivity</string>
     <string name="btnGoToAdmin">Admin Section</string>
     <string name="btnStartSales">Start Sales</string>
-    <string name="txtMerchantEmail">PayPalHere Account: </string>
+    <string name="txtMerchantEmail">Logged in to PayPalHere as: </string>
     <string name="paypal_error_title">Error</string>
     <string name="paypal_error_initialize_msg">Failed to set AccessToken. Please try after clearing the data/cache of the application.</string>
 

@@ -16,6 +16,18 @@
             android:orientation="horizontal">
 
             <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
+                android:id="@+id/scLoginToPayPal"
+                android:layout_width="260dp"
+                android:layout_height="265dp"
+                app:systemChoiceType="LOGIN_PAYPAL" />
+
+            <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
+                android:id="@+id/scStartSales"
+                android:layout_width="260dp"
+                android:layout_height="265dp"
+                app:systemChoiceType="START_SALES" />
+
+            <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
                 android:id="@+id/scManageData"
                 android:layout_width="260dp"
                 android:layout_height="265dp"
@@ -27,17 +39,6 @@
                 android:layout_height="265dp"
                 app:systemChoiceType="EXPORT_DB" />
 
-            <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
-                android:id="@+id/scLoginToPayPal"
-                android:layout_width="260dp"
-                android:layout_height="265dp"
-                app:systemChoiceType="LOGIN_PAYPAL" />
-
-            <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
-                android:id="@+id/scStartSales"
-                android:layout_width="260dp"
-                android:layout_height="265dp"
-                app:systemChoiceType="START_SALES" />
         </LinearLayout>
 
         <TextView
