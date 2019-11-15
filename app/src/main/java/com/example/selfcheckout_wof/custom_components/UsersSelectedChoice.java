@@ -74,7 +74,10 @@ public class UsersSelectedChoice {
      * Adds the current meal to order.
      */
     public static synchronized void addCurrentMealToOrder() {
-        currentOrder.add(currentMeal);
+        if (currentMeal.size() > 0) {
+            currentOrder.add(currentMeal);
+            clearCurrentMeal();
+        }
     }
 
     /**

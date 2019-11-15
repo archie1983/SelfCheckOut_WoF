@@ -29,6 +29,11 @@ public class SalesActivity extends AppCompatActivity
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler sysControlsHideHandler = new Handler();
 
+    /**
+     * Parent ID for items that have no parent (the top level items e.g. Food, Drink, etc.).
+     */
+    public static final int TOP_LEVEL_ITEMS = 0;
+
     private View contentView;
     private final Runnable mShowContentRunnable = new Runnable() {
         @SuppressLint("InlinedApi")
@@ -58,7 +63,7 @@ public class SalesActivity extends AppCompatActivity
         /*
          * When we create this activity, we start with the base page
          */
-        displayAvailableSalesItemsForEdit(0, 0, SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE);
+        displayAvailableSalesItemsOrCurrentOrder(0, TOP_LEVEL_ITEMS, SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE);
 
         contentView = findViewById(R.id.frmSalesItemsListBrowse);
     }
@@ -71,24 +76,32 @@ public class SalesActivity extends AppCompatActivity
      * @param process indicator of whether user needs to be shown the actual meal instead of a
      *                page with items to select or the final order.
      */
-    private void displayAvailableSalesItemsForEdit(int pageNumber,
+    private void displayAvailableSalesItemsOrCurrentOrder(int pageNumber,
                                                    int parentID,
                                                    SalesProcessNavigationFragment.SalesProcesses process){
         final FragmentManager fm = getSupportFragmentManager();
 
-        final SalesProcessNavigationFragment navigationFragment =
-                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, true, process);
+        if (process == SalesProcessNavigationFragment.SalesProcesses.SEE_ORDER) {
+            /**
+             * The fragment that shows the current selection and allows to check out at any time.
+             */
+            final SalesProcessNavigationFragment seeMealFragment =
+                    SalesProcessNavigationFragment.newInstance(pageNumber, parentID, true, process);
 
-        final SalesProcessNavigationFragment dataFragment =
-                SalesProcessNavigationFragment.newInstance(pageNumber, parentID, false, process);
+            fm.beginTransaction()
+                    .replace(R.id.frmSalesItemsListSeeMeal, seeMealFragment, "si_see_meal")
+                    .commit();
+        } else if (process == SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE) {
+            /**
+             * The fragment that allows to make choices for the meal.
+             */
+            final SalesProcessNavigationFragment dataFragment =
+                    SalesProcessNavigationFragment.newInstance(pageNumber, parentID, false, process);
 
-        fm.beginTransaction()
-                .replace(R.id.frmSalesItemsListNavigation, navigationFragment, "si_nav")
-                .commit();
-
-        fm.beginTransaction()
-                .replace(R.id.frmSalesItemsListBrowse, dataFragment, "si_list")
-                .commit();
+            fm.beginTransaction()
+                    .replace(R.id.frmSalesItemsListBrowse, dataFragment, "si_list")
+                    .commit();
+        }
     }
 
     public void onGoToAdminClick(View view) {
@@ -129,6 +142,6 @@ public class SalesActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(SalesProcessNavigationFragment.SalesProcesses process, int pageNumber, int parentId) {
-        displayAvailableSalesItemsForEdit(pageNumber, parentId, process);
+        displayAvailableSalesItemsOrCurrentOrder(pageNumber, parentId, process);
     }
 }

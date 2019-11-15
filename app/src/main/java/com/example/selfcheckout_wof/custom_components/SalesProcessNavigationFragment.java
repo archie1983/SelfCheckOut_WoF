@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.SalesActivity;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.custom_components.utils.PopupQuestions;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
@@ -35,7 +36,7 @@ import java.util.List;
 public class SalesProcessNavigationFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_PAGE_NUM
     private static final String ARG_PAGE_NUM = "ARG_PAGE_NUM";
-    private static final String ARG_BTNS_OR_ITEMS = "ARG_BTNS_OR_ITEMS";
+    private static final String ARG_MEAL_OR_ITEMS = "ARG_MEAL_OR_ITEMS"; // whether we're displaying the current order (meal) or the choice for user
     private static final String ARG_PARENT_ID = "ARG_PARENT_ID";
     private static final String ARG_SEE_MEAL = "ARG_SEE_MEAL";
     private static final String ARG_SEE_ORDER = "ARG_SEE_ORDER";
@@ -46,37 +47,34 @@ public class SalesProcessNavigationFragment extends Fragment {
      */
     private static final int MAX_NUMBER_OF_ITEMS_PER_ROW = 3;
 
-    /*
-     * page number in the db that we want to navigate to.
+    /**
+     * page number in the db that we want to display at the moment.
      */
-    private int page_number;
+    private int current_page_number;
 
-    /*
+    /**
+     * Item count in the next page. We'll need this to check sanity of next page request,
+     * when that's made.
+     */
+    private int item_count_in_next_page = -1;
+
+    /**
      * parent ID in the db, which pages we want to load.
      */
     private int parent_ID;
 
     /**
-     * A flag of whether we'll be rendering page navigation buttons
-     * or the actual page of items in this fragment.
+     * A flag of whether we'll be rendering the current order
+     * or the page of items to select in this fragment.
      */
-    private boolean btns_or_items;
-
-    /**
-     * A flag of whether user needs to be shown meal (true) or a page of items (false)
-     */
-    private boolean seeMeal = false;
-
-    /**
-     * A flag of whether user wants to see the final order (true) or not (false).
-     */
-    private boolean seeOrder = false;
+    private boolean current_order_or_items;
 
     /**
      * Elements on the fragment (both navigation and data fragments), that we will need to use
      */
-    private LinearLayout vContentLayout, salesItemsNavigationView;
-    private Button btnPreviousPage, btnNextPage, btnStartAgain, btnAddToOrder;
+    private LinearLayout vContentLayout, seeCurrentOrderView;
+    //private Button btnPreviousPage, btnNextPage, btnStartAgain,
+    private Button btnGoToCheckout;
 
     private OnFragmentInteractionListener mListener;
 
@@ -89,7 +87,8 @@ public class SalesProcessNavigationFragment extends Fragment {
      * this fragment using the provided parameters.
      *
      * @param pageNumber Page number that we want to navigate to.
-     * @param btnsOrItems A flag of whether we want the buttons or the actual items displayed.
+     * @param seeMealOrItemsForChoice A flag of whether we want the current selection or the
+     *                                actual items displayed, that can be selected.
      * @param parentID Parent ID, which pages we want.
      * @param process indicator of whether user needs to be shown the actual meal instead of a
      *                page with items to select or the final order.
@@ -97,14 +96,26 @@ public class SalesProcessNavigationFragment extends Fragment {
      */
     public static SalesProcessNavigationFragment newInstance(int pageNumber,
                                                              int parentID,
-                                                             boolean btnsOrItems,
+                                                             boolean seeMealOrItemsForChoice,
                                                              SalesProcesses process) {
         SalesProcessNavigationFragment fragment = new SalesProcessNavigationFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PAGE_NUM, pageNumber);
-        args.putBoolean(ARG_BTNS_OR_ITEMS, btnsOrItems);
+        args.putBoolean(ARG_MEAL_OR_ITEMS, seeMealOrItemsForChoice);
         args.putInt(ARG_PARENT_ID, parentID);
 
+        /*
+         * For now we won't be using the "process" variable to decide
+         * what screen we're showing to the user. It will be just one
+         * screen with two fragments - the choice selector and the
+         * current order.
+         *
+         * We'll keep the infrastructure though and for now these booleans
+         * will still be set.
+         */
+        args.putBoolean(ARG_SEE_MEAL, false);
+        args.putBoolean(ARG_SEE_ORDER, false);
+/*
         switch (process) {
             case LOAD_PAGE:
                 args.putBoolean(ARG_SEE_MEAL, false);
@@ -119,7 +130,7 @@ public class SalesProcessNavigationFragment extends Fragment {
                 args.putBoolean(ARG_SEE_ORDER, true);
                 break;
         }
-
+*/
         fragment.setArguments(args);
         return fragment;
     }
@@ -128,11 +139,12 @@ public class SalesProcessNavigationFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            page_number = getArguments().getInt(ARG_PAGE_NUM);
-            btns_or_items = getArguments().getBoolean(ARG_BTNS_OR_ITEMS);
+            current_page_number = getArguments().getInt(ARG_PAGE_NUM);
+            current_order_or_items = getArguments().getBoolean(ARG_MEAL_OR_ITEMS);
             parent_ID = getArguments().getInt(ARG_PARENT_ID);
-            seeMeal = getArguments().getBoolean(ARG_SEE_MEAL);
-            seeOrder = getArguments().getBoolean(ARG_SEE_ORDER);
+
+//            seeMeal = getArguments().getBoolean(ARG_SEE_MEAL);
+//            seeOrder = getArguments().getBoolean(ARG_SEE_ORDER);
         }
     }
 
@@ -141,118 +153,104 @@ public class SalesProcessNavigationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView;
-        if (btns_or_items) {
-            rootView = inflater.inflate(R.layout.fragment_sales_process_navigation, container, false);
-            btnPreviousPage = rootView.findViewById(R.id.btnPreviousPage);
-            btnNextPage = rootView.findViewById(R.id.btnNextPage);
-            btnStartAgain = rootView.findViewById(R.id.btnStartAgain);
-            salesItemsNavigationView = rootView.findViewById(R.id.salesItemsNavigationView);
+        if (current_order_or_items) {
+            rootView = inflater.inflate(R.layout.fragment_sales_process_see_meal, container, false);
+//            btnPreviousPage = rootView.findViewById(R.id.btnPreviousPage);
+//            btnNextPage = rootView.findViewById(R.id.btnNextPage);
+//            btnStartAgain = rootView.findViewById(R.id.btnStartAgain);
+            vContentLayout = rootView.findViewById(R.id.vContentLayout);
+            btnGoToCheckout = rootView.findViewById(R.id.btnGoToCheckout);
         } else {
             /*
-             * If user needs to be shown the selected meal, then we'll have one layout to load,
-             * but for browsing the item in a page there will be a different one. For seeing the
-             * order we'll have the same layout as for seeing the meal, but withoug the "Add to
-             * order" button.
+             * For seeing the order.
              */
-            if (seeMeal) {
-                rootView = inflater.inflate(R.layout.fragment_sales_process_see_meal, container, false);
-                btnAddToOrder = rootView.findViewById(R.id.btnAddToOrder);
-            } else if (seeOrder) {
-                rootView = inflater.inflate(R.layout.fragment_sales_process_see_meal, container, false);
-            } else {
-                rootView = inflater.inflate(R.layout.fragment_sales_process_browse, container, false);
-            }
-
+            rootView = inflater.inflate(R.layout.fragment_sales_process_browse, container, false);
             vContentLayout = rootView.findViewById(R.id.vContentLayout);
         }
 
         /**
-         * Loads the required frame - either data frame or navigation frame
+         * Loads the required frame - either data frame or current order frame
          */
-        if (btns_or_items) {
-            displayButtons();
-        } else {
-            displayPage(page_number);
-        }
+        displayPage(current_page_number);
 
         return rootView;
     }
 
-    /*
-     * Loads up a linear layout with the navigation buttons that need to be shown
-     */
-    private void displayButtons() {
-        /*
-         * If we're showing the base page, then we don't want navigation buttons, because
-         * user has to choose what base category they want
-         */
-        //System.out.println("PGNM: " + page_number);
-        if (page_number == 0) {
-            salesItemsNavigationView.setVisibility(View.INVISIBLE);
-            //System.out.println("VSB: INVISIBLE");
-        } else {
-            salesItemsNavigationView.setVisibility(View.VISIBLE);
-            //System.out.println("VSB: VISIBLE");
-            btnPreviousPage.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    requestPageLoad(page_number - 1, parent_ID);
-                }
-            });
-
-            btnStartAgain.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    /*
-                     * no parent ID required if we want base page.
-                     */
-                    UsersSelectedChoice.clearCurrentMeal();
-                    requestPageLoad(0, 0);
-                }
-            });
-
-            /*
-             * If next page doesn't exist, then the "Next" button should show the built meal
-             * instead of trying to jump to the next page.
-             */
-            DBThread.addTask(new Runnable() {
-                @Override
-                public void run() {
-                    int itemCountInNextPage = SalesItemsCache
-                            .getInstance()
-                            .getNumberOfItemsInPage(page_number + 1, parent_ID);
-
-                    if (itemCountInNextPage == 0) { // need to show user's assembled meal
-                        btnNextPage.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                requestToSeeMeal(page_number + 1, parent_ID);
-                            }
-                        });
-                    } else if (itemCountInNextPage > 0) { // need to show next page
-                        btnNextPage.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                requestPageLoad(page_number + 1, parent_ID);
-                            }
-                        });
-                    } else { // db not available
-                        btnNextPage.setVisibility(View.INVISIBLE);
-                    }
-                }
-            });
-        }
-
-        /*
-         * If we're looking at the selected meal, then we don't want the
-         * "Next" button.
-         */
-        if (seeMeal || seeOrder) {
-            btnNextPage.setVisibility(View.INVISIBLE);
-        } else {
-            btnNextPage.setVisibility(View.VISIBLE);
-        }
-    }
+//    /*
+//     * Loads up a linear layout with the navigation buttons that need to be shown
+//     */
+//    private void displayButtons() {
+//        /*
+//         * If we're showing the base page, then we don't want navigation buttons, because
+//         * user has to choose what base category they want
+//         */
+//        //System.out.println("PGNM: " + page_number);
+//        if (page_number == 0) {
+//            salesItemsNavigationView.setVisibility(View.INVISIBLE);
+//            //System.out.println("VSB: INVISIBLE");
+//        } else {
+//            salesItemsNavigationView.setVisibility(View.VISIBLE);
+//            //System.out.println("VSB: VISIBLE");
+//            btnPreviousPage.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    requestPageLoad(page_number - 1, parent_ID);
+//                }
+//            });
+//
+//            btnStartAgain.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    /*
+//                     * no parent ID required if we want base page.
+//                     */
+//                    UsersSelectedChoice.clearCurrentMeal();
+//                    requestPageLoad(0, 0);
+//                }
+//            });
+//
+//            /*
+//             * If next page doesn't exist, then the "Next" button should show the built meal
+//             * instead of trying to jump to the next page.
+//             */
+//            DBThread.addTask(new Runnable() {
+//                @Override
+//                public void run() {
+//                    int itemCountInNextPage = SalesItemsCache
+//                            .getInstance()
+//                            .getNumberOfItemsInPage(page_number + 1, parent_ID);
+//
+//                    if (itemCountInNextPage == 0) { // need to show user's assembled meal
+//                        btnNextPage.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                requestToSeeMeal(page_number + 1, parent_ID);
+//                            }
+//                        });
+//                    } else if (itemCountInNextPage > 0) { // need to show next page
+//                        btnNextPage.setOnClickListener(new View.OnClickListener() {
+//                            @Override
+//                            public void onClick(View view) {
+//                                requestPageLoad(page_number + 1, parent_ID);
+//                            }
+//                        });
+//                    } else { // db not available
+//                        btnNextPage.setVisibility(View.INVISIBLE);
+//                    }
+//                }
+//            });
+//        }
+//
+//        /*
+//         * If we're looking at the selected meal, then we don't want the
+//         * "Next" button.
+//         */
+//        if (seeMeal || seeOrder) {
+//            btnNextPage.setVisibility(View.INVISIBLE);
+//        } else {
+//            btnNextPage.setVisibility(View.VISIBLE);
+//        }
+//    }
 
     /**
      * Displays the requrested page of sales items or the already chosen meal.
@@ -265,59 +263,80 @@ public class SalesProcessNavigationFragment extends Fragment {
     private void displayPage(final int page_number) {
         /*
          * If user needs to be shown the meal, then we'll create a representation
-         * of user's choice. Same for seeing order or sales items selection.
+         * of user's choice. For seeing sales items selection, we'll need to create
+         * that, but either way we want to first clear whatever is there first.
          */
-        if (seeOrder) {
-            Iterator<ArrayList<PurchasableGoods>> mealsInOrder = UsersSelectedChoice.getCurrentOrder();
-            while (mealsInOrder.hasNext()) {
-                vContentLayout.addView(new SelectedMealView(getContext(), mealsInOrder.next()));
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                vContentLayout.removeAllViews();
             }
-        } else if (seeMeal) {
-            vContentLayout.addView(new SelectedMealView(getContext(), UsersSelectedChoice.getCurrentlySelectedItems()));
+        });
+
+        if (current_order_or_items) {
+            /*
+             * First we'll show the current order
+             */
+            final Iterator<ArrayList<PurchasableGoods>> mealsInOrder = UsersSelectedChoice.getCurrentOrder();
+            if (mealsInOrder.hasNext()) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        vContentLayout.addView(new FinalOrderView(getContext(), mealsInOrder));
+                    }
+                });
+            }
 
             /*
-             * If we're looking at the selected meal, then we want
-             * functionality for the "Add to Order" button.
+             * Afterwards we'll show what has been selected, but not yet added to the order.
              */
-            btnAddToOrder.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    UsersSelectedChoice.addCurrentMealToOrder();
-                    /*
-                     * Here we need to ask user if they'd like to add more meals
-                     * or drinks or go to checkout.
-                     */
-                    PopupQuestions.doYouWantToContinueShoppingOrCheckout(
-                            getContext(),
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    /*
-                                     * Here we need to open show user the complete order and
-                                     * then after another confirmation show the checkout
-                                     * activity and start up the card reader.
-                                     */
-                                    requestToSeeOrder(page_number, parent_ID);
-                                }
-                            },
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    UsersSelectedChoice.clearCurrentMeal();
-                                    requestPageLoad(0, 0);
-                                }
-                            }
-                    );
-                }
-            });
-        } else {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    vContentLayout.removeAllViews();
+                    vContentLayout.addView(new SelectedMealView(getContext(), UsersSelectedChoice.getCurrentlySelectedItems()));
                 }
             });
 
+            /*
+             * If we're looking at the selected meal, then we want
+             * functionality for the "CheckOut" button.
+             */
+            btnGoToCheckout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    /*
+                     * Add the curent selection to the order and re-display the order frame.
+                     */
+//                    UsersSelectedChoice.addCurrentMealToOrder();
+//                    displayPage(page_number);
+//                    /*
+//                     * Here we need to ask user if they'd like to add more meals
+//                     * or drinks or go to checkout.
+//                     */
+//                    PopupQuestions.doYouWantToContinueShoppingOrCheckout(
+//                            getContext(),
+//                            new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    /*
+//                                     * Here we need to open show user the complete order and
+//                                     * then after another confirmation show the checkout
+//                                     * activity and start up the card reader.
+//                                     */
+//                                    requestToSeeOrder(page_number, parent_ID);
+//                                }
+//                            },
+//                            new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    UsersSelectedChoice.clearCurrentMeal();
+//                                    requestPageLoad(0, 0);
+//                                }
+//                            }
+//                    );
+                }
+            });
+        } else {
             /**
              * Updating the admin list of sales items in a separate thread because
              * Room doesn't allow running db stuff on the main thread.
@@ -327,22 +346,52 @@ public class SalesProcessNavigationFragment extends Fragment {
                 public void run() {
                     List<SalesItems> salesItemsList = SalesItemsCache.getInstance().getSalesItemsPage(page_number, parent_ID);
                     int item_count = salesItemsList.size();
+
+                    /**
+                     * Updating the global variable item_count_in_next_page with the item count in the next page.
+                     */
+                    item_count_in_next_page = SalesItemsCache.getInstance().getNumberOfItemsInPage(page_number + 1, parent_ID);
+
                     /*
                      * making sure that the row size will be as close as possible to the column count,
                      * but no more than MAX_NUMBER_OF_ITEMS_PER_ROW. MAX_NUMBER_OF_ITEMS_PER_ROW items
                      * in a row is max, that the screen can show atm.
+                     *
+                     * Also if we end up with number_of_items_per_row == 0, then let's set that to
+                     * at least 1, because we may need to display a single default "go to next page"
+                     * choice and we'll need that as 1 item in 1 row, if there is nothing else there.
                      */
                     int number_of_items_per_row = (int) Math.ceil(Math.sqrt(item_count));
                     if (number_of_items_per_row > MAX_NUMBER_OF_ITEMS_PER_ROW) {
                         number_of_items_per_row = MAX_NUMBER_OF_ITEMS_PER_ROW;
+                    } else if(number_of_items_per_row < 1) {
+                        number_of_items_per_row = 1;
                     }
 
                     /*
                      * We'll find the layout where we want to put the items and start
                      * putting in there horizontal layouts and adding a calculated number
-                     * of items in each of the horizontal layouts (rows)
+                     * of items in each of the horizontal layouts (rows). For that we'll need
+                     * the items_displayed variable which will track the number of items displayed.
+                     *
+                     * We will start however not with 0, but with -1 because we want to include
+                     * the default option for user to go straight to the next page. That's the
+                     * (items_displayed == -1) option. That of course is only valid if we're
+                     * displaying ordinary choices. If we want to display the top level items
+                     * e.g. "Food" or "Drink", then we can't have the default "go to next page"
+                     * option as we don't yet know what is the next page.
                      */
-                    int items_displayed = 0;
+                    int items_displayed = -1;
+
+                    /**
+                     * items_displayed = -1 of course is only valid if we're
+                     * displaying ordinary choices. If we want to display the top level items
+                     * e.g. "Food" or "Drink", then we can't have the default "go to next page"
+                     * option as we don't yet know what is the next page.
+                     */
+                    if (parent_ID == SalesActivity.TOP_LEVEL_ITEMS) {
+                        items_displayed = 0;
+                    }
 
                     while (item_count > items_displayed) {
                         final LinearLayout hItemsRow = new LinearLayout(getContext());
@@ -355,31 +404,146 @@ public class SalesProcessNavigationFragment extends Fragment {
                              * we can use it as PurchasableGoods and pass into the constructor
                              * of SelectionGUIForOrder.
                              */
-                            final PurchasableGoods pg = salesItemsList.get(items_displayed);
+                            final PurchasableGoods pg;
                             final ActionForSelectionGUI action;
 
-                            /*
-                             * If this is base page, then we want the page load subcategories
-                             * of the item clicked.
+                            /**
+                             * If we're displaying the default "go to next page" option, then
+                             * we want appropriate action for that.
                              *
                              * Otherwise we want to select the categories and add them to the
                              * meal.
                              */
-                            if (page_number == 0) {
+                            if (items_displayed == -1) {
+                                //pg = salesItemsList.get(items_displayed);
+                                pg = new PurchasableGoods() {
+                                    @Override
+                                    public long getPrice() {
+                                        return 0;
+                                    }
+                                    @Override
+                                    public String getDescription() {
+                                        return "Go to next page";
+                                    }
+                                    @Override
+                                    public String getLabel() {
+                                        return "Go to next page";
+                                    }
+                                    @Override
+                                    public int getImage_resource() {
+                                        return R.drawable.dragndrop;
+                                    }
+                                    @Override
+                                    public String getImage_path() {
+                                        return "";
+                                    }
+                                    @Override
+                                    public int getID() {
+                                        return 0;
+                                    }
+                                    @Override
+                                    public int getParentID() {
+                                        return 0;
+                                    }
+                                    @Override
+                                    public int getNumberOfMultiSelectableItems() {
+                                        return 0;
+                                    }
+                                    @Override
+                                    public int getPage() {
+                                        return 0;
+                                    }
+                                };
+
                                 action = new ActionForSelectionGUI(pg) {
                                     @Override
                                     public boolean onSelected() {
-                                        requestPageLoad(page_number + 1, pg.getID());
+                                        /**
+                                         * If there are no more pages to go to, then we want to
+                                         * add the current selection to the order and go back to
+                                         * the beginning.
+                                         */
+                                        if (item_count_in_next_page < 1) {
+                                            UsersSelectedChoice.addCurrentMealToOrder();
+                                            requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
+                                        } else {
+                                            requestPageLoad(page_number + 1, parent_ID);
+                                        }
+
+                                        requestPageLoad(0, SalesActivity.TOP_LEVEL_ITEMS);
+
                                         return true;
                                     }
 
                                     @Override
                                     public boolean onDeSelected() {
-                                        return false;
+                                        return true;
                                     }
                                 };
                             } else {
-                                action = new ActionForSelectionGUI(pg);
+                                pg = salesItemsList.get(items_displayed);
+
+                                action = new ActionForSelectionGUI(pg) {
+                                    @Override
+                                    public boolean onSelected() {
+                                        /*
+                                         * If we're at the top level (e.g. "Food" or "Drink"),
+                                         * a.k.a.: parent_ID == SalesActivity.TOP_LEVEL_ITEMS,
+                                         * then we want to display that top level's children.
+                                         *
+                                         * Otherwise we are deeper in the tree and we don't want
+                                         * the immediate item ID as the parent, but rather the
+                                         * master parent's ID.
+                                         */
+                                        if (parent_ID == SalesActivity.TOP_LEVEL_ITEMS) {
+                                            requestPageLoad(page_number + 1, pg.getID());
+                                            //requestToSeeOrder(page_number, pg.getID());
+                                        } else {
+                                            /**
+                                             * Adding this item to the order.
+                                             */
+                                            super.onSelected();
+
+                                            /*
+                                             * If this item has to be selected alone, then upon its
+                                             * selection we need to move to the next page. For example,
+                                             * if we're building a food portion and it can only have one
+                                             * base (one of Egg noodles, rice noodles, etc., because
+                                             * of food container size), then we need to make sure that
+                                             * upon its selection we get to the next page.
+                                             */
+                                            if (pg.getNumberOfMultiSelectableItems() == 1) {
+                                                /**
+                                                 * If there are no more pages to go to, then we want to
+                                                 * add the current selection to the order and go back to
+                                                 * the beginning.
+                                                 */
+                                                if (item_count_in_next_page < 1) {
+                                                    UsersSelectedChoice.addCurrentMealToOrder();
+                                                    requestPageLoad(0, SalesActivity.TOP_LEVEL_ITEMS);
+                                                } else {
+                                                    requestPageLoad(page_number + 1, parent_ID);
+                                                }
+                                                requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
+                                            } else {
+                                                /*
+                                                 * Otherwise just update the total and allow further
+                                                 * selections on the same page.
+                                                 */
+                                                requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
+                                            }
+                                        }
+
+                                        return true;
+                                    }
+
+                                    @Override
+                                    public boolean onDeSelected() {
+                                        boolean result = super.onDeSelected();
+                                        requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
+                                        return result;
+                                    }
+                                };
                             }
 
                             getActivity().runOnUiThread(new Runnable() {
@@ -437,19 +601,35 @@ public class SalesProcessNavigationFragment extends Fragment {
         SEE_ORDER;
     }
 
-
     /**
      * A function to request a page load for both the navigation frame and the sales items list
      * frame
      *
-     * @param pageNumber
+     * @param newPageNumber
      */
-    private void requestPageLoad(int pageNumber, int parentId) {
+    private void requestPageLoad(int newPageNumber, int parentId) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(SalesProcesses.LOAD_PAGE, pageNumber, parentId);
+            /**
+             * Check the page numbers for sanity.
+             *
+             * 1) If we're requesting a page below 0, then load the beginning.
+             * 2) If we're requesting the next page, but there are not items
+             * in the next page, then also go to the beginning. The only exception
+             * here is when the current global parent_ID is the top level item, then
+             * we can't possibly know the number of items in the next page, because
+             * there is no next page yet- user still needs to decide what top level
+             * page will be loaded and that is being decided now in this function call.
+             */
+            if (newPageNumber < 0
+                    || newPageNumber > current_page_number
+                        && item_count_in_next_page < 1
+                        && parent_ID != SalesActivity.TOP_LEVEL_ITEMS) {
+                mListener.onFragmentInteraction(SalesProcesses.LOAD_PAGE, 0, SalesActivity.TOP_LEVEL_ITEMS);
+            } else {
+                mListener.onFragmentInteraction(SalesProcesses.LOAD_PAGE, newPageNumber, parentId);
+            }
         }
     }
-
 
     /**
      * A function to request to see the meal, that user has chosen.

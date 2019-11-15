@@ -129,7 +129,7 @@ public class SelectionGUIForOrder extends LinearLayout {
          */
         if (pgItemToDisplay.getImage_path().equals("")) {
             Glide.with(this)
-                    .load(R.drawable.dragndrop)
+                    .load(pgItemToDisplay.getImage_resource() == 0 ? R.drawable.dragndrop : pgItemToDisplay.getImage_resource())
                     .into(new CustomTarget<Drawable>() {
                         @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
                         @Override

@@ -17,6 +17,10 @@ import java.util.Iterator;
  * to visually show the contents of order.
  */
 public class SelectedMealView extends LinearLayout {
+    /**
+     * Price of this meal.
+     */
+    int mealTotal = 0;
 
     /**
      *
@@ -45,23 +49,33 @@ public class SelectedMealView extends LinearLayout {
     private void init(Iterator<PurchasableGoods> itemsInMeal) {
         this.setOrientation(VERTICAL);
 
-        int mealTotal = 0;
-        while (itemsInMeal.hasNext()) {
-            PurchasableGoods pg = itemsInMeal.next();
-            final TextView newItem = new TextView(getContext());
-            newItem.setText(pg.getLabel() +
-                    " " +
-                    Formatting.formatCash(pg.getPrice())
-            );
-            mealTotal += pg.getPrice();
-            this.addView(newItem);
+        if (itemsInMeal.hasNext()) {
+            final TextView header = new TextView(getContext());
+            header.setText("Selection: ");
+            header.setTextAppearance(R.style.mealTotal);
+            this.addView(header);
+
+            while (itemsInMeal.hasNext()) {
+                PurchasableGoods pg = itemsInMeal.next();
+                final TextView newItem = new TextView(getContext());
+                newItem.setText(pg.getLabel() +
+                        " " +
+                        Formatting.formatCash(pg.getPrice())
+                );
+                mealTotal += pg.getPrice();
+                this.addView(newItem);
+            }
         }
 
-        final TextView newItem = new TextView(getContext());
-        newItem.setText("Total: " +
-                Formatting.formatCash(mealTotal)
-        );
-        newItem.setTextAppearance(R.style.mealTotal);
-        this.addView(newItem);
+//        final TextView newItem = new TextView(getContext());
+//        newItem.setText("Total: " +
+//                Formatting.formatCash(mealTotal)
+//        );
+//        newItem.setTextAppearance(R.style.mealTotal);
+//        this.addView(newItem);
+    }
+
+    public int getMealTotal() {
+        return mealTotal;
     }
 }

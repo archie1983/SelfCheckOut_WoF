@@ -18,7 +18,7 @@
     <string name="btnPreviousPage">Previous</string>
     <string name="btnNextPage">Next</string>
     <string name="btnStartAgain">Start Again</string>
-    <string name="btnAddToOrder">Add To Order</string>
+    <string name="btnGoToCheckout">Check Out</string>
     <string name="btnManageData">Manage Data</string>
     <string name="btnLoginPaypal">Log in to PayPal</string>
     <string name="btnExportDB">Export Database</string>

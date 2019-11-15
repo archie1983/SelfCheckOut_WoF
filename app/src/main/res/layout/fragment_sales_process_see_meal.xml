@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".custom_components.SalesProcessNavigationFragment"
     android:orientation="vertical">
 
@@ -17,13 +17,15 @@
         <LinearLayout
             android:id="@+id/vContentLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"></LinearLayout>
+            android:layout_height="match_parent"
+            android:gravity="fill_vertical"
+            android:orientation="vertical"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"></LinearLayout>
     </ScrollView>
     <Button
-        android:id="@+id/btnAddToOrder"
+        android:id="@+id/btnGoToCheckout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/btnAddToOrder"></Button>
+        android:text="@string/btnGoToCheckout"></Button>
 </LinearLayout>

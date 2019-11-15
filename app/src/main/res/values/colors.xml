@@ -8,4 +8,6 @@
 
     <color name="black_overlay">#66000000</color>
     <color name="redText">#E73232</color>
+    <color name="sales_items_background">#ECFFEC</color>
+    <color name="vertical_divider_color">#303030</color>
 </resources>

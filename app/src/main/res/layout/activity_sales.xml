@@ -1,55 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
-    tools:context=".SalesActivity">
-
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-    <!--FrameLayout
+    android:background="@color/sales_items_background"
+    android:orientation="horizontal"
+    android:fitsSystemWindows="true"
+    tools:context=".SalesActivity"
+    android:divider="@drawable/vertical_divider"
+    android:showDividers="middle">
+    <!--FrameLayout android:id="@+id/frmSalesItemsListNavigation"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout="@layout/fragment_sales_process_navigation" /-->
+
+    <FrameLayout
+        android:id="@+id/frmSalesItemsListBrowse"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_weight=".75"
+        tools:layout="@layout/fragment_sales_process_browse" />
 
-        <LinearLayout
-            android:id="@+id/fullscreen_content_controls"
-            style="?metaButtonBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:background="@color/black_overlay"
-            android:orientation="horizontal"
-            tools:ignore="UselessParent">
-
-            <Button
-                android:id="@+id/btnGoToAdmin"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:onClick="onGoToAdminClick"
-                android:text="@string/btnGoToAdmin" />
-
-        </LinearLayout>
-    </FrameLayout-->
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/frmSalesItemsListSeeMeal"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:fitsSystemWindows="true">
-        <FrameLayout android:id="@+id/frmSalesItemsListNavigation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_sales_process_navigation" />
-        <FrameLayout android:id="@+id/frmSalesItemsListBrowse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_sales_process_browse" />
-    </LinearLayout>
+        android:layout_weight=".25"
+        tools:layout="@layout/fragment_sales_process_see_meal" />
 
-
-</FrameLayout>
+</LinearLayout>
