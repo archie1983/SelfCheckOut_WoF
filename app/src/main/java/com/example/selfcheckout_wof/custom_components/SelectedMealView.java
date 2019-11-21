@@ -6,6 +6,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
@@ -25,33 +26,28 @@ public class SelectedMealView extends LinearLayout {
     /**
      *
      * @param context
-     * @param itemsInMeal
+     * @param meal
      */
-    public SelectedMealView(Context context, Iterator<PurchasableGoods> itemsInMeal) {
+    public SelectedMealView(Context context, ConfiguredMeal meal) {
         super(context);
-        init(itemsInMeal);
-    }
-
-    /**
-     *
-     * @param context
-     * @param itemsInMeal
-     */
-    public SelectedMealView(Context context, ArrayList<PurchasableGoods> itemsInMeal) {
-        super(context);
-        init(itemsInMeal.iterator());
+        init(meal);
     }
 
     /**
      * Builds the view.
-     * @param itemsInMeal
+     * @param meal
      */
-    private void init(Iterator<PurchasableGoods> itemsInMeal) {
+    private void init(ConfiguredMeal meal) {
         this.setOrientation(VERTICAL);
 
-        if (itemsInMeal.hasNext()) {
+        Iterator<PurchasableGoods> itemsInMeal = null;
+        if (meal != null) {
+            itemsInMeal = meal.getCurrentMealItems().iterator();
+        }
+
+        if (itemsInMeal != null && itemsInMeal.hasNext()) {
             final TextView header = new TextView(getContext());
-            header.setText("Selection: ");
+            header.setText(meal.getMealName() + ":");
             header.setTextAppearance(R.style.mealTotal);
             this.addView(header);
 

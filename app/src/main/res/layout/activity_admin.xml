@@ -41,6 +41,21 @@
 
         </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/hlChoiceHolder1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <com.example.selfcheckout_wof.custom_components.SystemChoiceItemView
+            android:id="@+id/scImportData"
+            android:layout_width="260dp"
+            android:layout_height="265dp"
+            app:systemChoiceType="IMPORT_DB" />
+
+    </LinearLayout>
+
         <TextView
             android:id="@+id/merchant_email"
             android:layout_width="match_parent"

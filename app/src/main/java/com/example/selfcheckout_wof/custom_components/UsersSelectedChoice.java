@@ -1,5 +1,6 @@
 package com.example.selfcheckout_wof.custom_components;
 
+import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
 import java.util.ArrayList;
@@ -18,9 +19,9 @@ public class UsersSelectedChoice {
 
     /**
      * Here we will store the whole order, that consists of user's selected meals
-     * (arraylists of PurchasableGoods)- so really an arraylist of arralists.
+     * (glorified arraylists of PurchasableGoods).
      */
-    private static ArrayList<ArrayList<PurchasableGoods>> currentOrder = new ArrayList<>();
+    private static ArrayList<ConfiguredMeal> currentOrder = new ArrayList<>();
 
     /**
      * Adding items to the list in a synchronised, tightly controlled way
@@ -44,8 +45,8 @@ public class UsersSelectedChoice {
      * Returns an iterator for currently selected items.
      * @return
      */
-    public static synchronized Iterator<PurchasableGoods> getCurrentlySelectedItems() {
-        return currentMeal.iterator();
+    public static synchronized ArrayList<PurchasableGoods> getCurrentlySelectedItems() {
+        return currentMeal;
     }
 
     /**
@@ -72,10 +73,32 @@ public class UsersSelectedChoice {
 
     /**
      * Adds the current meal to order.
+     *
+     * @param nameOfParentItemInThisMeal the verbal part of name that we want the meal to be named
+     *                                   (e.g. "Packet" in name "Packet1")
+     * @param idOfParentItemInThisMeal the DB id of the parent item, from which this meal was
+     *                                 generated.
      */
-    public static synchronized void addCurrentMealToOrder() {
+    public static synchronized void addCurrentMealToOrder(String nameOfParentItemInThisMeal, int idOfParentItemInThisMeal) {
+
+        int mealNumber = 1;
+
+        /*
+         * Only add if there is anything to add.
+         */
         if (currentMeal.size() > 0) {
-            currentOrder.add(currentMeal);
+            /*
+             * Now find out the meal number for this parent ID.
+             */
+            if (currentOrder.size() > 0) {
+                for (ConfiguredMeal cm : currentOrder) {
+                    if (cm.getMainCategoryID() == idOfParentItemInThisMeal) {
+                        mealNumber++;
+                    }
+                }
+            }
+
+            currentOrder.add(new ConfiguredMeal(currentMeal, nameOfParentItemInThisMeal + " " + mealNumber, idOfParentItemInThisMeal));
             clearCurrentMeal();
         }
     }
@@ -88,10 +111,10 @@ public class UsersSelectedChoice {
     }
 
     /**
-     * Returns an iterator for currently selected items.
+     * Returns an iterator for currently added meals.
      * @return
      */
-    public static synchronized Iterator<ArrayList<PurchasableGoods>> getCurrentOrder() {
+    public static synchronized Iterator<ConfiguredMeal> getCurrentOrder() {
         return currentOrder.iterator();
     }
 }

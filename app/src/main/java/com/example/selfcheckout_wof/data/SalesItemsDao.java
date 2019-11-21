@@ -35,6 +35,9 @@ public interface SalesItemsDao {
     @Query("SELECT * FROM salesitems WHERE parent_category=:parentId order by page")
     List<SalesItems> loadSubCategory(int parentId);
 
+    @Query("SELECT * FROM salesitems WHERE si_id=:sid")
+    SalesItems getSalesItem(int sid);
+
     @Insert
     void insertAll(SalesItems... salesItems);
 

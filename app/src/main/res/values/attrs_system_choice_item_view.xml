@@ -6,6 +6,7 @@
             <enum name="EXPORT_DB" value="2"/>
             <enum name="LOGIN_PAYPAL" value="3"/>
             <enum name="START_SALES" value="4"/>
+            <enum name="IMPORT_DB" value="5"/>
         </attr>
     </declare-styleable>
 </resources>

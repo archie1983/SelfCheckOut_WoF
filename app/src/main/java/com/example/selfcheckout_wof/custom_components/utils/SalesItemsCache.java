@@ -210,6 +210,15 @@ public class SalesItemsCache extends Application {
         return result;
     }
 
+    public SalesItems getSalesItemByID(int sid) {
+        SalesItems salesItem = null;
+        final AppDatabase db = getDBInstance();
+        if (db != null) {
+            salesItem = db.salesItemsDao().getSalesItem(sid);
+        }
+        return salesItem;
+    }
+
     /**
      * Ensuring that we have an application context always available for
      * Room database access.

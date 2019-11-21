@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.SalesActivity;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
+import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.custom_components.utils.PopupQuestions;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.DBThread;
@@ -62,6 +63,11 @@ public class SalesProcessNavigationFragment extends Fragment {
      * parent ID in the db, which pages we want to load.
      */
     private int parent_ID;
+
+    /**
+     * Parent Sales Item corresponding to the parent_ID.
+     */
+    private SalesItems parentSalesItem = null;
 
     /**
      * A flag of whether we'll be rendering the current order
@@ -277,7 +283,7 @@ public class SalesProcessNavigationFragment extends Fragment {
             /*
              * First we'll show the current order
              */
-            final Iterator<ArrayList<PurchasableGoods>> mealsInOrder = UsersSelectedChoice.getCurrentOrder();
+            final Iterator<ConfiguredMeal> mealsInOrder = UsersSelectedChoice.getCurrentOrder();
             if (mealsInOrder.hasNext()) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
@@ -293,7 +299,11 @@ public class SalesProcessNavigationFragment extends Fragment {
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    vContentLayout.addView(new SelectedMealView(getContext(), UsersSelectedChoice.getCurrentlySelectedItems()));
+                    vContentLayout.addView(new SelectedMealView(
+                            getContext(),
+                            new ConfiguredMeal(UsersSelectedChoice.getCurrentlySelectedItems(), "Current", 0)
+                            )
+                    );
                 }
             });
 
@@ -351,6 +361,11 @@ public class SalesProcessNavigationFragment extends Fragment {
                      * Updating the global variable item_count_in_next_page with the item count in the next page.
                      */
                     item_count_in_next_page = SalesItemsCache.getInstance().getNumberOfItemsInPage(page_number + 1, parent_ID);
+
+                    /**
+                     * Updating the parent SalesItem.
+                     */
+                    parentSalesItem = SalesItemsCache.getInstance().getSalesItemByID(parent_ID);
 
                     /*
                      * making sure that the row size will be as close as possible to the column count,
@@ -464,7 +479,9 @@ public class SalesProcessNavigationFragment extends Fragment {
                                          * the beginning.
                                          */
                                         if (item_count_in_next_page < 1) {
-                                            UsersSelectedChoice.addCurrentMealToOrder();
+                                            UsersSelectedChoice.addCurrentMealToOrder(
+                                                    (parentSalesItem == null ? "" : parentSalesItem.getLabel()),
+                                                    parent_ID);
                                             requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
                                         } else {
                                             requestPageLoad(page_number + 1, parent_ID);
@@ -519,7 +536,9 @@ public class SalesProcessNavigationFragment extends Fragment {
                                                  * the beginning.
                                                  */
                                                 if (item_count_in_next_page < 1) {
-                                                    UsersSelectedChoice.addCurrentMealToOrder();
+                                                    UsersSelectedChoice.addCurrentMealToOrder(
+                                                            (parentSalesItem == null ? "" : parentSalesItem.getLabel()),
+                                                            parent_ID);
                                                     requestPageLoad(0, SalesActivity.TOP_LEVEL_ITEMS);
                                                 } else {
                                                     requestPageLoad(page_number + 1, parent_ID);

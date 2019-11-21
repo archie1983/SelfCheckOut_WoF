@@ -49,9 +49,7 @@ public class ActionForSelectionGUI {
          */
         int currentSelectedItemsInThisCategory = 0;
 
-        Iterator<PurchasableGoods> it = UsersSelectedChoice.getCurrentlySelectedItems();
-        while (it.hasNext()) {
-            PurchasableGoods pg = it.next();
+        for (PurchasableGoods pg: UsersSelectedChoice.getCurrentlySelectedItems()) {
             if (pg.getParentID() == pgSelectedItem.getParentID() &&
                     pg.getPage() == pgSelectedItem.getPage()) {
                 currentSelectedItemsInThisCategory++;

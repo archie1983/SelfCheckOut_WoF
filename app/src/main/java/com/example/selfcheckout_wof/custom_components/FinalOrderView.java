@@ -5,6 +5,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
@@ -26,7 +27,7 @@ public class FinalOrderView extends LinearLayout {
      * @param context
      * @param itemsInOrder
      */
-    public FinalOrderView(Context context, Iterator<ArrayList<PurchasableGoods>> itemsInOrder) {
+    public FinalOrderView(Context context, Iterator<ConfiguredMeal> itemsInOrder) {
         super(context);
         init(itemsInOrder);
     }
@@ -35,7 +36,7 @@ public class FinalOrderView extends LinearLayout {
      * Builds the view.
      * @param itemsInOrder
      */
-    private void init(Iterator<ArrayList<PurchasableGoods>> itemsInOrder) {
+    private void init(Iterator<ConfiguredMeal> itemsInOrder) {
         this.setOrientation(VERTICAL);
         this.setShowDividers(SHOW_DIVIDER_MIDDLE);
         this.setDividerDrawable(getResources().getDrawable(R.drawable.horizontal_divider, null));

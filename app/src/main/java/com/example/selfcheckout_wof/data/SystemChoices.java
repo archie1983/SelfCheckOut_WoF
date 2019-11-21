@@ -12,7 +12,8 @@ public enum SystemChoices {
     MANAGE_DATA(R.drawable.dragndrop, "Manage Data"),
     EXPORT_DB(R.drawable.dragndrop, "Export Data"),
     LOGIN_PAYPAL(R.drawable.dragndrop, "Login To Paypal"),
-    START_SALES(R.drawable.dragndrop, "Start Sales");
+    START_SALES(R.drawable.dragndrop, "Start Sales"),
+    IMPORT_DB(R.drawable.dragndrop, "Import Data");
 
     int image = 0;
     String caption = "";

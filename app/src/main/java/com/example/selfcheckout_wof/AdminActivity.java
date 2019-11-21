@@ -1,8 +1,6 @@
 package com.example.selfcheckout_wof;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.room.util.DBUtil;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -19,20 +17,16 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import com.example.selfcheckout_wof.custom_components.exceptions.DataExportException;
 import com.example.selfcheckout_wof.custom_components.utils.PaypalHereVariables;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
-import com.example.selfcheckout_wof.custom_components.utils.SqliteExporter;
-import com.example.selfcheckout_wof.data.AppDatabase;
+import com.example.selfcheckout_wof.custom_components.utils.SqliteExportAndImport;
 import com.example.selfcheckout_wof.data.SystemChoices;
 import com.paypal.paypalretailsdk.AppInfo;
 import com.paypal.paypalretailsdk.Merchant;
 import com.paypal.paypalretailsdk.RetailSDK;
 import com.paypal.paypalretailsdk.RetailSDKException;
 import com.paypal.paypalretailsdk.SdkCredential;
-
-import java.io.IOException;
 import java.util.Set;
 
 public class AdminActivity extends AppCompatActivity {
@@ -58,6 +52,8 @@ public class AdminActivity extends AppCompatActivity {
                     break;
                 case EXPORT_DB:
                     onExportDB(null);
+                case IMPORT_DB:
+                    onImportDB(null);
                     break;
                 case LOGIN_PAYPAL:
                     initPaypalHere();
@@ -119,11 +115,20 @@ public class AdminActivity extends AppCompatActivity {
      */
     public void onExportDB(View view) {
         try {
-            SqliteExporter.export(getApplicationContext(), SalesItemsCache.getDBInstance().getOpenHelper().getReadableDatabase());
+            SqliteExportAndImport.export(getApplicationContext(), SalesItemsCache.getDBInstance().getOpenHelper().getReadableDatabase());
         } catch (DataExportException exc) {
             Log.d(LOG_TAG, exc.getMessage());
         }
 
+    }
+
+    /**
+     * "Export DB" button press
+     * @param view
+     */
+    public void onImportDB(View view) {
+        SqliteExportAndImport.importData(getApplicationContext(),
+                SalesItemsCache.getDBInstance().getOpenHelper().getWritableDatabase());
     }
 
     /**
