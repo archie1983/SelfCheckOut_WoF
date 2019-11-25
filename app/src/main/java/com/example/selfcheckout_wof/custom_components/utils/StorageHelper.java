@@ -12,7 +12,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
+import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
+
+import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
 
 public final class StorageHelper {
 
@@ -301,6 +306,114 @@ public final class StorageHelper {
     }
 
     /**
+     * Returns the directory of the application on the SD card.
+     *
+     * @param applicationContext
+     *
+     * @return
+     */
+    private static String getAppDir(Context applicationContext){
+        //Environment.getExternalStorageDirectory();
+
+        String result = null;
+        /**
+         * Due to Android's quirks, there may be external storages that are not actually external,
+         * but rather part of the internal storage, but designated for some kind of external
+         * purposes. So here I'm hoping to get an external storage, that IS and SD card.
+         */
+        StorageHelper.StorageVolume hopefullySDCard = null;
+
+        for (StorageVolume sv : getStorages(true)) {
+            Log.d("Files", "StorageVolume: " + sv.toString());
+            if (!sv.isEmulated() && sv.isRemovable() && !sv.isReadOnly()) {
+                hopefullySDCard = sv;
+            }
+        }
+
+        if (hopefullySDCard != null) {
+//            File[] files = hopefullySDCard.file.listFiles();
+//            Log.d("Files", "Size: "+ files.length);
+//            for (int i = 0; i < files.length; i++)
+//            {
+//                Log.d("Files", "FileName:" + files[i].getName());
+//            }
+            result = hopefullySDCard.file.getAbsolutePath() + "/" + applicationContext.getString(R.string.app_name);
+        }
+
+        return result;
+        //return applicationContext.getExternalFilesDir(null) + "/" + applicationContext.getString(R.string.app_name);
+    }
+
+    private static File createDirIfNotExist(String path){
+        File dir = new File(path);
+        if( !dir.exists() ){
+            if (!dir.mkdirs()) {
+                return null;
+            }
+        }
+        return dir;
+    }
+
+    public static File getBackupDir(Context applicationContext) throws DataImportExportException {
+        File result = null;
+        String mainDir = getAppDir(applicationContext);
+
+        if (mainDir == null) {
+            throw new DataImportExportException("No access to SD card.");
+        } else {
+            result = createDirIfNotExist(mainDir + "/backup");
+            if (result == null) {
+                throw new DataImportExportException("Couldn't create backup directory.");
+            }
+        }
+
+        return result;
+    }
+
+    public static File getPicsDir(Context applicationContext) throws DataImportExportException {
+        File result = null;
+        String mainDir = getAppDir(applicationContext);
+
+        if (mainDir == null) {
+            throw new DataImportExportException("No access to SD card.");
+        } else {
+            result = createDirIfNotExist(mainDir + "/pics");
+            if (result == null) {
+                throw new DataImportExportException("Couldn't create pics directory.");
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Checks if external storage is available for read and write.
+     *
+     * WARNING: This may use an emulated external storage.
+     * Use {@link StorageHelper#getStorages(boolean)} to find real
+     * external storages and check if they are writable.
+     *
+     * @return
+     */
+    public static boolean isExternalStorageWritable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    /**
+     * Checks if external storage is available to at least read.
+     *
+     * WARNING: This may use an emulated external storage.
+     * Use {@link StorageHelper#getStorages(boolean)} to find real
+     * external storages and check if they are readable.
+     */
+    public static boolean isExternalStorageReadable() {
+        String state = Environment.getExternalStorageState();
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
+    }
+
+    /**
      * Represents storage volume information
      */
     public static final class StorageVolume {
@@ -440,8 +553,8 @@ public final class StorageHelper {
 
         @Override
         public String toString() {
-            return file.getAbsolutePath() + (mReadOnly ? " ro " : " rw ") + mType + (mRemovable ? " R " : "")
-                    + (mEmulated ? " E " : "") + fileSystem;
+            return file.getAbsolutePath() + (mReadOnly ? " ro " : " rw ") + mType + (mRemovable ? " R " : "NR")
+                    + (mEmulated ? " E " : "NE") + fileSystem;
         }
     }
 }

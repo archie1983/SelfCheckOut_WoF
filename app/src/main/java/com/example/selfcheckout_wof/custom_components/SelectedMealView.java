@@ -2,6 +2,9 @@ package com.example.selfcheckout_wof.custom_components;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,7 +40,7 @@ public class SelectedMealView extends LinearLayout {
      * Builds the view.
      * @param meal
      */
-    private void init(ConfiguredMeal meal) {
+    private void init(final ConfiguredMeal meal) {
         this.setOrientation(VERTICAL);
 
         Iterator<PurchasableGoods> itemsInMeal = null;
@@ -46,13 +49,48 @@ public class SelectedMealView extends LinearLayout {
         }
 
         if (itemsInMeal != null && itemsInMeal.hasNext()) {
+
+            /*
+             * We'll be adding a new horizontal layout with the header label of the meal
+             * and a button or icon to allow editing that meal.
+             */
+            final LinearLayout mealHdr = new LinearLayout(getContext());
+            mealHdr.setOrientation(HORIZONTAL);
+
             final TextView header = new TextView(getContext());
             header.setText(meal.getMealName() + ":");
             header.setTextAppearance(R.style.mealTotal);
-            this.addView(header);
+            mealHdr.addView(header);
+
+            Button btnEdit = new Button(getContext());
+            btnEdit.setText("Edit");
+            btnEdit.setLayoutParams(new LayoutParams(
+                    LayoutParams.MATCH_PARENT,
+                    LayoutParams.WRAP_CONTENT)
+            );
+            btnEdit.setGravity(Gravity.RIGHT);
+
+            /*
+             * Functionality for the Edit button. We basically want to clear current selection
+             * in the UsersSelectedChoice (or maybe add it to the order), then load the current
+             * selection with the items in the current ConfiguredMeal object (meal) and finally
+             * take user to the beginning of the parent, of this meal.
+             */
+            btnEdit.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    UsersSelectedChoice.clearCurrentMeal();
+                    UsersSelectedChoice.setCurrentMeal(meal.getCurrentMealItems());
+                }
+            });
+
+            mealHdr.addView(btnEdit);
+
+            this.addView(mealHdr);
 
             while (itemsInMeal.hasNext()) {
                 PurchasableGoods pg = itemsInMeal.next();
+
                 final TextView newItem = new TextView(getContext());
                 newItem.setText(pg.getLabel() +
                         " " +

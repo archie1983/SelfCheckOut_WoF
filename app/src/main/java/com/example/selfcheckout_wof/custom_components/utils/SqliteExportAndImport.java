@@ -8,7 +8,7 @@ import android.util.Log;
 
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.example.selfcheckout_wof.custom_components.exceptions.DataExportException;
+import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.CSVWriter;
@@ -51,11 +51,8 @@ public class SqliteExportAndImport {
      * @return
      * @throws IOException
      */
-    public static String export(Context context, SupportSQLiteDatabase db) throws DataExportException {
-        if( !FileUtils.isExternalStorageWritable() ){
-            throw new DataExportException("Cannot write to external storage");
-        }
-        File backupDir = FileUtils.createDirIfNotExist(FileUtils.getAppDir(context) + "/backup");
+    public static String export(Context context, SupportSQLiteDatabase db) throws DataImportExportException {
+        File backupDir = StorageHelper.getBackupDir(context);
         String fileName = createBackupFileName();
         File backupFile = new File(backupDir, fileName);
 
@@ -63,11 +60,11 @@ public class SqliteExportAndImport {
         try {
             success = backupFile.createNewFile();
         } catch (IOException exc) {
-            throw new DataExportException("Failed to create the backup file. IOException thrown.");
+            throw new DataImportExportException("Failed to create the backup file. IOException thrown.");
         }
 
         if(!success){
-            throw new DataExportException("Failed to create the backup file");
+            throw new DataImportExportException("Failed to create the backup file");
         }
         List<String> tables = getTablesOnDataBase(db);
         Log.d(TAG, "Started to fill the backup file in " + backupFile.getAbsolutePath());
@@ -81,7 +78,7 @@ public class SqliteExportAndImport {
 
     private static String createBackupFileName(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HHmm");
-        return "db_backup_" + sdf.format(new Date()) + ".csv";
+        return "self_checkout_db_backup_" + sdf.format(new Date()) + ".csv";
     }
 
     /**
@@ -167,24 +164,17 @@ public class SqliteExportAndImport {
      * @param db
      */
     public static void importData(Context context, SupportSQLiteDatabase db) {
-        //String dataDir = FileUtils.getAppDir(context) + "/backup";
-//        String dataDir = "/sdcard/";
-//
-//        Log.d("Files", "Path: " + dataDir);
-//        //File directory = new File(dataDir);
-//        File directory = Environment.getExternalStorageDirectory();
-//        File[] files = directory.listFiles();
-//        Log.d("Files", "Size: "+ files.length);
-//        for (int i = 0; i < files.length; i++)
-//        {
-//            Log.d("Files", "FileName:" + files[i].getName());
-//        }
-
-        for (StorageHelper.StorageVolume sv : StorageHelper.getStorages(true)) {
-            Log.d("Files", "StorageVolume: " + sv.toString());
+        try {
+            File[] files = StorageHelper.getBackupDir(context).listFiles();
+            Log.d("Files", "Size: "+ files.length);
+            for (int i = 0; i < files.length; i++)
+            {
+                Log.d("Files", "FileName:" + files[i].getName());
+            }
+            //readCSVData(files[files.length -1], db);
+        } catch (DataImportExportException exc) {
+            Log.d("Files", exc.toString());
         }
-
-        //readCSVData(files[files.length -1], db);
     }
 
     /**

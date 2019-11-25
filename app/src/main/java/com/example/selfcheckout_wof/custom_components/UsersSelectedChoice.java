@@ -72,6 +72,13 @@ public class UsersSelectedChoice {
     }
 
     /**
+     * Clears user's selection.
+     */
+    public static synchronized void setCurrentMeal(ArrayList<PurchasableGoods> newCurrentMealSelection) {
+        currentMeal = newCurrentMealSelection;
+    }
+
+    /**
      * Adds the current meal to order.
      *
      * @param nameOfParentItemInThisMeal the verbal part of name that we want the meal to be named

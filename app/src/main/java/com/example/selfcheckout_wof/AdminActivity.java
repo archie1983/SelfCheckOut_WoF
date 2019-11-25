@@ -17,7 +17,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import com.example.selfcheckout_wof.custom_components.exceptions.DataExportException;
+
+import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
 import com.example.selfcheckout_wof.custom_components.utils.PaypalHereVariables;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.custom_components.utils.SqliteExportAndImport;
@@ -116,7 +117,7 @@ public class AdminActivity extends AppCompatActivity {
     public void onExportDB(View view) {
         try {
             SqliteExportAndImport.export(getApplicationContext(), SalesItemsCache.getDBInstance().getOpenHelper().getReadableDatabase());
-        } catch (DataExportException exc) {
+        } catch (DataImportExportException exc) {
             Log.d(LOG_TAG, exc.getMessage());
         }
 

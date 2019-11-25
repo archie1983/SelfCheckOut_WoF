@@ -30,7 +30,7 @@ import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.SystemChoices;
 
 /**
- * TODO: document your custom view class.
+ * A clickable CardView for choosing one of the System choices (e.g. Start Sales, Import DB, etc.).
  */
 public class SystemChoiceItemView extends LinearLayout {
     private SystemChoices systemChoiceToRepresent;
