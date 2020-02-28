@@ -1,6 +1,10 @@
 package com.example.selfcheckout_wof.custom_components;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -16,11 +20,13 @@ import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.SalesActivity;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
+import com.example.selfcheckout_wof.custom_components.utils.IntentFactory;
 import com.example.selfcheckout_wof.custom_components.utils.PopupQuestions;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.example.selfcheckout_wof.data.SalesItems;
+import com.example.selfcheckout_wof.data.SystemChoices;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -182,6 +188,29 @@ public class SalesProcessNavigationFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        /**
+         * Making sure that we can receive intents in this fragment.
+         */
+        IntentFilter filter = new IntentFilter();
+        for (IntentFactory.IntentType intentType : IntentFactory.IntentType.values()) {
+            filter.addAction(intentType.getIntent().getAction());
+        }
+
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+
+        mActivity.registerReceiver(selfCheckoutIntentReceiver, filter);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mActivity.unregisterReceiver(selfCheckoutIntentReceiver);
+    }
+
 //    /*
 //     * Loads up a linear layout with the navigation buttons that need to be shown
 //     */
@@ -272,7 +301,7 @@ public class SalesProcessNavigationFragment extends Fragment {
          * of user's choice. For seeing sales items selection, we'll need to create
          * that, but either way we want to first clear whatever is there first.
          */
-        getActivity().runOnUiThread(new Runnable() {
+        mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 vContentLayout.removeAllViews();
@@ -285,10 +314,10 @@ public class SalesProcessNavigationFragment extends Fragment {
              */
             final Iterator<ConfiguredMeal> mealsInOrder = UsersSelectedChoice.getCurrentOrder();
             if (mealsInOrder.hasNext()) {
-                getActivity().runOnUiThread(new Runnable() {
+                mActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        vContentLayout.addView(new FinalOrderView(getContext(), mealsInOrder));
+                        vContentLayout.addView(new FinalOrderView(mActivity, mealsInOrder));
                     }
                 });
             }
@@ -296,11 +325,11 @@ public class SalesProcessNavigationFragment extends Fragment {
             /*
              * Afterwards we'll show what has been selected, but not yet added to the order.
              */
-            getActivity().runOnUiThread(new Runnable() {
+            mActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     vContentLayout.addView(new SelectedMealView(
-                            getContext(),
+                            mActivity,
                             new ConfiguredMeal(UsersSelectedChoice.getCurrentlySelectedItems(), "Current", 0)
                             )
                     );
@@ -409,7 +438,7 @@ public class SalesProcessNavigationFragment extends Fragment {
                     }
 
                     while (item_count > items_displayed) {
-                        final LinearLayout hItemsRow = new LinearLayout(getContext());
+                        final LinearLayout hItemsRow = new LinearLayout(mActivity);
                         hItemsRow.setOrientation(LinearLayout.HORIZONTAL);
                         hItemsRow.setGravity(Gravity.CENTER);
 
@@ -565,7 +594,7 @@ public class SalesProcessNavigationFragment extends Fragment {
                                 };
                             }
 
-                            getActivity().runOnUiThread(new Runnable() {
+                            mActivity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     hItemsRow.addView(
@@ -574,7 +603,7 @@ public class SalesProcessNavigationFragment extends Fragment {
                                                     action,
                                                     UsersSelectedChoice.itemIsSelected(pg),
                                                     false,
-                                                    getContext()
+                                                    mActivity
                                             )
                                     );
                                 }
@@ -582,7 +611,7 @@ public class SalesProcessNavigationFragment extends Fragment {
 
                             items_displayed++;
                         }
-                        getActivity().runOnUiThread(new Runnable() {
+                        mActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 vContentLayout.addView(hItemsRow);
@@ -594,9 +623,22 @@ public class SalesProcessNavigationFragment extends Fragment {
         }
     }
 
+    /**
+     * A reference to activity has to be kept and loaded in onAttach(),
+     * because otherwise we get getActivity() == null, when fragment is
+     * loaded as a result of an intent fired from SelectedMealView object
+     * via intentFactory.
+     */
+    Activity mActivity = null;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+
+        if (context instanceof Activity){
+            mActivity =(Activity) context;
+        }
+
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -690,4 +732,33 @@ public class SalesProcessNavigationFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(SalesProcesses process, int pageNumber, int parentId);
     }
+
+    /**
+     * In addition to the fragment interaction listener, we'll also have this broadcast receiver
+     * for handling intents issued by GUI (e.g. when user presses "Edit" button to edit an already
+     * added meal in the order.)
+     */
+    private BroadcastReceiver selfCheckoutIntentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            /**
+             * Handling the intent generated by one of the main GUI Admin choices
+             * (typically generated in SystemChoiceItemView).
+             */
+            switch(IntentFactory.lookUpByIntent(intent)) {
+                case GOTO_FIRST_PAGE_OF_GIVEN_PARENT:
+                    Bundle extras = intent.getExtras();
+
+                    if (extras != null) {
+                        int parentID = extras.getInt(IntentFactory.PARENT_ID_PARAM_NAME);
+                        requestPageLoad(1, parentID);
+                    }
+
+                    break;
+                case UNKNOWN:
+                    break;
+            }
+        }
+    };
 }

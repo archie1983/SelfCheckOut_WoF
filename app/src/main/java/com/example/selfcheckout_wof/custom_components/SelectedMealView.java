@@ -1,6 +1,7 @@
 package com.example.selfcheckout_wof.custom_components;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.GradientDrawable;
 import android.view.Gravity;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
+import com.example.selfcheckout_wof.custom_components.utils.IntentFactory;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
 import java.util.ArrayList;
@@ -81,6 +83,10 @@ public class SelectedMealView extends LinearLayout {
                 public void onClick(View v) {
                     UsersSelectedChoice.clearCurrentMeal();
                     UsersSelectedChoice.setCurrentMeal(meal.getCurrentMealItems());
+
+                    Intent intent = IntentFactory.create_GOTO_FIRST_PAGE_OF_GIVEN_PARENT_Intent(meal.getMainCategoryID());
+
+                    getContext().sendBroadcast(intent);
                 }
             });
 
