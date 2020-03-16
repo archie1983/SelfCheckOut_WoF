@@ -1,0 +1,4 @@
+16 Mar 2020:
+- SQL storage and importable data from User's PC
+- Merchant connection to PaypalHere server running on my AWS instance
+- Connection to printer and screen
