@@ -347,7 +347,7 @@ public final class StorageHelper {
              * SD card root.
              */
             if (for_writing) {
-                result = hopefullySDCard.file.getAbsolutePath() + "/Android/data/" + applicationContext.getPackageName();
+                result = hopefullySDCard.file.getAbsolutePath() + "/Android/data/" + applicationContext.getPackageName() + "/files";
             } else {
                 result = hopefullySDCard.file.getAbsolutePath() + "/" + applicationContext.getString(R.string.app_name);
             }

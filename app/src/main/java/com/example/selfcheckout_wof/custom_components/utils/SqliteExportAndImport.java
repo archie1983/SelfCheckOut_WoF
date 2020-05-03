@@ -3,6 +3,7 @@ package com.example.selfcheckout_wof.custom_components.utils;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.util.Log;
 
@@ -73,6 +74,8 @@ public class SqliteExportAndImport {
         long endTime = System.currentTimeMillis();
         Log.d(TAG, "Creating backup took " + (endTime - starTime) + "ms.");
 
+        MediaScannerConnection.scanFile(context, new String[] {backupFile.getAbsolutePath()}, null, null);
+        
         return backupFile.getAbsolutePath();
     }
 
