@@ -52,7 +52,7 @@ public class SqliteExportAndImport {
      * @throws IOException
      */
     public static String export(Context context, SupportSQLiteDatabase db) throws DataImportExportException {
-        File backupDir = StorageHelper.getBackupDir(context);
+        File backupDir = StorageHelper.getBackupDir(true, context);
         String fileName = createBackupFileName();
         File backupFile = new File(backupDir, fileName);
 
@@ -165,7 +165,7 @@ public class SqliteExportAndImport {
      */
     public static void importData(Context context, SupportSQLiteDatabase db) {
         try {
-            File[] files = StorageHelper.getBackupDir(context).listFiles();
+            File[] files = StorageHelper.getBackupDir(false, context).listFiles();
             Log.d("Files", "Size: "+ files.length);
             for (int i = 0; i < files.length; i++)
             {

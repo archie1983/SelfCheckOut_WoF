@@ -312,7 +312,7 @@ public final class StorageHelper {
      *
      * @return
      */
-    private static String getAppDir(Context applicationContext){
+    private static String getAppDir(boolean for_writing, Context applicationContext){
         //Environment.getExternalStorageDirectory();
 
         String result = null;
@@ -331,13 +331,26 @@ public final class StorageHelper {
         }
 
         if (hopefullySDCard != null) {
-//            File[] files = hopefullySDCard.file.listFiles();
-//            Log.d("Files", "Size: "+ files.length);
-//            for (int i = 0; i < files.length; i++)
-//            {
-//                Log.d("Files", "FileName:" + files[i].getName());
-//            }
-            result = hopefullySDCard.file.getAbsolutePath() + "/" + applicationContext.getString(R.string.app_name);
+            File[] files = hopefullySDCard.file.listFiles();
+            Log.d("Files", "Size: "+ files.length);
+            for (int i = 0; i < files.length; i++)
+            {
+                Log.d("Files", "FileName:" + files[i].getName());
+            }
+
+            /*
+             * If we want to write, then we need to have the special application directory for that,
+             * which is dug into the ".../Android/data/com.example.SelfCheckOut_WoF" location. All
+             * other locations for writing will yield an EACCES exception.
+             *
+             * For reading we can be more flexible and take in the directory directly under the
+             * SD card root.
+             */
+            if (for_writing) {
+                result = hopefullySDCard.file.getAbsolutePath() + "/Android/data/" + applicationContext.getPackageName();
+            } else {
+                result = hopefullySDCard.file.getAbsolutePath() + "/" + applicationContext.getString(R.string.app_name);
+            }
         }
 
         return result;
@@ -354,9 +367,9 @@ public final class StorageHelper {
         return dir;
     }
 
-    public static File getBackupDir(Context applicationContext) throws DataImportExportException {
+    public static File getBackupDir(boolean for_writing, Context applicationContext) throws DataImportExportException {
         File result = null;
-        String mainDir = getAppDir(applicationContext);
+        String mainDir = getAppDir(for_writing, applicationContext);
 
         if (mainDir == null) {
             throw new DataImportExportException("No access to SD card.");
@@ -372,7 +385,7 @@ public final class StorageHelper {
 
     public static File getPicsDir(Context applicationContext) throws DataImportExportException {
         File result = null;
-        String mainDir = getAppDir(applicationContext);
+        String mainDir = getAppDir(false, applicationContext);
 
         if (mainDir == null) {
             throw new DataImportExportException("No access to SD card.");

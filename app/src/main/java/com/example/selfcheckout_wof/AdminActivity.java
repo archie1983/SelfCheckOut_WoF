@@ -1,6 +1,8 @@
 package com.example.selfcheckout_wof;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -10,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -65,11 +68,30 @@ public class AdminActivity extends AppCompatActivity {
         }
     };
 
+    protected boolean shouldAskPermissions() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+    @TargetApi(23)
+    protected void askPermissions() {
+        String[] permissions = {
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE"
+        };
+        int requestCode = 200;
+        requestPermissions(permissions, requestCode);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
         progress = (ProgressBar)findViewById(R.id.progress);
+
+        //# Ensuring that we have persmissions for SD card read/write
+        if (shouldAskPermissions()) {
+            askPermissions();
+        }
     }
 
     @Override
