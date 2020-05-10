@@ -1,12 +1,15 @@
 package com.example.selfcheckout_wof.custom_components.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import androidx.documentfile.provider.DocumentFile;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
@@ -16,9 +19,14 @@ import com.opencsv.CSVWriter;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,31 +60,37 @@ public class SqliteExportAndImport {
      * @return
      * @throws IOException
      */
-    public static String export(Context context, SupportSQLiteDatabase db) throws DataImportExportException {
-        File backupDir = StorageHelper.getBackupDir(true, context);
+    public static String export(Context context, ContentResolver contentResolver, DocumentFile pickedDir, SupportSQLiteDatabase db) throws DataImportExportException {
+        //File backupDir = StorageHelper.getBackupDir(true, context);
         String fileName = createBackupFileName();
-        File backupFile = new File(backupDir, fileName);
+        OutputStream backupFile = null;
 
-        boolean success = false;
         try {
-            success = backupFile.createNewFile();
-        } catch (IOException exc) {
+            DocumentFile file = pickedDir.createFile("text/csv", fileName);
+
+            try {
+                backupFile = contentResolver.openOutputStream(file.getUri());
+
+                if(backupFile == null){
+                    throw new DataImportExportException("Failed to create the backup file");
+                }
+                List<String> tables = getTablesOnDataBase(db);
+                Log.d(TAG, "Started to fill the backup file in " + file.getUri().getPath());
+                long starTime = System.currentTimeMillis();
+                writeCsv(backupFile, db, tables);
+                long endTime = System.currentTimeMillis();
+                Log.d(TAG, "Creating backup took " + (endTime - starTime) + "ms.");
+
+                MediaScannerConnection.scanFile(context, new String[] {file.getUri().getPath()}, null, null);
+
+                return file.getUri().getPath();
+            } finally {
+                backupFile.close();
+            }
+
+        } catch (IOException e) {
             throw new DataImportExportException("Failed to create the backup file. IOException thrown.");
         }
-
-        if(!success){
-            throw new DataImportExportException("Failed to create the backup file");
-        }
-        List<String> tables = getTablesOnDataBase(db);
-        Log.d(TAG, "Started to fill the backup file in " + backupFile.getAbsolutePath());
-        long starTime = System.currentTimeMillis();
-        writeCsv(backupFile, db, tables);
-        long endTime = System.currentTimeMillis();
-        Log.d(TAG, "Creating backup took " + (endTime - starTime) + "ms.");
-
-        MediaScannerConnection.scanFile(context, new String[] {backupFile.getAbsolutePath()}, null, null);
-
-        return backupFile.getAbsolutePath();
     }
 
     private static String createBackupFileName(){
@@ -120,11 +134,11 @@ public class SqliteExportAndImport {
         return tables;
     }
 
-    private static void writeCsv(File backupFile, SupportSQLiteDatabase db, List<String> tables){
+    private static void writeCsv(OutputStream backupFile, SupportSQLiteDatabase db, List<String> tables){
         CSVWriter csvWrite = null;
         Cursor curCSV = null;
         try {
-            csvWrite = new CSVWriter(new FileWriter(backupFile));
+            csvWrite = new CSVWriter(new OutputStreamWriter(backupFile));
             writeSingleValue(csvWrite, DB_BACKUP_DB_VERSION_KEY + "=" + db.getVersion());
             for(String table: tables){
                 writeSingleValue(csvWrite, DB_BACKUP_TABLE_NAME + "=" + table);
@@ -166,25 +180,25 @@ public class SqliteExportAndImport {
      * @param context
      * @param db
      */
-    public static void importData(Context context, SupportSQLiteDatabase db) {
-        try {
-            File[] files = StorageHelper.getBackupDir(false, context).listFiles();
-            File csv_data = null;
-            Log.d("Files", "Size: "+ files.length);
-            for (int i = 0; i < files.length; i++)
-            {
-                Log.d("Files", "FileName:" + files[i].getName());
-                if (files[i].getName().endsWith(".csv")) {
-                    csv_data = files[i];
-                }
+public static void importData(Context context, ContentResolver contentResolver, DocumentFile pickedDir, SupportSQLiteDatabase db) throws DataImportExportException {
+        DocumentFile[] files = pickedDir.listFiles();
+        DocumentFile csv_data = null;
+        Log.d("Files", "Size: "+ files.length);
+        for (int i = 0; i < files.length; i++)
+        {
+            Log.d("Files", "FileName:" + files[i].getName());
+            if (files[i].getName().endsWith(".csv")) {
+                csv_data = files[i];
             }
+        }
 
-            if (csv_data != null) {
-                readCSVData(csv_data, db);
+        if (csv_data != null) {
+            try {
+                InputStream csv_istr = contentResolver.openInputStream(csv_data.getUri());
+                readCSVData(csv_istr, db);
+            } catch (FileNotFoundException e) {
+                throw new DataImportExportException("Failed to read the backup file. FileNotFoundException thrown.");
             }
-
-        } catch (DataImportExportException exc) {
-            Log.d("Files", exc.toString());
         }
     }
 
@@ -192,14 +206,14 @@ public class SqliteExportAndImport {
      * Reads in CSV file and prepares SQL statements with the data.
      *
      */
-    private static void readCSVData(File csvFile, SupportSQLiteDatabase db) {
+    private static void readCSVData(InputStream csv_istr, SupportSQLiteDatabase db) {
         //String csvFileNameToImport = "csv/twoColumn.csv";
         Reader reader = null;
         CSVReader csvReader = null;
 
         try {
             //Reader reader = new BufferedReader(new FileReader(csvFileNameToImport));
-            reader = new BufferedReader(new FileReader(csvFile));
+            reader = new BufferedReader(new InputStreamReader(csv_istr));
             csvReader = new CSVReader(reader);
 
             /*

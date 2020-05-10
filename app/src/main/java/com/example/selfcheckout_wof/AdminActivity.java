@@ -1,6 +1,7 @@
 package com.example.selfcheckout_wof;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.documentfile.provider.DocumentFile;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -132,26 +133,62 @@ public class AdminActivity extends AppCompatActivity {
         startActivity(showSalesActivity);
     }
 
+    private static final int TO_EXPORT_DB_REQUEST_CODE = 1;
+    private static final int TO_IMPORT_DB_REQUEST_CODE = 2;
     /**
      * "Export DB" button press
      * @param view
      */
     public void onExportDB(View view) {
-        try {
-            SqliteExportAndImport.export(getApplicationContext(), SalesItemsCache.getDBInstance().getOpenHelper().getReadableDatabase());
-        } catch (DataImportExportException exc) {
-            Log.d(LOG_TAG, exc.getMessage());
-        }
-
+        /*
+         * If the export button was pressed, then we'll ask user for where to store the exported
+         * data with the help of this activity and intent. It will later call back the
+         * onActivityResult(...) function, where the real thing starts.
+         */
+        startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), TO_EXPORT_DB_REQUEST_CODE);
     }
 
+
     /**
-     * "Export DB" button press
+     * "Import DB" button press
      * @param view
      */
     public void onImportDB(View view) {
-        SqliteExportAndImport.importData(getApplicationContext(),
-                SalesItemsCache.getDBInstance().getOpenHelper().getWritableDatabase());
+        /*
+         * If the import button was pressed, then we'll ask user for where to read the
+         * data with the help of this activity and intent. It will later call back the
+         * onActivityResult(...) function, where the real thing starts.
+         */
+        startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), TO_IMPORT_DB_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        if (resultCode != RESULT_OK)
+            return;
+        Uri treeUri = resultData.getData();
+        DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
+
+        if (requestCode == TO_EXPORT_DB_REQUEST_CODE) {
+            grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            try {
+                SqliteExportAndImport.export(getApplicationContext(), getContentResolver(), pickedDir, SalesItemsCache.getDBInstance().getOpenHelper().getReadableDatabase());
+            } catch (DataImportExportException exc) {
+                Log.d(LOG_TAG, exc.getMessage());
+            }
+        } else if (requestCode == TO_IMPORT_DB_REQUEST_CODE) {
+            grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            try {
+                SqliteExportAndImport.importData(getApplicationContext(), getContentResolver(), pickedDir,
+                        SalesItemsCache.getDBInstance().getOpenHelper().getWritableDatabase());
+            } catch (DataImportExportException exc) {
+                Log.d(LOG_TAG, exc.getMessage());
+            }
+        }
     }
 
     /**
