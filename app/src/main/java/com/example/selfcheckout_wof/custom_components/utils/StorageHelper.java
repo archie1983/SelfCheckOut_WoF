@@ -322,6 +322,7 @@ public final class StorageHelper {
          * purposes. So here I'm hoping to get an external storage, that IS and SD card.
          */
         StorageHelper.StorageVolume hopefullySDCard = null;
+        //Environment.getExternalStorageDirectory();
 
         for (StorageVolume sv : getStorages(true)) {
             Log.d("Files", "StorageVolume: " + sv.toString());
@@ -332,11 +333,11 @@ public final class StorageHelper {
 
         if (hopefullySDCard != null) {
             File[] files = hopefullySDCard.file.listFiles();
-            Log.d("Files", "Size: "+ files.length);
-            for (int i = 0; i < files.length; i++)
-            {
-                Log.d("Files", "FileName:" + files[i].getName());
-            }
+//            Log.d("Files", "Size: "+ files.length);
+//            for (int i = 0; i < files.length; i++)
+//            {
+//                Log.d("Files", "FileName:" + files[i].getName());
+//            }
 
             /*
              * If we want to write, then we need to have the special application directory for that,
@@ -349,7 +350,7 @@ public final class StorageHelper {
             if (for_writing) {
                 result = hopefullySDCard.file.getAbsolutePath() + "/Android/data/" + applicationContext.getPackageName() + "/files";
             } else {
-                result = hopefullySDCard.file.getAbsolutePath() + "/" + applicationContext.getString(R.string.app_name);
+                result = hopefullySDCard.file.getAbsolutePath() + "/" + applicationContext.getString(R.string.app_name) + "/import";
             }
         }
 
@@ -374,9 +375,19 @@ public final class StorageHelper {
         if (mainDir == null) {
             throw new DataImportExportException("No access to SD card.");
         } else {
-            result = createDirIfNotExist(mainDir + "/backup");
-            if (result == null) {
+            if (for_writing) {
+                result = createDirIfNotExist(mainDir + "/backup");
+            } else {
+                result = new File(mainDir);
+                if(result == null || !result.exists() ){
+                    result = null;
+                }
+            }
+
+            if (result == null && for_writing) {
                 throw new DataImportExportException("Couldn't create backup directory.");
+            } else if (result == null && !for_writing) {
+                throw new DataImportExportException("Couldn't find import directory.");
             }
         }
 

@@ -75,7 +75,7 @@ public class SqliteExportAndImport {
         Log.d(TAG, "Creating backup took " + (endTime - starTime) + "ms.");
 
         MediaScannerConnection.scanFile(context, new String[] {backupFile.getAbsolutePath()}, null, null);
-        
+
         return backupFile.getAbsolutePath();
     }
 
@@ -169,12 +169,20 @@ public class SqliteExportAndImport {
     public static void importData(Context context, SupportSQLiteDatabase db) {
         try {
             File[] files = StorageHelper.getBackupDir(false, context).listFiles();
+            File csv_data = null;
             Log.d("Files", "Size: "+ files.length);
             for (int i = 0; i < files.length; i++)
             {
                 Log.d("Files", "FileName:" + files[i].getName());
+                if (files[i].getName().endsWith(".csv")) {
+                    csv_data = files[i];
+                }
             }
-            //readCSVData(files[files.length -1], db);
+
+            if (csv_data != null) {
+                readCSVData(csv_data, db);
+            }
+
         } catch (DataImportExportException exc) {
             Log.d("Files", exc.toString());
         }
@@ -208,11 +216,12 @@ public class SqliteExportAndImport {
                 /*
                  * Catching the start of the SalesItems table and the end of it.
                  */
-                if (nextRecord.length == 1 && nextRecord[0].equals("table=SalesItems")) {
+                if (nextRecord.length >= 1 && nextRecord[0].equals("table=SalesItems")) {
                     salesItemsRecords = true;
                     tableHeaderRead = false;
                     db.execSQL("delete from SalesItems");
-                } else if(nextRecord.length == 1 && nextRecord[0].substring(0, 5).equals("table=")) {
+                    continue;
+                } else if(nextRecord.length >= 1 && nextRecord[0].length() >= 6 && nextRecord[0].substring(0, 5).equals("table=")) {
                     salesItemsRecords = false;
                     tableHeaderRead = false;
                 }
