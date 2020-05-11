@@ -1,0 +1,38 @@
+dbVersion=1,,,,,,,
+table=SalesItems,,,,,,,
+si_id,item_label,item_description,picture_url,multi_selectable_items,parent_category,price,page
+1,Food Menu,,test_img.jpg,1,-1,0,0
+2,Bubble Teas,,test_img.jpg,1,-1,0,0
+3,Soft Drinks,,test_img.jpg,1,-1,0,0
+4,Udon Noodles,Udon Noodles!,test_img.jpg,1,1,245,1
+5,Vermicelli,Vermicelli!,test_img.jpg,1,1,255,1
+6,Rice,Rice!,test_img.jpg,1,1,265,1
+7,Egg Noodles,Egg Noodles!,test_img.jpg,1,1,200,1
+8,Spicy Noodles,Spicy Noodles!,test_img.jpg,1,1,255,1
+9,Chicken,Tender chicken pieces,test_img.jpg,2,1,120,2
+10,Beef,Juicy beef strips,test_img.jpg,2,1,130,2
+11,Brocoli,Fresh steamed brocoli,test_img.jpg,2,1,99,2
+12,Duck,Farmer’s best,test_img.jpg,2,1,149,2
+13,Pork,Farmer’s best,test_img.jpg,2,1,139,2
+14,Sea weed,Good for health,test_img.jpg,3,1,69,3
+15,Peanuts,Crunchy,test_img.jpg,3,1,69,3
+16,Chilli,Spicy,test_img.jpg,3,1,59,3
+17,Mushrooms,Oyster mushrooms,test_img.jpg,3,1,79,3
+18,Watermelon,Watermelon syrup,test_img.jpg,1,2,129,2
+19,Lemon,Lemon syrup,test_img.jpg,1,2,129,2
+20,Apple,Apple syrup,test_img.jpg,1,2,129,2
+21,Strawberry,Strawberry syrup,test_img.jpg,1,2,129,2
+22,Cookie,Cookie syrup,test_img.jpg,1,2,129,2
+23,Lychee,Lychee jelly,test_img.jpg,10,2,79,3
+24,Apple,Apple balls,test_img.jpg,10,2,79,3
+25,Strawberry,Strawberry balls,test_img.jpg,10,2,79,3
+26,Tapioca,Tapioca balls,test_img.jpg,10,2,79,3
+27,Mango,Mango pieces,test_img.jpg,10,2,79,3
+28,Green Iced Tea,Jasmine Green Tea,test_img.jpg,1,2,69,1
+29,Black Iced Tea,Premium Assam,test_img.jpg,1,2,69,1
+30,Coca Cola,,test_img.jpg,10,3,110,1
+31,Fanta,,test_img.jpg,10,3,110,1
+32,Sprite,,test_img.jpg,10,3,110,1
+33,Capri Sun,,test_img.jpg,10,3,110,1
+34,Water,,test_img.jpg,10,3,110,1
+35,Fruit Shoot,,test_img.jpg,10,3,110,1
