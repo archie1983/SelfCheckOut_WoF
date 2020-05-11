@@ -5,10 +5,13 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
@@ -32,8 +35,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -183,19 +193,30 @@ public class SqliteExportAndImport {
 public static void importData(Context context, ContentResolver contentResolver, DocumentFile pickedDir, SupportSQLiteDatabase db) throws DataImportExportException {
         DocumentFile[] files = pickedDir.listFiles();
         DocumentFile csv_data = null;
+
+        /*
+         * We'll keep all the image file names along with their URIs in this collection. It's the
+         * URIs that we'll put into the DB. We already have access to those URIs to display
+         * in the app because we took the persistent URI permission for the tree URI that we
+         * got through SAF.
+         */
+        Map<String, Uri> image_files = new HashMap<>();
+
         Log.d("Files", "Size: "+ files.length);
         for (int i = 0; i < files.length; i++)
         {
             Log.d("Files", "FileName:" + files[i].getName());
             if (files[i].getName().endsWith(".csv")) {
                 csv_data = files[i];
+            } else if (files[i].getName().endsWith(".jpg")) {
+                image_files.put(files[i].getName(), files[i].getUri());
             }
         }
 
         if (csv_data != null) {
             try {
                 InputStream csv_istr = contentResolver.openInputStream(csv_data.getUri());
-                readCSVData(csv_istr, db);
+                readCSVData(csv_istr, image_files, db);
             } catch (FileNotFoundException e) {
                 throw new DataImportExportException("Failed to read the backup file. FileNotFoundException thrown.");
             }
@@ -206,7 +227,7 @@ public static void importData(Context context, ContentResolver contentResolver, 
      * Reads in CSV file and prepares SQL statements with the data.
      *
      */
-    private static void readCSVData(InputStream csv_istr, SupportSQLiteDatabase db) {
+    private static void readCSVData(InputStream csv_istr, Map<String, Uri> image_files, SupportSQLiteDatabase db) {
         //String csvFileNameToImport = "csv/twoColumn.csv";
         Reader reader = null;
         CSVReader csvReader = null;
@@ -255,6 +276,16 @@ public static void importData(Context context, ContentResolver contentResolver, 
                         insertSQL = tableHeaderSQL;
 
                         for (String columnValue : nextRecord) {
+                            /*
+                             * In the map we have image file names and their respective URIs. We
+                             * want to translate the image file names into URIs before saving
+                             * them into the DB. We already have access granted to those URIs
+                             * because we chose treeUri access through SAF when asking user to
+                             * grant access.
+                             */
+                            if (image_files.containsKey(columnValue)) {
+                                columnValue = image_files.get(columnValue).toString();
+                            }
                             insertSQL += "\"" + columnValue + "\", ";
                         }
                         insertSQL = insertSQL.substring(0, insertSQL.length() - 2) + ")";
