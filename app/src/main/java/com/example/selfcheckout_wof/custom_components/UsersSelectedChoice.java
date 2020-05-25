@@ -24,6 +24,12 @@ public class UsersSelectedChoice {
     private static ArrayList<ConfiguredMeal> currentOrder = new ArrayList<>();
 
     /**
+     * When we're editing the current meal, we'll want to know to not add it as a new one
+     * when we're done editing.
+     */
+    private static boolean currentMealIsBeingEdited = false;
+
+    /**
      * Adding items to the list in a synchronised, tightly controlled way
      * @param purchasableGoods
      * @return
@@ -69,13 +75,24 @@ public class UsersSelectedChoice {
          * of meal.
          */
         currentMeal = new ArrayList<>();
+        currentMealIsBeingEdited = false;
     }
 
     /**
-     * Clears user's selection.
+     * Load a meal for editing.
      */
-    public static synchronized void setCurrentMeal(ArrayList<PurchasableGoods> newCurrentMealSelection) {
+    public static synchronized void startEditingMeal(ArrayList<PurchasableGoods> newCurrentMealSelection) {
         currentMeal = newCurrentMealSelection;
+        currentMealIsBeingEdited = true;
+    }
+
+    /**
+     * Is the current meal being edited?
+     *
+     * @return
+     */
+    public static boolean isCurrentMealBeingEdited() {
+        return currentMealIsBeingEdited;
     }
 
     /**
@@ -115,6 +132,7 @@ public class UsersSelectedChoice {
      */
     public static synchronized void clearOrder() {
         currentOrder = new ArrayList<>();
+        currentMealIsBeingEdited = false;
     }
 
     /**

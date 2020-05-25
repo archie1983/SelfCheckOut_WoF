@@ -28,6 +28,8 @@ public class SelectedMealView extends LinearLayout {
      */
     int mealTotal = 0;
 
+    boolean mealBeingEdited = false;
+
     /**
      *
      * @param context
@@ -64,8 +66,8 @@ public class SelectedMealView extends LinearLayout {
             header.setTextAppearance(R.style.mealTotal);
             mealHdr.addView(header);
 
-            Button btnEdit = new Button(getContext());
-            btnEdit.setText("Edit");
+            final Button btnEdit = new Button(getContext());
+            btnEdit.setText(R.string.btnEditMeal);
             btnEdit.setLayoutParams(new LayoutParams(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.WRAP_CONTENT)
@@ -82,11 +84,19 @@ public class SelectedMealView extends LinearLayout {
                 @Override
                 public void onClick(View v) {
                     UsersSelectedChoice.clearCurrentMeal();
-                    UsersSelectedChoice.setCurrentMeal(meal.getCurrentMealItems());
+                    UsersSelectedChoice.startEditingMeal(meal.getCurrentMealItems());
 
                     Intent intent = IntentFactory.create_GOTO_FIRST_PAGE_OF_GIVEN_PARENT_Intent(meal.getMainCategoryID());
 
                     getContext().sendBroadcast(intent);
+
+                    if (mealBeingEdited) {
+                        mealBeingEdited = false;
+                        btnEdit.setText(R.string.btnEditMeal);
+                    } else {
+                        mealBeingEdited = true;
+                        btnEdit.setText(R.string.btnStopEditMeal);
+                    }
                 }
             });
 

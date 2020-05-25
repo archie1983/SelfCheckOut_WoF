@@ -12,6 +12,8 @@
     <string name="enter_item_description">Item Description</string>
     <string name="choose_cat_img">Choose Category Image</string>
     <string name="btnEditSalesItem">Edit</string>
+    <string name="btnEditMeal">Edit</string>
+    <string name="btnStopEditMeal">Done</string>
     <string name="lblParentCategory">Parent Category: </string>
     <string name="btnDeleteCategory">Delete Category</string>
     <string name="btnCancel">Cancel</string>

@@ -324,17 +324,20 @@ public class SalesProcessNavigationFragment extends Fragment {
 
             /*
              * Afterwards we'll show what has been selected, but not yet added to the order.
+             * But only if we're not editing a meal at the moment.
              */
-            mActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    vContentLayout.addView(new SelectedMealView(
-                            mActivity,
-                            new ConfiguredMeal(UsersSelectedChoice.getCurrentlySelectedItems(), "Current", 0)
-                            )
-                    );
-                }
-            });
+            if (!UsersSelectedChoice.isCurrentMealBeingEdited()) {
+                mActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        vContentLayout.addView(new SelectedMealView(
+                                        mActivity,
+                                        new ConfiguredMeal(UsersSelectedChoice.getCurrentlySelectedItems(), "Current", 0)
+                                )
+                        );
+                    }
+                });
+            }
 
             /*
              * If we're looking at the selected meal, then we want
@@ -508,9 +511,18 @@ public class SalesProcessNavigationFragment extends Fragment {
                                          * the beginning.
                                          */
                                         if (item_count_in_next_page < 1) {
-                                            UsersSelectedChoice.addCurrentMealToOrder(
-                                                    (parentSalesItem == null ? "" : parentSalesItem.getLabel()),
-                                                    parent_ID);
+                                            /**
+                                             * If the current meal is being edited, then there's no
+                                             * need to add it again to the order.
+                                             */
+                                            if (!UsersSelectedChoice.isCurrentMealBeingEdited()) {
+                                                UsersSelectedChoice.addCurrentMealToOrder(
+                                                        (parentSalesItem == null ? "" : parentSalesItem.getLabel()),
+                                                        parent_ID);
+                                            } else {
+                                                UsersSelectedChoice.clearCurrentMeal();
+                                            }
+
                                             requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
                                             requestPageLoad(0, SalesActivity.TOP_LEVEL_ITEMS);
                                         } else {
