@@ -512,11 +512,10 @@ public class SalesProcessNavigationFragment extends Fragment {
                                                     (parentSalesItem == null ? "" : parentSalesItem.getLabel()),
                                                     parent_ID);
                                             requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
+                                            requestPageLoad(0, SalesActivity.TOP_LEVEL_ITEMS);
                                         } else {
                                             requestPageLoad(page_number + 1, parent_ID);
                                         }
-
-                                        requestPageLoad(0, SalesActivity.TOP_LEVEL_ITEMS);
 
                                         return true;
                                     }
@@ -533,6 +532,15 @@ public class SalesProcessNavigationFragment extends Fragment {
                                     @Override
                                     public boolean onSelected() {
                                         /*
+                                         * This is an action which will return True for a successful action and False for when it wasn't possible
+                                         * to select due to some logic. This onSelected() method though will be called from
+                                         * the context of SelectionGUIForOrder component and based on the result value here
+                                         * it will know to paint it selected or not. We'll need this value when we want to
+                                         * return from here.
+                                         */
+                                        boolean returnValue = false;
+
+                                        /*
                                          * If we're at the top level (e.g. "Food" or "Drink"),
                                          * a.k.a.: parent_ID == SalesActivity.TOP_LEVEL_ITEMS,
                                          * then we want to display that top level's children.
@@ -544,11 +552,12 @@ public class SalesProcessNavigationFragment extends Fragment {
                                         if (parent_ID == SalesActivity.TOP_LEVEL_ITEMS) {
                                             requestPageLoad(page_number + 1, pg.getID());
                                             //requestToSeeOrder(page_number, pg.getID());
+                                            returnValue = true;
                                         } else {
                                             /**
                                              * Adding this item to the order.
                                              */
-                                            super.onSelected();
+                                            returnValue = super.onSelected();
 
                                             /*
                                              * If this item has to be selected alone, then upon its
@@ -557,8 +566,10 @@ public class SalesProcessNavigationFragment extends Fragment {
                                              * base (one of Egg noodles, rice noodles, etc., because
                                              * of food container size), then we need to make sure that
                                              * upon its selection we get to the next page.
+                                             *
+                                             * That all of course only applies if the selection was successful.
                                              */
-                                            if (pg.getNumberOfMultiSelectableItems() == 1) {
+                                            if (returnValue && pg.getNumberOfMultiSelectableItems() == 1) {
                                                 /**
                                                  * If there are no more pages to go to, then we want to
                                                  * add the current selection to the order and go back to
@@ -573,16 +584,17 @@ public class SalesProcessNavigationFragment extends Fragment {
                                                     requestPageLoad(page_number + 1, parent_ID);
                                                 }
                                                 requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
-                                            } else {
+                                            } else if (returnValue && pg.getNumberOfMultiSelectableItems() > 1) {
                                                 /*
                                                  * Otherwise just update the total and allow further
-                                                 * selections on the same page.
+                                                 * selections on the same page. Again - only if the selection
+                                                 * was successful in the first place.
                                                  */
                                                 requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
                                             }
                                         }
 
-                                        return true;
+                                        return returnValue;
                                     }
 
                                     @Override

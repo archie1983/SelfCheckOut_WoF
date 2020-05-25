@@ -148,7 +148,6 @@ public class AdminActivity extends AppCompatActivity {
         startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), TO_EXPORT_DB_REQUEST_CODE);
     }
 
-
     /**
      * "Import DB" button press
      * @param view
