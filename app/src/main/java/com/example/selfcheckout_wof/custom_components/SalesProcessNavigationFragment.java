@@ -332,7 +332,7 @@ public class SalesProcessNavigationFragment extends Fragment {
                     public void run() {
                         vContentLayout.addView(new SelectedMealView(
                                         mActivity,
-                                        new ConfiguredMeal(UsersSelectedChoice.getCurrentlySelectedItems(), "Current", 0)
+                                        new ConfiguredMeal(UsersSelectedChoice.getCurrentlySelectedItems(), getString(R.string.current_meal_name), 0)
                                 )
                         );
                     }

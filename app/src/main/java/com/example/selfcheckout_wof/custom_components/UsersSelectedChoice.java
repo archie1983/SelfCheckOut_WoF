@@ -25,9 +25,10 @@ public class UsersSelectedChoice {
 
     /**
      * When we're editing the current meal, we'll want to know to not add it as a new one
-     * when we're done editing.
+     * when we're done editing. For that it will be useful to know what meal we are editing
+     * if any.
      */
-    private static boolean currentMealIsBeingEdited = false;
+    private static String nameOfMealBeingEdited = "";
 
     /**
      * Adding items to the list in a synchronised, tightly controlled way
@@ -75,15 +76,20 @@ public class UsersSelectedChoice {
          * of meal.
          */
         currentMeal = new ArrayList<>();
-        currentMealIsBeingEdited = false;
+        nameOfMealBeingEdited = "";
     }
 
     /**
      * Load a meal for editing.
      */
-    public static synchronized void startEditingMeal(ArrayList<PurchasableGoods> newCurrentMealSelection) {
-        currentMeal = newCurrentMealSelection;
-        currentMealIsBeingEdited = true;
+    public static synchronized void startEditingMeal(String nameOfMealToEdit) {
+        for (ConfiguredMeal cm : currentOrder) {
+            if (cm.getMealName().equals(nameOfMealToEdit)) {
+                currentMeal = cm.getCurrentMealItems();
+                nameOfMealBeingEdited = cm.getMealName();
+                break;
+            }
+        }
     }
 
     /**
@@ -92,7 +98,11 @@ public class UsersSelectedChoice {
      * @return
      */
     public static boolean isCurrentMealBeingEdited() {
-        return currentMealIsBeingEdited;
+        return (nameOfMealBeingEdited != "");
+    }
+
+    public static String getNameOfMealBeingEdited() {
+        return nameOfMealBeingEdited;
     }
 
     /**
@@ -132,7 +142,7 @@ public class UsersSelectedChoice {
      */
     public static synchronized void clearOrder() {
         currentOrder = new ArrayList<>();
-        currentMealIsBeingEdited = false;
+        nameOfMealBeingEdited = "";
     }
 
     /**

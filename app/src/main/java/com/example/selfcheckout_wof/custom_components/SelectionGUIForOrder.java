@@ -242,8 +242,8 @@ public class SelectionGUIForOrder extends LinearLayout {
                     if (action.onDeSelected()) {
                         chkThisSelected.setChecked(false);
                         cvThisGUI.setCardBackgroundColor(Color.WHITE);
-                        vDescription.setBackgroundColor(Color.WHITE);
-                        vPrice.setBackgroundColor(Color.WHITE);
+                        vDescription.setBackgroundColor(ContextCompat.getColor(context, R.color.sales_items_background));
+                        vPrice.setBackgroundColor(ContextCompat.getColor(context, R.color.sales_items_background));
                         //thisSelectionGUI.setBackgroundColor(Color.WHITE);
                     }
                 } else {

@@ -14,6 +14,7 @@
     <string name="btnEditSalesItem">Edit</string>
     <string name="btnEditMeal">Edit</string>
     <string name="btnStopEditMeal">Done</string>
+    <string name="current_meal_name">Current</string>
     <string name="lblParentCategory">Parent Category: </string>
     <string name="btnDeleteCategory">Delete Category</string>
     <string name="btnCancel">Cancel</string>

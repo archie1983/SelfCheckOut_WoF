@@ -10,4 +10,6 @@
     <color name="redText">#E73232</color>
     <color name="sales_items_background">#ECFFEC</color>
     <color name="vertical_divider_color">#303030</color>
+    <color name="meal_being_edited">#F70783</color>
+    <color name="meal_not_being_edited">#FFFFFF</color>
 </resources>
