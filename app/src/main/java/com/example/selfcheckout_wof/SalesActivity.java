@@ -101,6 +101,21 @@ public class SalesActivity extends AppCompatActivity
             fm.beginTransaction()
                     .replace(R.id.frmSalesItemsListBrowse, dataFragment, "si_list")
                     .commit();
+        } else if (process == SalesProcessNavigationFragment.SalesProcesses.GO_TO_CHECKOUT) {
+            /**
+             * The fragment that allows to make choices for the meal.
+             */
+            final SalesProcessNavigationFragment dataFragment =
+                    SalesProcessNavigationFragment.newInstance(pageNumber, parentID, false, process);
+
+            /*
+             * Now we will load the part where we normally put items that are available on menu,
+             * now we will load there the final order that the user has chosen and offer a checkout
+             * option there.
+             */
+            fm.beginTransaction()
+                    .replace(R.id.frmSalesItemsListBrowse, dataFragment, "si_list")
+                    .commit();
         }
     }
 

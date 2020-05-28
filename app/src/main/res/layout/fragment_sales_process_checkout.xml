@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/v1"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:orientation="vertical">
+<ScrollView
+    android:id="@+id/salesItemsListScrollView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:scrollbarAlwaysDrawVerticalTrack="true"
+    android:fadeScrollbars="false"
+    android:fillViewport="true">
+    <LinearLayout
+        android:id="@+id/vContentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/txtInstruction"
+            android:layout_width="match_parent"
+            android:layout_height="109dp"
+            android:text="@string/checkout_please_pay"
+            android:textSize="@dimen/text_32" />
+
+        <Button
+            android:id="@+id/btnPrintReceipt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/checkout_print_receipt" />
+    </LinearLayout>
+</ScrollView>
+</LinearLayout>
+

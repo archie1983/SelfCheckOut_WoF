@@ -45,8 +45,7 @@ public class SalesProcessNavigationFragment extends Fragment {
     private static final String ARG_PAGE_NUM = "ARG_PAGE_NUM";
     private static final String ARG_MEAL_OR_ITEMS = "ARG_MEAL_OR_ITEMS"; // whether we're displaying the current order (meal) or the choice for user
     private static final String ARG_PARENT_ID = "ARG_PARENT_ID";
-    private static final String ARG_SEE_MEAL = "ARG_SEE_MEAL";
-    private static final String ARG_SEE_ORDER = "ARG_SEE_ORDER";
+    private static final String ARG_SEE_CHECKOUT = "ARG_SEE_CHECKOUT";
 
     /**
      * Maximum number of itemst per row in the area where user picks
@@ -80,6 +79,8 @@ public class SalesProcessNavigationFragment extends Fragment {
      * or the page of items to select in this fragment.
      */
     private boolean current_order_or_items;
+
+    private boolean see_checkout;
 
     /**
      * Elements on the fragment (both navigation and data fragments), that we will need to use
@@ -117,32 +118,14 @@ public class SalesProcessNavigationFragment extends Fragment {
         args.putInt(ARG_PARENT_ID, parentID);
 
         /*
-         * For now we won't be using the "process" variable to decide
-         * what screen we're showing to the user. It will be just one
-         * screen with two fragments - the choice selector and the
-         * current order.
-         *
-         * We'll keep the infrastructure though and for now these booleans
-         * will still be set.
+         * If the process is "GO_TO_CHECKOUT" then we want to load the checkout page.
          */
-        args.putBoolean(ARG_SEE_MEAL, false);
-        args.putBoolean(ARG_SEE_ORDER, false);
-/*
-        switch (process) {
-            case LOAD_PAGE:
-                args.putBoolean(ARG_SEE_MEAL, false);
-                args.putBoolean(ARG_SEE_ORDER, false);
-                break;
-            case SEE_MEAL:
-                args.putBoolean(ARG_SEE_MEAL, true);
-                args.putBoolean(ARG_SEE_ORDER, false);
-                break;
-            case SEE_ORDER:
-                args.putBoolean(ARG_SEE_MEAL, false);
-                args.putBoolean(ARG_SEE_ORDER, true);
-                break;
+        if (process == SalesProcesses.GO_TO_CHECKOUT) {
+            args.putBoolean(ARG_SEE_CHECKOUT, true);
+        } else {
+            args.putBoolean(ARG_SEE_CHECKOUT, false);
         }
-*/
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -154,9 +137,7 @@ public class SalesProcessNavigationFragment extends Fragment {
             current_page_number = getArguments().getInt(ARG_PAGE_NUM);
             current_order_or_items = getArguments().getBoolean(ARG_MEAL_OR_ITEMS);
             parent_ID = getArguments().getInt(ARG_PARENT_ID);
-
-//            seeMeal = getArguments().getBoolean(ARG_SEE_MEAL);
-//            seeOrder = getArguments().getBoolean(ARG_SEE_ORDER);
+            see_checkout = getArguments().getBoolean(ARG_SEE_CHECKOUT);
         }
     }
 
@@ -165,25 +146,37 @@ public class SalesProcessNavigationFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView;
-        if (current_order_or_items) {
-            rootView = inflater.inflate(R.layout.fragment_sales_process_see_meal, container, false);
+        if (see_checkout) {
+            /*
+             * For seeing the checkout.
+             */
+            rootView = inflater.inflate(R.layout.fragment_sales_process_checkout, container, false);
+            vContentLayout = rootView.findViewById(R.id.vContentLayout);
+        } else {
+            /**
+             * If we want normal sales process, then it's going to be either the current order
+             * or items from the menu for choice.
+             */
+            if (current_order_or_items) {
+                rootView = inflater.inflate(R.layout.fragment_sales_process_see_meal, container, false);
 //            btnPreviousPage = rootView.findViewById(R.id.btnPreviousPage);
 //            btnNextPage = rootView.findViewById(R.id.btnNextPage);
 //            btnStartAgain = rootView.findViewById(R.id.btnStartAgain);
-            vContentLayout = rootView.findViewById(R.id.vContentLayout);
-            btnGoToCheckout = rootView.findViewById(R.id.btnGoToCheckout);
-        } else {
-            /*
-             * For seeing the order.
-             */
-            rootView = inflater.inflate(R.layout.fragment_sales_process_browse, container, false);
-            vContentLayout = rootView.findViewById(R.id.vContentLayout);
-        }
+                vContentLayout = rootView.findViewById(R.id.vContentLayout);
+                btnGoToCheckout = rootView.findViewById(R.id.btnGoToCheckout);
+            } else {
+                /*
+                 * For seeing the order.
+                 */
+                rootView = inflater.inflate(R.layout.fragment_sales_process_browse, container, false);
+                vContentLayout = rootView.findViewById(R.id.vContentLayout);
+            }
 
-        /**
-         * Loads the required frame - either data frame or current order frame
-         */
-        displayPage(current_page_number);
+            /*
+             * Loads the required frame - either data frame or current order frame
+             */
+            displayPage(current_page_number);
+        }
 
         return rootView;
     }
@@ -349,7 +342,11 @@ public class SalesProcessNavigationFragment extends Fragment {
                     /*
                      * Add the curent selection to the order and re-display the order frame.
                      */
-//                    UsersSelectedChoice.addCurrentMealToOrder();
+                    UsersSelectedChoice.addCurrentMealToOrder(
+                            (parentSalesItem == null ? "" : parentSalesItem.getLabel()),
+                            parent_ID);
+                    //requestToSeeOrder(page_number, parent_ID);
+                    requestCheckOut();
 //                    displayPage(page_number);
 //                    /*
 //                     * Here we need to ask user if they'd like to add more meals
@@ -682,7 +679,7 @@ public class SalesProcessNavigationFragment extends Fragment {
      */
     public enum SalesProcesses {
         LOAD_PAGE,
-        SEE_MEAL,
+        GO_TO_CHECKOUT,
         SEE_ORDER;
     }
 
@@ -717,15 +714,12 @@ public class SalesProcessNavigationFragment extends Fragment {
     }
 
     /**
-     * A function to request to see the meal, that user has chosen.
-     * @param pageNumber number of the page - needed for navigation frame
-     *                   (even though we're going to show the selected choises
-     *                   not a page)
-     * @param parentId parent ID needed for navigation frame just like pageNumber
+     * A function to request to see the checkout page where user can review the final order
+     * and pay.
      */
-    private void requestToSeeMeal(int pageNumber, int parentId) {
+    private void requestCheckOut() {
         if (mListener != null) {
-            mListener.onFragmentInteraction(SalesProcesses.SEE_MEAL, pageNumber, parentId);
+            mListener.onFragmentInteraction(SalesProcesses.GO_TO_CHECKOUT, 0, 0);
         }
     }
 
