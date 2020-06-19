@@ -47,6 +47,12 @@
     <string name="not_connected">Please connect a Bluetooth printer</string>
     <string name="title_activity_device_list">DeviceListActivity</string>
 
+    <!-- BT receipt printer -->
+    <string name="bt_not_enabled_leaving">Bluetooth does not start, quit the program</string>
+    <string name="connecting">connecting…</string>
+    <string name="connected">connected: </string>
+    <string name="disconnected">disconnected</string>
+
     <string name="title_activity_ttttttttt_fullscreen">tttttttttFullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
