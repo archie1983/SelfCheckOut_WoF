@@ -36,6 +36,17 @@
     <string name="paypal_error_title">Error</string>
     <string name="paypal_error_initialize_msg">Failed to set AccessToken. Please try after clearing the data/cache of the application.</string>
 
+    <!--  DeviceListActivity -->
+    <string name="scanning">Scanning Device&#8230;</string>
+    <string name="select_device">Select the connected device</string>
+    <string name="none_paired">No matching devices</string>
+    <string name="none_found">No device found</string>
+    <string name="title_paired_devices">Match equipment</string>
+    <string name="title_other_devices">Other useful equipment</string>
+    <string name="button_scan">Scanning device</string>
+    <string name="not_connected">Please connect a Bluetooth printer</string>
+    <string name="title_activity_device_list">DeviceListActivity</string>
+
     <string name="title_activity_ttttttttt_fullscreen">tttttttttFullscreenActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
