@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.selfcheckout_wof.btprinter_zj.BTPrinterConstants;
@@ -24,6 +25,13 @@ import com.example.selfcheckout_wof.btprinter_zj.BluetoothService;
 import com.example.selfcheckout_wof.btprinter_zj.DeviceListActivity;
 import com.example.selfcheckout_wof.btprinter_zj.PrinterCommand;
 import com.example.selfcheckout_wof.custom_components.SalesProcessNavigationFragment;
+import com.example.selfcheckout_wof.custom_components.SelectedMealView;
+import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
+import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
+import com.example.selfcheckout_wof.custom_components.utils.Formatting;
+import com.example.selfcheckout_wof.data.PurchasableGoods;
+
+import java.util.Iterator;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -68,6 +76,9 @@ public class SalesActivity extends AppCompatActivity
      */
     // Name of the connected receipt printer device - for debug purposes
     private String receiptPrinterDeviceName = null;
+    // MAC address of the receipt printer. We'll need to get it once. After that we can re-use
+    // it to send data to the printer.
+    private String receiptPrinterDeviceAddr = null;
     // Local Bluetooth adapter for the receipt printer
     private BluetoothAdapter mBluetoothAdapter = null;
     // Member object for the services for the receipt printer
@@ -87,7 +98,8 @@ public class SalesActivity extends AppCompatActivity
                         case BluetoothService.STATE_CONNECTED:
                             //txtStatus.setText(R.string.connected);
                             //txtStatus.append(mConnectedDeviceName);
-                            Print_Test();//
+                            //Print_Test();//
+                            printReceipt();
                             break;
                         case BluetoothService.STATE_CONNECTING:
                             //txtStatus.setText(R.string.connecting);
@@ -136,6 +148,96 @@ public class SalesActivity extends AppCompatActivity
         startActivityForResult(serverIntent, BTPrinterConstants.REQUEST_CONNECT_DEVICE);
     }
 
+    public void onPrintReceipt(View view) {
+        if (receiptPrinterService.getState() == BluetoothService.STATE_CONNECTED) {
+            /*
+             * Looks like we're connected, try printing.
+             */
+            printReceipt();
+        } else {
+            /**
+             * If our current address looks like a MAC address, then try to print
+             * to that, if not, ask user to select the printer.
+             */
+            if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
+                BluetoothDevice device = mBluetoothAdapter
+                        .getRemoteDevice(receiptPrinterDeviceAddr);
+                // Attempt to connect to the device
+                receiptPrinterService.connect(device);
+                receiptPrinterService.getState();
+            } else {
+                /*
+                 * Ask user to select the printer to connect to.
+                 */
+                connectToBlueToothPrinter();
+            }
+        }
+    }
+
+    /**
+     * Prints the actual receipt from the current order.
+     */
+    private void printReceipt() {
+        Iterator<ConfiguredMeal> mealsInCurrentOrder = UsersSelectedChoice.getCurrentOrder();
+
+        /**
+         * If there's not meals in the order, then we don't need to print anything.
+         */
+        if (!mealsInCurrentOrder.hasNext()) {
+            return;
+        }
+
+        /*
+         * Going through the current order and preparing items one line at a time for each
+         * meal.
+         */
+        int orderTotal = 0;
+        int mealTotal = 0;
+        String textToPrint  = "";
+
+        //String s = String.format("%-15s %5s %10s\n", "Item", "Qty", "Price");
+        //String s1 = String.format("%-15s %5s %10s\n", "----", "---", "-----");
+
+        /*
+         * Looking at the each meal in the order.
+         */
+        while (mealsInCurrentOrder.hasNext()) {
+            ConfiguredMeal currentMealInOrder = mealsInCurrentOrder.next();
+            /*
+             * Assembling the text to print on the receipt.
+             * First - the meal name.
+             */
+            textToPrint += currentMealInOrder.getMealName() + "\n";
+
+            if (currentMealInOrder.getCurrentMealItems() != null) {
+                /*
+                 * Now let's go through the items in each meal.
+                 */
+                for (PurchasableGoods pg : currentMealInOrder.getCurrentMealItems()) {
+                    //String line = String.format("%.40s %5d %10.2f\n", itemName, quantity, price);
+                    textToPrint += String.format("%-30.30s %10.10s", pg.getLabel(), Formatting.formatCash(pg.getPrice())) + "\n";
+
+                    //textToPrint += pg.getLabel() + "        " + Formatting.formatCash(pg.getPrice()) + "\n";
+                    mealTotal += pg.getPrice();
+                }
+
+                orderTotal += mealTotal;
+                mealTotal = 0;
+                textToPrint += "\n";
+            }
+        }
+
+        textToPrint += "\n" + String.format("%-30.30s %10.10s", "Total:", Formatting.formatCash(orderTotal)) + "\n\n";
+        //textToPrint += "\nTotal: " + Formatting.formatCash(orderTotal) + "\n\n";
+
+        SendDataByte(PrinterCommand.POS_Print_Text(textToPrint, BTPrinterConstants.UTF16, BTPrinterConstants.WEST_EUR, 0, 0, 0));
+        SendDataByte(PrinterCommand.POS_Set_Cut(1));
+        SendDataByte(PrinterCommand.POS_Set_PrtInit());
+    }
+
+    /**
+     * Prints a test message to test printer connectivity.
+     */
     private void Print_Test(){
         String msg = "Congratulations!\n\n";
         String data = "Oscar Is A Good Boy and Eva is. :-)\n\n";
@@ -245,12 +347,12 @@ public class SalesActivity extends AppCompatActivity
                 // When DeviceListActivity returns with a device to connect
                 if (resultCode == Activity.RESULT_OK) {
                     // Get the device MAC address
-                    String address = data.getExtras().getString(
+                    receiptPrinterDeviceAddr = data.getExtras().getString(
                             DeviceListActivity.EXTRA_DEVICE_ADDRESS);
                     // Get the BLuetoothDevice object
-                    if (BluetoothAdapter.checkBluetoothAddress(address)) {
+                    if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
                         BluetoothDevice device = mBluetoothAdapter
-                                .getRemoteDevice(address);
+                                .getRemoteDevice(receiptPrinterDeviceAddr);
                         // Attempt to connect to the device
                         receiptPrinterService.connect(device);
                     }

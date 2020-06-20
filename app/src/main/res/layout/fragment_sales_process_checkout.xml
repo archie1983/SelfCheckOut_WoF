@@ -30,6 +30,7 @@ android:orientation="vertical">
             android:id="@+id/btnPrintReceipt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="onPrintReceipt"
             android:text="@string/checkout_print_receipt" />
     </LinearLayout>
 </ScrollView>

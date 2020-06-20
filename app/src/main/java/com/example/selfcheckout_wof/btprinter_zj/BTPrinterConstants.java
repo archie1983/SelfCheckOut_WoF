@@ -29,8 +29,17 @@ public class BTPrinterConstants {
     public static final int QR_WIDTH = 350;
     public static final int QR_HEIGHT = 350;
     /*******************************************************************************************************/
+    public static final String UTF8 = "UTF-8";
+    public static final String UTF16 = "UTF-16";
     public static final String CHINESE = "GBK";
     public static final String THAI = "CP874";
     public static final String KOREAN = "EUC-KR";
     public static final String BIG5 = "BIG5";
+
+    /**
+     * Code pages
+     */
+    public static final int STD_EUROPE = 0;
+    public static final int MULTI_LINGUAL = 1;
+    public static final int WEST_EUR = 6;
 }
