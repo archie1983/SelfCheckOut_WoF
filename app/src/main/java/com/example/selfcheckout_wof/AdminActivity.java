@@ -91,7 +91,7 @@ public class AdminActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin);
         progress = (ProgressBar)findViewById(R.id.progress);
 
-        //# Ensuring that we have persmissions for SD card read/write
+        //# Ensuring that we have permissions for SD card read/write
         if (shouldAskPermissions()) {
             askPermissions();
         }

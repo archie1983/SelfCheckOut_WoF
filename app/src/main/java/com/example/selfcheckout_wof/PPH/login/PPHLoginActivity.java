@@ -15,11 +15,14 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.selfcheckout_wof.PPH.ui.ReaderConnectionActivity;
 import com.example.selfcheckout_wof.PPH.ui.StepView;
@@ -37,7 +40,15 @@ import static com.example.selfcheckout_wof.PPH.ui.OfflinePayActivity.OFFLINE_INI
 import static com.example.selfcheckout_wof.PPH.ui.OfflinePayActivity.OFFLINE_MODE;
 import static com.example.selfcheckout_wof.PPH.ui.OfflinePayActivity.PREF_NAME;
 
+/**
+ * The Activity that allows the user to log onto Paypal and connect the card reader.
+ */
+  // If we use toolbar as the base class for this activity, then the whole application needs to
+  // use toolbar and all activities need to extend ToolbarActivity instead of AppCompatActivity.
+  // Maybe we'll want that in the future, but for now we need this activity to extend AppCompatActivity
+  // and not the ToolbarActivity.
 public class PPHLoginActivity extends ToolbarActivity implements View.OnClickListener
+//public class PPHLoginActivity extends AppCompatActivity implements View.OnClickListener
 {
   private static final String LOG_TAG = PPHLoginActivity.class.getSimpleName();
   public static final String PREFS_NAME = "SDKSampleAppPreferences";
@@ -70,13 +81,12 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
     return R.layout.pph_login_activity;
   }
 
-
   @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     super.onCreate(savedInstanceState);
     Log.d(LOG_TAG, "onCreate");
-
+    //setContentView(R.layout.pph_login_activity);
 
     radioGroup1 = (RadioGroup) findViewById(R.id.radioGroup1);
     connectButton = (Button) findViewById(R.id.connect_reader_button);
@@ -263,8 +273,9 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
 
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
     if (requestCode == 1) {
-      if(resultCode == Activity.RESULT_OK){
+      if (resultCode == Activity.RESULT_OK) {
         String result = data.getStringExtra("result");
         Log.d(LOG_TAG, "onActivityResult result: " + result);
       }

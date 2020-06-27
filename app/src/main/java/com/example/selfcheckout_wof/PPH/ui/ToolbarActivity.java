@@ -16,8 +16,7 @@ public abstract class ToolbarActivity extends AppCompatActivity
   {
     super.onCreate(savedInstanceState);
     setContentView(getLayoutResId());
-    setupToolbar();
-
+    //setupToolbar();
   }
 
   public abstract int getLayoutResId();
