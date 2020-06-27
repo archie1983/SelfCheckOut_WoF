@@ -93,6 +93,22 @@ public class UsersSelectedChoice {
     }
 
     /**
+     * Remove a meal from order.
+     */
+    public static synchronized void removeMealFromOrder(String nameOfMealToRemove) {
+        ConfiguredMeal mealToRemove = null;
+        for (ConfiguredMeal cm : currentOrder) {
+            if (cm.getMealName().equals(nameOfMealToRemove)) {
+                mealToRemove = cm;
+                break;
+            }
+        }
+        if (mealToRemove != null) {
+            currentOrder.remove(mealToRemove);
+        }
+    }
+
+    /**
      * Is the current meal being edited?
      *
      * @return

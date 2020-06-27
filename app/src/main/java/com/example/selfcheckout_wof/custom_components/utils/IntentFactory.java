@@ -22,6 +22,7 @@ public class IntentFactory {
      */
     public enum IntentType {
         GOTO_FIRST_PAGE_OF_GIVEN_PARENT,
+        GOTO_BEGINNING_OF_SALES_PROCESS,
         UNKNOWN;
 
         Intent intent = null;
@@ -70,6 +71,12 @@ public class IntentFactory {
         Intent intent = IntentType.GOTO_FIRST_PAGE_OF_GIVEN_PARENT.getIntent();
 
         intent.putExtra(PARENT_ID_PARAM_NAME, parentID);
+        return intent;
+    }
+
+    public static Intent create_GOTO_BEGINNING_OF_SALES_PROCESS_Intent() {
+        Intent intent = IntentType.GOTO_BEGINNING_OF_SALES_PROCESS.getIntent();
+
         return intent;
     }
 }

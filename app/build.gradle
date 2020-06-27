@@ -26,13 +26,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
+    // Bluetooth receipt printer connectivity.
     implementation files('libs/btsdk.jar')
     implementation files('libs/zixng.jar')
     def room_version = "2.2.0-beta01"
 
+    // Default dependencies
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
@@ -44,16 +51,57 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'org.jetbrains:annotations-java5:15.0'
 
+    // SQLite database support.
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-rxjava2:$room_version"
     implementation "androidx.room:room-guava:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
 
+    // Image loading support for loading lots of potentially large images on SalesActivity.
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
+    // CSV support for import / export features
+    implementation 'com.opencsv:opencsv:4.1'
+
+    // PPH dependencies
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
     api("com.paypal.retail:here-sdk-debug:$PAYPAL_HERE_PUBLISH_VERSION@aar") { transitive = true }
 
-    implementation 'com.opencsv:opencsv:4.1'
+    // Dagger core
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.13'
+    implementation 'com.google.dagger:dagger:2.13'
+
+    // Lifecycle
+    implementation 'androidx.lifecycle:lifecycle-runtime:2.1.0'
+    annotationProcessor 'androidx.lifecycle:lifecycle-compiler:2.1.0'
+
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.1.0'
+
+    // ReactiveX
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.0'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+    // Android Annotation
+    annotationProcessor 'org.androidannotations:androidannotations:4.4.0'
+    implementation 'org.androidannotations:androidannotations-api:4.4.0'
+
+    //Android & Android X
+    implementation 'androidx.fragment:fragment:1.1.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'androidx.preference:preference:1.1.0'
+    implementation 'androidx.annotation:annotation:1.0.0'
+    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.0.0'
+
+
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.0@aar') {
+        transitive = true
+    }
+    implementation 'com.eclipsesource.j2v8:j2v8:4.6.0@aar'
 }

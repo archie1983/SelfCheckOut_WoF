@@ -39,6 +39,62 @@
         <activity
             android:name=".btprinter_zj.DeviceListActivity"
             android:label="@string/title_activity_device_list"></activity>
+
+        <!-- PPH Activities -->
+        <activity
+            android:name=".PPH.ui.MainActivity"
+            android:label="@string/app_name"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".PPH.login.PPHLoginActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity
+            android:name=".PPH.ui.ReaderConnectionActivity"
+            android:label="@string/title_activity_reader_connection"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity
+            android:name=".PPH.ui.ChargeActivity"
+            android:label="@string/title_activity_charge"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity
+            android:name=".PPH.ui.RefundActivity"
+            android:label="@string/title_activity_charge"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity
+            android:name=".PPH.ui.AuthCaptureActivity"
+            android:label="AuthCaptureActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity
+            android:name=".PPH.ui.CaptureActivity"
+            android:label="CaptureActivity"
+            android:windowSoftInputMode="stateVisible"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity android:name=".PPH.ui.PaymentOptionsActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity android:name=".PPH.ui.OfflinePayActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+        <activity android:name=".PPH.ui.OfflinePaySuccessActivity"></activity>
+        <activity
+            android:name=".PPH.ui.VaultActivity"
+            android:label="@string/title_activity_vault"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+        </activity>
+
+
     </application>
 
 </manifest>

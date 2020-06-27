@@ -774,6 +774,9 @@ public class SalesProcessNavigationFragment extends Fragment {
                     }
 
                     break;
+                case GOTO_BEGINNING_OF_SALES_PROCESS:
+                    requestToSeeOrder(0, SalesActivity.TOP_LEVEL_ITEMS);
+                    requestPageLoad(0, SalesActivity.TOP_LEVEL_ITEMS);
                 case UNKNOWN:
                     break;
             }

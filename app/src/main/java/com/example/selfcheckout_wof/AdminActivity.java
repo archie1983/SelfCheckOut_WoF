@@ -22,6 +22,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.selfcheckout_wof.PPH.login.PPHLoginActivity;
 import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
 import com.example.selfcheckout_wof.custom_components.utils.PaypalHereVariables;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
@@ -61,7 +62,8 @@ public class AdminActivity extends AppCompatActivity {
                     onImportDB(null);
                     break;
                 case LOGIN_PAYPAL:
-                    initPaypalHere();
+                    //initPaypalHere();
+                    configurePaypalHere();
                     break;
                 case UNKNOWN:
                     break;
@@ -163,6 +165,7 @@ public class AdminActivity extends AppCompatActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        super.onActivityResult(requestCode, resultCode, resultData);
         if (resultCode != RESULT_OK)
             return;
         Uri treeUri = resultData.getData();
@@ -190,21 +193,20 @@ public class AdminActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * "Log in to PayPal" button press
-     * @param view
-     */
-    public void onLogInPayPal(View view) {
-        initPaypalHere();
-    }
-
     private static final String LOG_TAG = AdminActivity.class.getSimpleName();
-    private static final String MID_TIER_URL_FOR_LIVE = "https://pph-retail-sdk-sample.herokuapp.com/toPayPal/live?returnTokenOnQueryString=true";
+    //private static final String MID_TIER_URL_FOR_LIVE = "https://pph-retail-sdk-sample.herokuapp.com/toPayPal/live?returnTokenOnQueryString=true";
+    private static final String MID_TIER_URL_FOR_LIVE = "https://pph.elksnis.co.uk/toPayPal/live?returnTokenOnQueryString=true";
     public static final String PREF_NAME = "SelfCheckOutPrefs";
     public static final String OFFLINE_MODE ="offlineMode";
     public static final String OFFLINE_INIT ="offlineInit";
 
     private ProgressBar progress;
+
+    private void configurePaypalHere() {
+        Intent pphLoginActivity = new Intent(this, PPHLoginActivity.class);
+        startActivity(pphLoginActivity);
+    }
+
     /**
      * Initialise the PaypalHere SDK. The context here should be application context
      * (getApplicationContext()) rather than just the activity, because this method

@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.SalesActivity;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.custom_components.utils.IntentFactory;
@@ -42,6 +43,11 @@ public class SelectedMealView extends LinearLayout {
     Button btnEdit = null;
 
     /**
+     * Delete button
+     */
+    Button btnDelete = null;
+
+    /**
      * Cardview of this element - the main part of the GUI
      */
     CardView cvThisGUI;
@@ -50,6 +56,12 @@ public class SelectedMealView extends LinearLayout {
      * Inside the CardView will be this vertical panel where we will add all the meal items.
      */
     LinearLayout vlContent;
+
+    /**
+     * For the "Delete" button we'll need a distinction of whether this is a view for a meal
+     * that has not been added to order yet (true) or it has already been added to order (false).
+     */
+    private boolean mealInProgress = false;
 
     /**
      *
@@ -68,6 +80,14 @@ public class SelectedMealView extends LinearLayout {
     private void init(final ConfiguredMeal meal) {
         this.setOrientation(VERTICAL);
         Iterator<PurchasableGoods> itemsInMeal = null;
+
+        UsersSelectedChoice.clearCurrentMeal();
+
+        if (meal != null && meal.getMealName() == getResources().getString(R.string.current_meal_name)) {
+            mealInProgress = true;
+        } else {
+            mealInProgress = false;
+        }
 
         /**
          * If we have anything to display, then we want to start setting up the card view and the
@@ -134,7 +154,7 @@ public class SelectedMealView extends LinearLayout {
                         LayoutParams.MATCH_PARENT,
                         LayoutParams.WRAP_CONTENT)
                 );
-                btnEdit.setGravity(Gravity.RIGHT);
+                //btnEdit.setGravity(Gravity.RIGHT);
 
                 /*
                  * Functionality for the Edit button. We basically want to clear current selection
@@ -165,8 +185,37 @@ public class SelectedMealView extends LinearLayout {
                  * current meal, that we haven't yet added to the order).
                  */
                 if (!meal.getMealName().equals(getResources().getString(R.string.current_meal_name))) {
-                    mealHdr.addView(btnEdit);
+                    //mealHdr.addView(btnEdit);
                 }
+
+                /**
+                 * Now adding the Delete button to the meal header
+                 */
+                btnDelete = new Button(getContext());
+
+                btnDelete.setLayoutParams(new LayoutParams(
+                        LayoutParams.MATCH_PARENT,
+                        LayoutParams.WRAP_CONTENT)
+                );
+                //btnDelete.setGravity(Gravity.RIGHT);
+                btnDelete.setText(R.string.btnDeleteMeal);
+
+                /*
+                 * Functionality for the Delete button. Here we want to clear the given meal from
+                 * the UsersSelectedChoice and take the user back to beginning.
+                 */
+                btnDelete.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        UsersSelectedChoice.clearCurrentMeal();
+                        setMealEditStatus(false);
+                        UsersSelectedChoice.removeMealFromOrder(meal.getMealName());
+                        Intent intent = IntentFactory.create_GOTO_BEGINNING_OF_SALES_PROCESS_Intent();
+                        getContext().sendBroadcast(intent);
+                    }
+                });
+
+                mealHdr.addView(btnDelete);
 
                 vlContent.addView(mealHdr);
 

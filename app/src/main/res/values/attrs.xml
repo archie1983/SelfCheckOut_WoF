@@ -9,4 +9,12 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <!-- PPH attrs -->
+    <declare-styleable name="step_view_styleable">
+        <attr name="title_text" format="string"></attr>
+        <attr name="code_text" format="string"></attr>
+        <attr name="button_text" format="string"></attr>
+        <attr name="enabled" format="boolean"></attr>
+    </declare-styleable>
+
 </resources>

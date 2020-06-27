@@ -105,6 +105,7 @@ public class SalesActivity extends AppCompatActivity
                             //txtStatus.setText(R.string.connecting);
                             break;
                         case BluetoothService.STATE_LISTEN:
+                            break;
                         case BluetoothService.STATE_NONE:
                             //txtStatus.setText(R.string.disconnected);
                             break;
@@ -149,27 +150,29 @@ public class SalesActivity extends AppCompatActivity
     }
 
     public void onPrintReceipt(View view) {
-        if (receiptPrinterService.getState() == BluetoothService.STATE_CONNECTED) {
-            /*
-             * Looks like we're connected, try printing.
-             */
-            printReceipt();
-        } else {
-            /**
-             * If our current address looks like a MAC address, then try to print
-             * to that, if not, ask user to select the printer.
-             */
-            if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
-                BluetoothDevice device = mBluetoothAdapter
-                        .getRemoteDevice(receiptPrinterDeviceAddr);
-                // Attempt to connect to the device
-                receiptPrinterService.connect(device);
-                receiptPrinterService.getState();
-            } else {
+        if (mBluetoothAdapter != null) {
+            if (receiptPrinterService.getState() == BluetoothService.STATE_CONNECTED) {
                 /*
-                 * Ask user to select the printer to connect to.
+                 * Looks like we're connected, try printing.
                  */
-                connectToBlueToothPrinter();
+                printReceipt();
+            } else {
+                /**
+                 * If our current address looks like a MAC address, then try to print
+                 * to that, if not, ask user to select the printer.
+                 */
+                if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
+                    BluetoothDevice device = mBluetoothAdapter
+                            .getRemoteDevice(receiptPrinterDeviceAddr);
+                    // Attempt to connect to the device
+                    receiptPrinterService.connect(device);
+                    receiptPrinterService.getState();
+                } else {
+                    /*
+                     * Ask user to select the printer to connect to.
+                     */
+                    connectToBlueToothPrinter();
+                }
             }
         }
     }
@@ -272,9 +275,9 @@ public class SalesActivity extends AppCompatActivity
 
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
-            Toast.makeText(this, "Bluetooth is not available",
+            Toast.makeText(this, R.string.bt_not_available,
                     Toast.LENGTH_LONG).show();
-            finish();
+            //finish();
         }
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -294,14 +297,16 @@ public class SalesActivity extends AppCompatActivity
 
         // If Bluetooth is not on, request that it be enabled.
         // createService() will then be called during onActivityResult()
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableIntent = new Intent(
-                    BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableIntent, BTPrinterConstants.REQUEST_ENABLE_BT);
-            // Otherwise, setup the session
-        } else {
-            if (receiptPrinterService == null)
-                createService();
+        if (mBluetoothAdapter != null) {
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent enableIntent = new Intent(
+                        BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableIntent, BTPrinterConstants.REQUEST_ENABLE_BT);
+                // Otherwise, setup the session
+            } else {
+                if (receiptPrinterService == null)
+                    createService();
+            }
         }
     }
 
@@ -340,39 +345,40 @@ public class SalesActivity extends AppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (BTPrinterConstants.DEBUG)
-            Log.d(BTPrinterConstants.TAG, "onActivityResult " + resultCode);
-        switch (requestCode) {
-            case BTPrinterConstants.REQUEST_CONNECT_DEVICE: {
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK) {
-                    // Get the device MAC address
-                    receiptPrinterDeviceAddr = data.getExtras().getString(
-                            DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-                    // Get the BLuetoothDevice object
-                    if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
-                        BluetoothDevice device = mBluetoothAdapter
-                                .getRemoteDevice(receiptPrinterDeviceAddr);
-                        // Attempt to connect to the device
-                        receiptPrinterService.connect(device);
+        if (mBluetoothAdapter != null) {
+            if (BTPrinterConstants.DEBUG)
+                Log.d(BTPrinterConstants.TAG, "onActivityResult " + resultCode);
+            switch (requestCode) {
+                case BTPrinterConstants.REQUEST_CONNECT_DEVICE: {
+                    // When DeviceListActivity returns with a device to connect
+                    if (resultCode == Activity.RESULT_OK) {
+                        // Get the device MAC address
+                        receiptPrinterDeviceAddr = data.getExtras().getString(
+                                DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                        // Get the BLuetoothDevice object
+                        if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
+                            BluetoothDevice device = mBluetoothAdapter
+                                    .getRemoteDevice(receiptPrinterDeviceAddr);
+                            // Attempt to connect to the device
+                            receiptPrinterService.connect(device);
+                        }
                     }
+                    break;
                 }
-                break;
-            }
-            case BTPrinterConstants.REQUEST_ENABLE_BT: {
-                // When the request to enable Bluetooth returns
-                if (resultCode == Activity.RESULT_OK) {
-                    // Bluetooth is now enabled, so set up a session
-                    createService();
-                } else {
-                    // User did not enable Bluetooth or an error occured
-                    Log.d(BTPrinterConstants.TAG, "BT not enabled");
-                    Toast.makeText(this, R.string.bt_not_enabled_leaving,
-                            Toast.LENGTH_SHORT).show();
-                    finish();
+                case BTPrinterConstants.REQUEST_ENABLE_BT: {
+                    // When the request to enable Bluetooth returns
+                    if (resultCode == Activity.RESULT_OK) {
+                        // Bluetooth is now enabled, so set up a session
+                        createService();
+                    } else {
+                        // User did not enable Bluetooth or an error occured
+                        Log.d(BTPrinterConstants.TAG, "BT not enabled");
+                        Toast.makeText(this, R.string.bt_not_enabled_leaving,
+                                Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                    break;
                 }
-                break;
-            }
 //            case REQUEST_CHOSE_BMP:{
 //                if (resultCode == Activity.RESULT_OK){
 //                    Uri selectedImage = data.getData();
@@ -410,6 +416,7 @@ public class SalesActivity extends AppCompatActivity
 //                }
 //                break;
 //            }
+            }
         }
     }
 
