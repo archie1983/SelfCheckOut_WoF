@@ -71,7 +71,7 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   private StepView step2;
   private Boolean offlineClicked;
 
-  private Button connectButton;
+  private Button connectButton, btnConnectToPaypal;
 
 
   // abstract method from ToolbarActivity
@@ -94,6 +94,8 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
     step1.setOnButtonClickListener(this);
     step2 = (StepView)findViewById(R.id.step2);
     step2.setOnButtonClickListener(this);
+
+    btnConnectToPaypal = (Button) findViewById(R.id.btnConnectToPaypal);
 
     offlineClicked = false;
   }
@@ -485,8 +487,10 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   {
     if (v == step1.getButton()){
       initSDK();
-    }else if(v == step2.getButton()){
+    } else if(v == step2.getButton()){
       onInitMerchantClicked();
+    } else if (v == btnConnectToPaypal){
+      initSDK();
     }
   }
 
@@ -494,7 +498,7 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   {
     try
     {
-      AppInfo info = new AppInfo("SampleApp", "1.0", "01");
+      AppInfo info = new AppInfo(getString(R.string.pph_storage_name), "1.0", "01");
       RetailSDK.initialize(getApplicationContext(), new RetailSDK.AppState()
       {
         @Override

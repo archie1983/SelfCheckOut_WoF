@@ -87,6 +87,12 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
+                <Button
+                    android:id="@+id/btnConnectToPaypal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btnConnectToPaypal" />
+
                 <com.example.selfcheckout_wof.PPH.ui.StepView
                     android:id="@+id/step1"
                     android:layout_width="match_parent"
