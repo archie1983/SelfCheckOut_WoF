@@ -70,6 +70,13 @@ public class StepView extends LinearLayout
 
   }
 
+  public void setCodeText(String code) {
+    codeTextView.setText(code);
+  }
+
+  public void setTitleText(String title) {
+    titleTextView.setText(title);
+  }
 
   public void setStepDisabled(){
     button.setVisibility(GONE);

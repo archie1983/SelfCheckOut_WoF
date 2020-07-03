@@ -54,8 +54,9 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   public static final String PREFS_NAME = "SDKSampleAppPreferences";
   public static final String PREF_TOKEN_KEY_NAME = "lastToken";
   // private static final String MID_TIER_URL_FOR_LIVE = "http://pph-retail-sdk-sample.herokuapp.com/toPayPal/live";
-  private static final String MID_TIER_URL_FOR_LIVE = "https://ae-co-test.herokuapp.com/toPayPal/live?returnTokenOnQueryString=true";
+  //private static final String MID_TIER_URL_FOR_LIVE = "https://ae-co-test.herokuapp.com/toPayPal/live?returnTokenOnQueryString=true";
   //private static final String MID_TIER_URL_FOR_LIVE = "https://pph.elksnis.co.uk/toPayPal/live?returnTokenOnQueryString=true";
+  private static final String MID_TIER_URL_FOR_LIVE = "https://pph.elksnis.co.uk/toPayPal/live";
   // private static final String MID_TIER_URL_FOR_SANDBOX = "http://pph-retail-sdk-sample.herokuapp.com/toPayPal/sandbox";
   //private static final String MID_TIER_URL_FOR_SANDBOX = "https://pph-retail-sdk-sample.herokuapp.com/toPayPal/sandbox?returnTokenOnQueryString=true";
   //private static final String MID_TIER_URL_FOR_SANDBOX = "https://ae-co-test.herokuapp.com/toPayPal/sandbox?returnTokenOnQueryString=true";
@@ -67,11 +68,10 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   private ProgressDialog mProgressDialog = null;
   private RadioGroup radioGroup1;
 
-  private StepView step1;
-  private StepView step2;
+  private StepView stpConnectToPaypal;
   private Boolean offlineClicked;
 
-  private Button connectButton, btnConnectToPaypal;
+  private Button connectButton;
 
 
   // abstract method from ToolbarActivity
@@ -90,12 +90,9 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
 
     radioGroup1 = (RadioGroup) findViewById(R.id.radioGroup1);
     connectButton = (Button) findViewById(R.id.connect_reader_button);
-    step1 = (StepView)findViewById(R.id.step1);
-    step1.setOnButtonClickListener(this);
-    step2 = (StepView)findViewById(R.id.step2);
-    step2.setOnButtonClickListener(this);
 
-    btnConnectToPaypal = (Button) findViewById(R.id.btnConnectToPaypal);
+    stpConnectToPaypal = (StepView) findViewById(R.id.stpConnectToPaypal);
+    stpConnectToPaypal.setOnButtonClickListener(this);
 
     offlineClicked = false;
   }
@@ -115,7 +112,8 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   {
     RadioButton sandboxButton = (RadioButton) findViewById(R.id.radioSandbox);
     RadioButton liveButton = (RadioButton) findViewById(R.id.radioLive);
-    RadioButton offlineButton = (RadioButton) findViewById(R.id.radioOffline);
+
+    stpConnectToPaypal.setCodeText(getString(R.string.pph_connecting));
 
     if (sandboxButton.isChecked())
     {
@@ -140,10 +138,6 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
         initializeMerchant(credential);
 
       }
-    }
-    else if (offlineButton.isChecked())
-    {
-      initializeMerchantOffline();
     }
     else
     {
@@ -409,14 +403,16 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
           Log.d(LOG_TAG, "merchantReady without any error");
           cancelProgressbar();
 
-          step2.setStepCompleted();
+          stpConnectToPaypal.setStepCompleted();
           final TextView txtMerchantEmail = (TextView) findViewById(R.id.merchant_email);
           if (offlineClicked) {
             txtMerchantEmail.setText("Offline Merchant loaded");
+            stpConnectToPaypal.setCodeText("");
           }
           else
           {
             txtMerchantEmail.setText(merchant.getEmailAddress());
+            stpConnectToPaypal.setCodeText(getString(R.string.pph_connected_as) + " " + merchant.getEmailAddress());
           }
           final RelativeLayout logoutContainer = (RelativeLayout) findViewById(R.id.logout);
           logoutContainer.setVisibility(View.VISIBLE);
@@ -471,25 +467,20 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
 
   private void showProcessingProgressbar()
   {
-    step2.showProgressBar();
-
+    stpConnectToPaypal.showProgressBar();
   }
 
 
   private void cancelProgressbar()
   {
-    step2.hideProgressBarShowTick();
+    stpConnectToPaypal.hideProgressBarShowTick();
   }
 
 
   @Override
   public void onClick(View v)
   {
-    if (v == step1.getButton()){
-      initSDK();
-    } else if(v == step2.getButton()){
-      onInitMerchantClicked();
-    } else if (v == btnConnectToPaypal){
+    if (v == stpConnectToPaypal.getButton()){
       initSDK();
     }
   }
@@ -498,7 +489,10 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   {
     try
     {
-      AppInfo info = new AppInfo(getString(R.string.pph_storage_name), "1.0", "01");
+      stpConnectToPaypal.setCodeText(getString(R.string.pph_initialising_connection));
+      showProcessingProgressbar();
+      //AppInfo info = new AppInfo(getString(R.string.pph_storage_name), "1.0", "01");
+      AppInfo info = new AppInfo(getString(R.string.app_name), "1.0", "01");
       RetailSDK.initialize(getApplicationContext(), new RetailSDK.AppState()
       {
         @Override
@@ -533,6 +527,7 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
                   });
               AlertDialog alert = builder.create();
               alert.show();
+              stpConnectToPaypal.setCodeText("");
             }
           });
         }
@@ -542,7 +537,7 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
     {
       e.printStackTrace();
     }
-    step1.setStepCompleted();
-    step2.setStepEnabled();
+
+    onInitMerchantClicked();
   }
 }

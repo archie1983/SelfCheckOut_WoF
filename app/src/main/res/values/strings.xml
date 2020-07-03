@@ -1,6 +1,9 @@
 <resources>
     <string name="ok">OK</string>
-    <string name="app_name">Self Checkout</string>
+
+    <string name="app_name">Self_Checkout</string>
+    <string name="pph_storage_name">Self_Checkout</string>
+
     <string name="title_item_detail">Item Detail</string>
     <string name="btnAddMainCategory">Add Category</string>
     <string name="btnSaveCategory">Save Category</string>
@@ -60,7 +63,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
 
     <!-- PPH strings -->
-    <string name="pph_storage_name">Self_Checkout</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="error_title">Error</string>
@@ -262,6 +264,9 @@
     <string name="dialog_transaction_created_title">Replaying while in Offline Mode</string>
     <string name="dialog_transaction_created_message">Replaying transaction in offlineMode will bring the SDK back into Online Mode.</string>
 
+    <string name="pph_initialising_connection">Initialising connection</string>
+    <string name="pph_connecting">Connecting</string>
+    <string name="pph_connected_as">Connected as: </string>
     <string name="btnConnectToPaypal">Connect To Paypal</string>
 
 </resources>

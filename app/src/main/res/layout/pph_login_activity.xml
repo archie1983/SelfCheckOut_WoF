@@ -57,14 +57,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/pph_rbtn_selector_center"
+            android:background="@drawable/pph_rbtn_selector_right"
             android:button="@null"
             android:gravity="center"
             android:padding="5dp"
             android:text="Live"
             android:textColor="@drawable/pph_rbtn_textcolor_selector" />
 
-        <RadioButton
+        <!--RadioButton
             android:id="@+id/radioOffline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             android:gravity="center"
             android:padding="5dp"
             android:text="Offline"
-            android:textColor="@drawable/pph_rbtn_textcolor_selector" />
+            android:textColor="@drawable/pph_rbtn_textcolor_selector" /-->
     </RadioGroup>
 
         <!-- Steps container -->
@@ -87,13 +87,17 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/btnConnectToPaypal"
+                <com.example.selfcheckout_wof.PPH.ui.StepView
+                    android:id="@+id/stpConnectToPaypal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/btnConnectToPaypal" />
+                    android:padding="@dimen/activity_vertical_margin"
+                    stepview:button_text="@string/btnConnectToPaypal"
+                    stepview:code_text=""
+                    stepview:title_text=""
+                    />
 
-                <com.example.selfcheckout_wof.PPH.ui.StepView
+                <!--com.example.selfcheckout_wof.PPH.ui.StepView
                     android:id="@+id/step1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -114,7 +118,7 @@
                     stepview:enabled="false"
 
 
-                    />
+                    /-->
             </LinearLayout>
         </ScrollView>
 

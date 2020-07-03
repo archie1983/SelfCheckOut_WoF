@@ -52,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 stepview:title_text="@string/find_connect"
-                stepview:code_text="@string/device_find_connect"
+                stepview:code_text=""
                 stepview:button_text="@string/connect"
                 android:padding="@dimen/activity_vertical_margin"
                 ></com.example.selfcheckout_wof.PPH.ui.StepView>
@@ -61,7 +61,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 stepview:title_text="@string/connect_to_last_title"
-                stepview:code_text="@string/device_connect_last"
+                stepview:code_text=""
                 stepview:button_text="@string/connect"
                 android:padding="@dimen/activity_vertical_margin"
                 ></com.example.selfcheckout_wof.PPH.ui.StepView>
@@ -70,7 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 stepview:title_text="@string/auto_connect"
-                stepview:code_text="@string/auto_connect_code"
+                stepview:code_text=""
                 stepview:button_text="@string/connect"
                 android:padding="@dimen/activity_vertical_margin"
                 ></com.example.selfcheckout_wof.PPH.ui.StepView>
