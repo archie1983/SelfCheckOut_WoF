@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activities.vaultTransaction.VaultTransaction"
-    tools:showIn="@layout/activity_vault_transaction">
+    tools:context=".PPH.activities.vaultTransaction.PPHVaultTransaction"
+    tools:showIn="@layout/pph_activity_vault_transaction">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread" >
 
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/braintree_merchant_login_step"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_chainStyle="spread">
 
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/begin_vault_step"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -21,7 +21,7 @@
 
     <PreferenceCategory
         android:title="Tags">
-        <com.paypal.heresdk.sampleapp.ui.EditTextPreference android:key="@string/edit_text_pref" android:title="@string/edit_text_pref"></com.paypal.heresdk.sampleapp.ui.EditTextPreference>
+        <com.example.selfcheckout_wof.PPH.ui.EditTextPreference android:key="@string/edit_text_pref" android:title="@string/edit_text_pref"></com.example.selfcheckout_wof.PPH.ui.EditTextPreference>
 
     </PreferenceCategory>
 

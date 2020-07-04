@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
 
     android:orientation="vertical"
-    tools:context=".ui.OfflinePayActivity">
+    tools:context=".PPH.ui.OfflinePayActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -72,7 +72,7 @@
 
             </LinearLayout>
 
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/offline_status"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
                 stepview:enabled="true"
                 stepview:title_text="@string/offline_status" />
 
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/replay_offline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
                 stepview:enabled="true"
                 stepview:title_text="@string/replay_offline_transaction" />
 
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/stop_replay"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

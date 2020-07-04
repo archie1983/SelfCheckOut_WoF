@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ui.PaymentOptionsActivity">
+    tools:context=".PPH.ui.PaymentOptionsActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -40,7 +40,7 @@
 
     <fragment
         android:id="@+id/options_fragment"
-        android:name="com.paypal.heresdk.sampleapp.ui.PaymentOptionsFragment"
+        android:name="com.example.selfcheckout_wof.PPH.ui.PaymentOptionsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         ></fragment>

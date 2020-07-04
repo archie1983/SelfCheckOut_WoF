@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/xxxxlarge"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activities.transactionSelection.TransactionSelection"
-    tools:showIn="@layout/activity_transaction_selection"
+    tools:context=".PPH.activities.transactionSelection.PPHTransactionSelection"
+    tools:showIn="@layout/pph_activity_transaction_selection"
     android:orientation="vertical">
 
     <TextView

@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activities.vaultAndPayTransaction.VaultAndPayTransaction"
-    tools:showIn="@layout/activity_vault_and_pay_transaction">
+    tools:context=".PPH.activities.vaultAndPayTransaction.PPHVaultAndPayTransaction"
+    tools:showIn="@layout/pph_activity_vault_and_pay_transaction">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -21,7 +21,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread" >
 
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/braintree_merchant_login_step"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
             app:layout_constraintTop_toBottomOf="@id/braintree_merchant_login_view"
             app:layout_constraintBottom_toTopOf="@id/transaction_amount"
             app:layout_constraintVertical_chainStyle="spread">
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/create_invoice_step"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
             app:layout_constraintTop_toBottomOf="@id/transaction_amount"
             app:layout_constraintBottom_toTopOf="@id/begin_vault_and_pay_view"
             app:layout_constraintVertical_chainStyle="spread">
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/add_invoice_item_step"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintVertical_chainStyle="spread">
 
-            <com.paypal.heresdk.sampleapp.ui.StepView
+            <com.example.selfcheckout_wof.PPH.ui.StepView
                 android:id="@+id/begin_vault_and_pay_step"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
