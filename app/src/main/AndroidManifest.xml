@@ -58,6 +58,12 @@
         <activity
             android:name=".PPH.ui.ChargeActivity"
             android:label="@string/title_activity_charge"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:theme="@style/SelfCheckoutFullscreen">
+        </activity>
+        <activity
+            android:name=".PPH.ui.SelfCheckoutChargeActivity"
+            android:label="@string/title_activity_charge"
             android:configChanges="orientation|screenSize|keyboardHidden">
         </activity>
         <activity

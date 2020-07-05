@@ -81,7 +81,7 @@ public class SelectedMealView extends LinearLayout {
         this.setOrientation(VERTICAL);
         Iterator<PurchasableGoods> itemsInMeal = null;
 
-        UsersSelectedChoice.clearCurrentMeal();
+        //UsersSelectedChoice.clearCurrentMeal();
 
         if (meal != null && meal.getMealName() == getResources().getString(R.string.current_meal_name)) {
             mealInProgress = true;

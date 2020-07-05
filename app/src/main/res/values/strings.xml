@@ -32,6 +32,7 @@
 
     <string name="checkout_please_pay">Please use the card machine to pay</string>
     <string name="checkout_print_receipt">Print receipt</string>
+    <string name="checkout_pay">Pay!</string>
 
     <string name="title_activity_sales">SalesActivity</string>
     <string name="btnGoToAdmin">Admin Section</string>

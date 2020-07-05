@@ -20,6 +20,7 @@ import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.selfcheckout_wof.PPH.ui.SelfCheckoutChargeActivity;
 import com.example.selfcheckout_wof.btprinter_zj.BTPrinterConstants;
 import com.example.selfcheckout_wof.btprinter_zj.BluetoothService;
 import com.example.selfcheckout_wof.btprinter_zj.DeviceListActivity;
@@ -51,6 +52,11 @@ public class SalesActivity extends AppCompatActivity
      * Parent ID for items that have no parent (the top level items e.g. Food, Drink, etc.).
      */
     public static final int TOP_LEVEL_ITEMS = 0;
+
+    /**
+     * A return value for the intent that launches payment activity.
+     */
+    public static final int INVOICE_PAYMENT = 1;
 
     private View contentView;
     private final Runnable mShowContentRunnable = new Runnable() {
@@ -147,6 +153,11 @@ public class SalesActivity extends AppCompatActivity
     private void connectToBlueToothPrinter() {
         Intent serverIntent = new Intent(SalesActivity.this, DeviceListActivity.class);
         startActivityForResult(serverIntent, BTPrinterConstants.REQUEST_CONNECT_DEVICE);
+    }
+
+    public void onPay(View view) {
+        Intent serverIntent = new Intent(SalesActivity.this, SelfCheckoutChargeActivity.class);
+        startActivityForResult(serverIntent, INVOICE_PAYMENT);
     }
 
     public void onPrintReceipt(View view) {
