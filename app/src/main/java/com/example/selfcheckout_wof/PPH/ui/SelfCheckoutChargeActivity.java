@@ -20,6 +20,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
+import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
+import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.paypal.paypalretailsdk.DeviceUpdate;
 import com.paypal.paypalretailsdk.FormFactor;
 import com.paypal.paypalretailsdk.Invoice;
@@ -39,6 +42,7 @@ import com.paypal.paypalretailsdk.VaultRecord;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class SelfCheckoutChargeActivity extends AppCompatActivity implements View.OnClickListener
@@ -54,7 +58,6 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
     Invoice currentInvoice;
     Invoice invoiceForRefund;
 
-    private EditText amountEditText;
     private StepView createInvoiceStep;
     private StepView createTxnStep;
     private StepView acceptTxnStep;
@@ -101,7 +104,6 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
         setContentView(R.layout.pph_self_checkout_transaction_activity);
 
         Log.d(LOG_TAG, "onCreate");
-        amountEditText = (EditText)findViewById(R.id.amount);
         TextView paymentAmountText = (TextView) findViewById(R.id.payment_amount_text);
         paymentAmountText.setText(getString(R.string.payment_amount) + " (" + NumberFormat.getCurrencyInstance().getCurrency().getSymbol() + ")");
         createInvoiceStep = (StepView)findViewById(R.id.create_invoice_step);
@@ -113,38 +115,28 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
 
         sharedPrefs = getSharedPreferences(OfflinePayActivity.PREF_NAME, Context.MODE_PRIVATE);
 
-      amountEditText.setOnEditorActionListener(new TextView.OnEditorActionListener()
-        {
-          @Override
-          public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
-          {
-
-            if (actionId == EditorInfo.IME_ACTION_DONE){
-                if (TextUtils.isEmpty(amountEditText.getText().toString()))
-                {
-                    Toast.makeText(SelfCheckoutChargeActivity.this, "Amount cannot be empty", Toast.LENGTH_SHORT).show();
-                    return true;
-                }else
-                {
-                    createInvoiceStep.setStepEnabled();
-                    createTxnStep.setStepDisabled();
-                    // disablePaymentOptionsStep();
-                    acceptTxnStep.setStepDisabled();
-                    return false;
-
-                }
-            }
-            return false;
-          }
-        });
-
-
+        createInvoiceStep.setStepEnabled();
+        createTxnStep.setStepDisabled();
+        acceptTxnStep.setStepDisabled();
     }
+
+    /**
+     * This is where we'll keep the total amount of money that we need to charge for.
+     * We'll get this from the intent extra, that started this activity.
+     */
+    private double orderAmount = 0.0;
 
     @Override
     protected void onResume()
     {
         super.onResume();
+
+        /**
+         * Extracting the total amount tha we need to charge for.
+         */
+        Intent i= getIntent();
+        orderAmount = i.getDoubleExtra(INTENT_TRANX_TOTAL_AMOUNT, 0.0);
+
         if(sharedPrefs.getBoolean(OfflinePayActivity.OFFLINE_MODE,false))
         {
             if (RetailSDK.getTransactionManager().getOfflinePaymentEligibility()){
@@ -181,35 +173,69 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
             return;
         }
 
-        amountEditText = (EditText) findViewById(R.id.amount);
-        String amountText = amountEditText.getText().toString();
-        BigDecimal amount = BigDecimal.ZERO;
-        if (null != amountText && amountText.length() > 0) {
-            amountText = String.format("%.2f", Double.parseDouble(amountText));
-            amount = new BigDecimal(amountText);
-            if (amount.compareTo(BigDecimal.ZERO) == 0)
-            {
-                showInvalidAmountAlertDialog();
-                return;
+        Log.d(LOG_TAG, "onCreateInvoiceClicked amount:" + orderAmount);
+
+//        /**
+//         * Preparing the amount for payment.
+//         * One way to do it, is to create an invoice with one item - the grand total.
+//         */
+//        BigDecimal amount = BigDecimal.ZERO;
+//        amount = new BigDecimal(orderAmount);
+//        if (amount.compareTo(BigDecimal.ZERO) == 0)
+//        {
+//            showInvalidAmountAlertDialog();
+//            return;
+//        }
+//
+//
+//        currentInvoice = new Invoice(RetailSDK.getMerchant().getCurrency());
+//        BigDecimal quantity = new BigDecimal(1);
+//        currentInvoice.addItem("Item", quantity, amount, 1, null);
+//        // BigDecimal gratuityAmt = new BigDecimal(gratuityField.getText().toString());
+//        // if(gratuityAmt.intValue() > 0){
+//        //    invoice.setGratuityAmount(gratuityAmt);
+//        // }
+
+        /**
+         * Preparing the amount for payment.
+         * Another way to do it, is to create an invoice with each item that is being purchased.
+         */
+        currentInvoice = new Invoice(RetailSDK.getMerchant().getCurrency());
+        Iterator<ConfiguredMeal> itCurrentOrder = UsersSelectedChoice.getCurrentOrder();
+
+        /*
+         * Going through the meals in the order.
+         */
+        while (itCurrentOrder.hasNext()) {
+            ConfiguredMeal cm = itCurrentOrder.next();
+
+            ArrayList<PurchasableGoods> itemsInCurrentMeal = cm.getCurrentMealItems();
+
+            /*
+             * Going through each item in each meal.
+             */
+            if (itemsInCurrentMeal != null && itemsInCurrentMeal.size() > 0) {
+                for (PurchasableGoods pg : cm.getCurrentMealItems()) {
+                    BigDecimal amount = BigDecimal.ZERO;
+                    amount = new BigDecimal((double)pg.getPrice() / 100.0);
+                    /*
+                     * If we have a non-zero amount, then add that to the invoice.
+                     */
+                    if (amount.compareTo(BigDecimal.ZERO) != 0)
+                    {
+                        BigDecimal quantity = new BigDecimal(1);
+                        currentInvoice.addItem(pg.getLabel(), quantity, amount, pg.getID(), null);
+                    }
+                }
             }
         }
-        else
-        {
-            showInvalidAmountAlertDialog();
-            return;
-        }
-        Log.d(LOG_TAG, "onCreateInvoiceClicked amount:" + amount);
 
-        currentInvoice = new Invoice(RetailSDK.getMerchant().getCurrency());
-        BigDecimal quantity = new BigDecimal(1);
-        currentInvoice.addItem("Item", quantity, amount, 1, null);
         // BigDecimal gratuityAmt = new BigDecimal(gratuityField.getText().toString());
         // if(gratuityAmt.intValue() > 0){
         //    invoice.setGratuityAmount(gratuityAmt);
         // }
+        Log.d(LOG_TAG, "AE : Invoice created");
     }
-
-
 
     public void onCreateTransactionClicked()
     {
@@ -250,6 +276,7 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
                         });
                     }else{
                         currentTransaction = context;
+                        Log.d(LOG_TAG, "AE : Current transaction acquired");
                     }
                 }
             });
@@ -270,18 +297,17 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
                 public void completed(RetailSDKException e, Boolean aBoolean)
                 {
                     Log.d(LOG_TAG, "device update completed");
+                    Log.d(LOG_TAG, "AE : Starting payment");
                     SelfCheckoutChargeActivity.this.beginPayment();
                 }
             });
 
         }
         else {
+            Log.d(LOG_TAG, "AE : Starting payment");
             beginPayment();
         }
     }
-
-
-
 
     private void beginPayment()
     {

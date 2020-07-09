@@ -4,36 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.documentfile.provider.DocumentFile;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.example.selfcheckout_wof.PPH.login.PPHLoginActivity;
 import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
-import com.example.selfcheckout_wof.custom_components.utils.PaypalHereVariables;
 import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
 import com.example.selfcheckout_wof.custom_components.utils.SqliteExportAndImport;
 import com.example.selfcheckout_wof.data.SystemChoices;
-import com.paypal.paypalretailsdk.AppInfo;
-import com.paypal.paypalretailsdk.Merchant;
-import com.paypal.paypalretailsdk.RetailSDK;
-import com.paypal.paypalretailsdk.RetailSDKException;
-import com.paypal.paypalretailsdk.SdkCredential;
-import java.util.Set;
 
 public class AdminActivity extends AppCompatActivity {
 
@@ -89,7 +74,6 @@ public class AdminActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
-        progress = (ProgressBar)findViewById(R.id.progress);
 
         //# Ensuring that we have permissions for SD card read/write
         if (shouldAskPermissions()) {
@@ -194,256 +178,9 @@ public class AdminActivity extends AppCompatActivity {
     }
 
     private static final String LOG_TAG = AdminActivity.class.getSimpleName();
-    //private static final String MID_TIER_URL_FOR_LIVE = "https://pph-retail-sdk-sample.herokuapp.com/toPayPal/live?returnTokenOnQueryString=true";
-    private static final String MID_TIER_URL_FOR_LIVE = "https://pph.elksnis.co.uk/toPayPal/live?returnTokenOnQueryString=true";
-    public static final String PREF_NAME = "SelfCheckOutPrefs";
-    public static final String OFFLINE_MODE ="offlineMode";
-    public static final String OFFLINE_INIT ="offlineInit";
-
-    private ProgressBar progress;
 
     private void configurePaypalHere() {
         Intent pphLoginActivity = new Intent(this, PPHLoginActivity.class);
         startActivity(pphLoginActivity);
-    }
-
-    /**
-     * Initialise the PaypalHere SDK. The context here should be application context
-     * (getApplicationContext()) rather than just the activity, because this method
-     * will likely be called many times during normal operation fo the app.
-     *
-     */
-    public void initPaypalHere()
-    {
-        try
-        {
-            AppInfo info = new AppInfo("SelfCheckOut_WoF", "1.0", "01");
-            RetailSDK.initialize(getApplicationContext(), new RetailSDK.AppState()
-            {
-                @Override
-                public Activity getCurrentActivity()
-                {
-                    return AdminActivity.this;
-                }
-
-                @Override
-                public boolean getIsTabletMode()
-                {
-                    return false;
-                }
-            }, info);
-            /**
-             * Add this observer to handle insecure network errors from the sdk
-             */
-            RetailSDK.addUntrustedNetworkObserver(new RetailSDK.UntrusterNetworkObserver() {
-                @Override
-                public void untrustedNetwork(RetailSDKException error) {
-                    AdminActivity.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
-                            builder.setMessage("Insecure network. Please join a secure network and open the app again")
-                                    .setCancelable(true)
-                                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            finish();
-                                        }
-                                    });
-                            AlertDialog alert = builder.create();
-                            alert.show();
-                        }
-                    });
-                }
-            });
-        }
-        catch (RetailSDKException e)
-        {
-            e.printStackTrace();
-        }
-        initPaypalHereStep2();
-    }
-
-    private void initPaypalHereStep2() {
-        /* If User selected Live environment then we need to check if we already have live token form mid tier server or not.
-         * If we don't have the token then we need to start web view, else we can use the token and set it to sdk.
-         */
-        //String token = LocalPreferences.getLiveMidtierToken(LoginActivity.this);
-        String accessToken = PaypalHereVariables.getLiveMidtierAccessToken(this);
-        String refreshUrl = PaypalHereVariables.getLiveMidtierRefreshUrl(this);
-        String env = PaypalHereVariables.getLiveMidtierEnv(this);
-
-        if (null == accessToken || null == refreshUrl || null == env)
-        {
-            startWebView(this, MID_TIER_URL_FOR_LIVE, false, true);
-            //hardCodingInitMerchant();
-        }
-        else
-        {
-            Log.d(LOG_TAG, "onLoginButtonClicked looks like we have live access token: " + accessToken);
-            SdkCredential credential = new SdkCredential(env, accessToken);
-            credential.setTokenRefreshCredentials(refreshUrl);
-            Log.d(LOG_TAG, "onLoginButtonClicked looks like we have live token. Starting payment options activity");
-            initializeMerchant(credential);
-        }
-    }
-
-    private void startWebView(final Activity activity, String url, final boolean isSandBox, final boolean isLive)
-    {
-        Log.d(LOG_TAG, "startWebView url: " + url + " isSandbox: " + isSandBox + " isLive: " + isLive);
-
-        final WebView webView = (WebView) findViewById(R.id.id_webView);
-        webView.setVisibility(View.VISIBLE);
-
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.requestFocus(View.FOCUS_DOWN);
-        webView.setWebViewClient(new WebViewClient()
-        {
-            public boolean shouldOverrideUrlLoading(WebView view, String url)
-            {
-                Log.d(LOG_TAG, "shouldOverrideURLLoading: url: " + url);
-                //String returnStringCheckParam = "retailsdksampleapp://oauth?sdk_token=";
-                String returnStringCheckParam = "retailsdksampleapp://oauth?access_token=";
-
-                // List<NameValuePair> parameters = URLEncodedUtils.parse(new URI(url));
-                Uri uri = Uri.parse(url);
-                Set<String> paramNames = uri.getQueryParameterNames();
-                for (String key: paramNames) {
-                    String value = uri.getQueryParameter(key);
-                    Log.d(LOG_TAG, "shouldOverrideURLLoading: name: " + key + " value: " + value);
-                }
-
-                if (null != url && url.startsWith(returnStringCheckParam))
-                {
-                    if (paramNames.contains("access_token") && paramNames.contains("refresh_url") && paramNames.contains("env"))
-                    {
-                        String access_token = uri.getQueryParameter("access_token");
-                        String refresh_url = uri.getQueryParameter("refresh_url");
-                        String env = uri.getQueryParameter("env");
-                        Log.d(LOG_TAG, "shouldOverrideURLLoading: access_token: " + access_token);
-                        Log.d(LOG_TAG, "shouldOverrideURLLoading: refresh_url: " + refresh_url);
-                        Log.d(LOG_TAG, "shouldOverrideURLLoading: env: " + env);
-                        SdkCredential credential = new SdkCredential(env, access_token);
-                        credential.setTokenRefreshCredentials(refresh_url);
-                        //String compositeToken = url.substring(returnStringCheckParam.length());
-                        //Log.d(LOG_TAG, "shouldOverrideURLLoading compositeToken: " + compositeToken);
-                        if (isSandBox)
-                        {
-                            //LocalPreferences.storeSandboxMidTierToken(LoginActivity.this, compositeToken);
-                            //startPaymentOptionsActivity(compositeToken, PayPalHereSDK.Sandbox);
-                            //initializeMerchant(compositeToken, SW_REPOSITORY);
-                            PaypalHereVariables.storeSandboxMidTierCredentials(activity, access_token, refresh_url, env);
-                            initializeMerchant(credential);
-                        }
-                        else if (isLive)
-                        {
-                            PaypalHereVariables.storeLiveMidTierCredentials(activity, access_token, refresh_url, env);
-                            //LocalPreferences.storeLiveMidTierToken(LoginActivity.this, compositeToken);
-                            // startPaymentOptionsActivity(compositeToken, PayPalHereSDK.Live);
-                            initializeMerchant(credential);
-                        }
-                        webView.setVisibility(View.GONE);
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-        webView.loadUrl(url);
-    }
-
-    private void initializeMerchant(final SdkCredential credential)
-    {
-        try
-        {
-            showProgressBar();
-            RetailSDK.initializeMerchant(credential, new RetailSDK.MerchantInitializedCallback()
-            {
-                @Override
-                public void merchantInitialized(RetailSDKException error, Merchant merchant)
-                {
-                    SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = pref.edit();
-                    editor.putBoolean(OFFLINE_MODE, false);
-                    editor.putBoolean(OFFLINE_INIT, false);
-                    editor.apply();
-                    editor.commit();
-                    AdminActivity.this.merchantReady(error, merchant);
-                }
-            });
-        }
-        catch (Exception x)
-        {
-            try
-            {
-                Log.e(LOG_TAG, "exception: " + x.toString());
-                //statusText.setText(x.toString());
-            }
-            catch (Exception ignore)
-            {
-                ignore.printStackTrace();
-            }
-            x.printStackTrace();
-        }
-    }
-
-    void merchantReady(final RetailSDKException error, final Merchant merchant)
-    {
-        if (error == null)
-        {
-            AdminActivity.this.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    // Add the BN code for Partner tracking. To obtain this value, contact
-                    // your PayPal account representative. Please do not change this value when
-                    // using this sample app for testing.
-                    merchant.setReferrerCode("PPHSDK_SampleApp_Android");
-
-                    Log.d(LOG_TAG, "merchantReady without any error");
-                    cancelProgressbar();
-
-                    final TextView txtMerchantEmail = (TextView) findViewById(R.id.merchant_email);
-                    txtMerchantEmail.setText(getResources().getString(R.string.txtMerchantEmail) + merchant.getEmailAddress());
-                }
-            });
-        }
-        else
-        {
-            AdminActivity.this.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    Log.d(LOG_TAG, "RetailSDK initialize on Error:" + error.toString());
-                    cancelProgressbar();
-                    AlertDialog.Builder builder = new AlertDialog.Builder(AdminActivity.this);
-                    builder.setTitle(R.string.paypal_error_title);
-                    builder.setMessage(R.string.paypal_error_initialize_msg);
-                    builder.setCancelable(false);
-                    builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            Log.d(LOG_TAG, "RetailSDK Initialize error AlertDialog onClick");
-                            dialog.dismiss();
-                            finish();
-                        }
-                    });
-                    builder.show();
-                }
-            });
-        }
-    }
-
-    public void showProgressBar()
-    {
-        progress.setVisibility(View.VISIBLE);
-    }
-
-    public void cancelProgressbar(){
-        progress.setVisibility(View.GONE);
     }
 }

@@ -44,15 +44,6 @@
                     android:text="@string/payment_amount"
                     android:textColor="@color/sdk_black"
                     />
-                <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="2.00"
-                    android:id="@+id/amount"
-                    android:inputType="number"
-                    android:imeOptions="actionDone"
-                    />
-
             </LinearLayout>
 
             <!-- Steps container -->

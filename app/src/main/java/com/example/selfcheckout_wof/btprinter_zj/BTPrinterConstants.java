@@ -16,7 +16,7 @@ public class BTPrinterConstants {
     public static final int MESSAGE_UNABLE_CONNECT = 7;
     /*******************************************************************************************************/
     // Key names received from the BluetoothService Handler
-    public static final String DEVICE_NAME = "device_name";
+    public static final String DEVICE_NAME = "bt_receipt_printer_device_name";
     public static final String TOAST = "toast";
 
     // Intent request codes
