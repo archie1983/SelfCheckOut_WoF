@@ -1,4 +1,4 @@
-package com.example.selfcheckout_wof.PPH.ui;
+package com.example.selfcheckout_wof;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -6,20 +6,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.PPH.ui.AuthCaptureActivity;
+import com.example.selfcheckout_wof.PPH.ui.OfflinePayActivity;
+import com.example.selfcheckout_wof.PPH.ui.OfflinePaySuccessActivity;
+import com.example.selfcheckout_wof.PPH.ui.PaymentOptionsActivity;
+import com.example.selfcheckout_wof.PPH.ui.RefundActivity;
+import com.example.selfcheckout_wof.PPH.ui.StepView;
+import com.example.selfcheckout_wof.PPH.ui.VaultActivity;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
@@ -45,14 +45,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class SelfCheckoutChargeActivity extends AppCompatActivity implements View.OnClickListener
+public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implements View.OnClickListener
 {
     private static final String LOG_TAG = SelfCheckoutChargeActivity.class.getSimpleName();
     public static final String INTENT_TRANX_TOTAL_AMOUNT = "TOTAL_AMOUNT";
     public static final String INTENT_AUTH_ID = "AUTH_ID";
     public static final String INTENT_INVOICE_ID = "INVOICE_ID";
     public static final String INTENT_VAULT_ID = "VAULT_ID";
-    private static final int REQUEST_OPTIONS_ACTIVITY = 1;
+    //private static final int REQUEST_OPTIONS_ACTIVITY = 8001;
 
     TransactionContext currentTransaction;
     Invoice currentInvoice;
@@ -466,7 +466,7 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
 
     private void goToOfflinePayCompleteActivity()
     {
-        Intent intent = new Intent(SelfCheckoutChargeActivity.this,OfflinePaySuccessActivity.class);
+        Intent intent = new Intent(SelfCheckoutChargeActivity.this, OfflinePaySuccessActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
@@ -550,23 +550,23 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK)
         {
-            if (requestCode == REQUEST_OPTIONS_ACTIVITY)
-            {
-                Bundle optionsBundle = data.getExtras();
-                isAuthCaptureEnabled = optionsBundle.getBoolean(OPTION_AUTH_CAPTURE);
-                vaultType = TransactionBeginOptionsVaultType.fromInt(optionsBundle.getInt(OPTION_VAULT_TYPE));
-                isAppPromptEnabled = optionsBundle.getBoolean(OPTION_APP_PROMPT);
-                isTippingOnReaderEnabled = optionsBundle.getBoolean(OPTION_TIP_ON_READER);
-                isAmountBasedTippingEnabled = optionsBundle.getBoolean(OPTION_AMOUNT_TIP);
-                isQuickChipEnabled = optionsBundle.getBoolean(OPTION_QUICK_CHIP_ENABLED);
-                isMagneticSwipeEnabled = optionsBundle.getBoolean(OPTION_MAGNETIC_SWIPE);
-                isChipEnabled = optionsBundle.getBoolean(OPTION_CHIP);
-                isContactlessEnabled = optionsBundle.getBoolean(OPTION_CONTACTLESS);
-                isManualCardEnabled = optionsBundle.getBoolean(OPTION_MANUAL_CARD);
-                isSecureManualEnabled = optionsBundle.getBoolean(OPTION_SECURE_MANUAL);
-                customerId = optionsBundle.getString(OPTION_CUSTOMER_ID);
-                tagString = optionsBundle.getString(OPTION_TAG);
-            }
+//            if (requestCode == REQUEST_OPTIONS_ACTIVITY)
+//            {
+//                Bundle optionsBundle = data.getExtras();
+//                isAuthCaptureEnabled = optionsBundle.getBoolean(OPTION_AUTH_CAPTURE);
+//                vaultType = TransactionBeginOptionsVaultType.fromInt(optionsBundle.getInt(OPTION_VAULT_TYPE));
+//                isAppPromptEnabled = optionsBundle.getBoolean(OPTION_APP_PROMPT);
+//                isTippingOnReaderEnabled = optionsBundle.getBoolean(OPTION_TIP_ON_READER);
+//                isAmountBasedTippingEnabled = optionsBundle.getBoolean(OPTION_AMOUNT_TIP);
+//                isQuickChipEnabled = optionsBundle.getBoolean(OPTION_QUICK_CHIP_ENABLED);
+//                isMagneticSwipeEnabled = optionsBundle.getBoolean(OPTION_MAGNETIC_SWIPE);
+//                isChipEnabled = optionsBundle.getBoolean(OPTION_CHIP);
+//                isContactlessEnabled = optionsBundle.getBoolean(OPTION_CONTACTLESS);
+//                isManualCardEnabled = optionsBundle.getBoolean(OPTION_MANUAL_CARD);
+//                isSecureManualEnabled = optionsBundle.getBoolean(OPTION_SECURE_MANUAL);
+//                customerId = optionsBundle.getString(OPTION_CUSTOMER_ID);
+//                tagString = optionsBundle.getString(OPTION_TAG);
+//            }
         }
     }
 
@@ -598,6 +598,56 @@ public class SelfCheckoutChargeActivity extends AppCompatActivity implements Vie
             onAcceptTransactionClicked();
         }
     }
+
+
+
+
+//    @Override
+//    public void onClick(View v)
+//    {
+//        if (v == createInvoiceStep.getButton())
+//        {
+//            onCreateInvoiceClicked();
+//            createInvoiceStep.setStepCompleted();
+//            createTxnStep.setStepEnabled();
+//        }
+//        else if(v == createTxnStep.getButton())
+//        {
+//            onCreateTransactionClicked();
+//            createTxnStep.setStepCompleted();
+//            // Don't enable payment options step if offline mode is selected
+//            if(!sharedPrefs.getBoolean(OfflinePayActivity.OFFLINE_MODE,false))
+//            {
+//                // enablePaymentOptionsStep();
+//                acceptTxnStep.setStepEnabled();
+//            } else {
+//                acceptTxnStep.setStepEnabled();
+//            }
+//        }
+//        else if(v == acceptTxnStep.getButton())
+//        {
+//            onAcceptTransactionClicked();
+//        }else if(v == paymentOptionsStep){
+//            Intent optionsActivity = new Intent(this, PaymentOptionsActivity.class);
+//            optionsActivity.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+//            optionsActivity.putExtras(getOptionsBundle());
+//            startActivityForResult(optionsActivity,REQUEST_OPTIONS_ACTIVITY);
+//        }else if(v == offlineModeContainer){
+//            if (currentTransaction != null) {
+//                showTransactionAlreadyCreatedDialog();
+//            } else {
+//                Intent offlineActivity = new Intent(this, OfflinePayActivity.class);
+//                offlineActivity.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+//                startActivity(offlineActivity);
+//            }
+//        }
+//    }
+
+
+
+
+
+
 
     public List<FormFactor> getPreferredFormFactors()
     {

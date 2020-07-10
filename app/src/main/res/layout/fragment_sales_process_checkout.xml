@@ -27,12 +27,6 @@ android:orientation="vertical">
             android:textSize="@dimen/text_32" />
 
         <Button
-            android:id="@+id/btnPrintReceipt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="onPrintReceipt"
-            android:text="@string/checkout_print_receipt" />
-        <Button
             android:id="@+id/btnPay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

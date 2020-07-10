@@ -6,31 +6,15 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.selfcheckout_wof.PPH.ui.SelfCheckoutChargeActivity;
-import com.example.selfcheckout_wof.btprinter_zj.BTPrintManagement;
-import com.example.selfcheckout_wof.btprinter_zj.BTPrinterConstants;
-import com.example.selfcheckout_wof.btprinter_zj.BluetoothService;
-import com.example.selfcheckout_wof.btprinter_zj.DeviceListActivity;
-import com.example.selfcheckout_wof.btprinter_zj.PrinterCommand;
 import com.example.selfcheckout_wof.custom_components.SalesProcessNavigationFragment;
-import com.example.selfcheckout_wof.custom_components.SelectedMealView;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
-import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 
 import java.util.Iterator;
@@ -127,15 +111,9 @@ public class SalesActivity extends AppCompatActivity
         return orderTotal / 100.0;
     }
 
-    public void onPrintReceipt(View view) {
-        BTPrintManagement.handleReceiptPrinting();
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        BTPrintManagement.createBTPrinterAdapter();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_sales);
@@ -146,41 +124,6 @@ public class SalesActivity extends AppCompatActivity
         displayAvailableSalesItemsOrCurrentOrder(0, TOP_LEVEL_ITEMS, SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE);
 
         contentView = findViewById(R.id.frmSalesItemsListBrowse);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        BTPrintManagement.startBTPrinterService();
-    }
-
-    @Override
-    public synchronized void onResume() {
-        super.onResume();
-        BTPrintManagement.startBTPrinterService();
-    }
-
-    @Override
-    protected void onDestroy() {
-        // TODO Auto-generated method stub
-        super.onDestroy();
-        BTPrintManagement.stopBTPrinterService();
-        if (BTPrinterConstants.DEBUG)
-            Log.e(BTPrinterConstants.TAG, "--- ON DESTROY ---");
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        /*
-         * If we have BT printer codes coming back to deal with, then handle that with the
-         * static functions that we have.
-         */
-        if (requestCode == BTPrinterConstants.REQUEST_CONNECT_DEVICE ||
-                requestCode == BTPrinterConstants.REQUEST_ENABLE_BT) {
-            BTPrintManagement.processBTActivityResult(requestCode, resultCode, data);
-        }
     }
 
     /**

@@ -36,7 +36,7 @@ public class BTPrintManagement {
 
     private static AppCompatActivity context;
 
-    public void setContext(AppCompatActivity context_in) {
+    public static void setContext(AppCompatActivity context_in) {
         context = context_in;
     }
 

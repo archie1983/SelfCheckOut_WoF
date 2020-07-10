@@ -37,6 +37,14 @@
                 android:orientation="vertical"
                 android:layout_margin="@dimen/activity_vertical_margin"
                 android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/btnPrintReceipt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="onPrintReceipt"
+                    android:text="Print Receipt" />
+
                 <TextView
                     android:id="@+id/payment_amount_text"
                     android:layout_width="wrap_content"
