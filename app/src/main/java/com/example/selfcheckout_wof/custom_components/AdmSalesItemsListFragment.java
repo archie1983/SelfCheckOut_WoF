@@ -6,23 +6,16 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
-import com.example.selfcheckout_wof.AdminActivity;
 import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
-import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
-import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
-import com.example.selfcheckout_wof.data.AppDatabase;
-import com.example.selfcheckout_wof.data.DBThread;
+import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
 import com.example.selfcheckout_wof.data.SalesItems;
 
-import java.text.RuleBasedCollator;
 import java.util.List;
 
 /**
@@ -127,7 +120,7 @@ public class AdmSalesItemsListFragment extends Fragment {
                 }
             });
         } else {
-            List<SalesItems> sales_items = SalesItemsCache.getInstance().getCachedSalesItemsList();
+            List<SalesItems> sales_items = CheckOutDBCache.getInstance().getCachedSalesItemsList();
             if (sales_items != null) {
                 for (final SalesItems si : sales_items) {
                     /*

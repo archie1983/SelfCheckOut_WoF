@@ -1,8 +1,5 @@
 package com.example.selfcheckout_wof.data;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * An interface for all the enums that I'll use to specify goods, that can be added
  * to invoice and purchased.

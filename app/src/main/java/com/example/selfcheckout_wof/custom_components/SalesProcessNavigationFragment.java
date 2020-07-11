@@ -21,14 +21,11 @@ import com.example.selfcheckout_wof.SalesActivity;
 import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.custom_components.utils.IntentFactory;
-import com.example.selfcheckout_wof.custom_components.utils.PopupQuestions;
-import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
+import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.example.selfcheckout_wof.data.SalesItems;
-import com.example.selfcheckout_wof.data.SystemChoices;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -383,18 +380,18 @@ public class SalesProcessNavigationFragment extends Fragment {
             DBThread.addTask(new Runnable() {
                 @Override
                 public void run() {
-                    List<SalesItems> salesItemsList = SalesItemsCache.getInstance().getSalesItemsPage(page_number, parent_ID);
+                    List<SalesItems> salesItemsList = CheckOutDBCache.getInstance().getSalesItemsPage(page_number, parent_ID);
                     int item_count = salesItemsList.size();
 
                     /**
                      * Updating the global variable item_count_in_next_page with the item count in the next page.
                      */
-                    item_count_in_next_page = SalesItemsCache.getInstance().getNumberOfItemsInPage(page_number + 1, parent_ID);
+                    item_count_in_next_page = CheckOutDBCache.getInstance().getNumberOfItemsInPage(page_number + 1, parent_ID);
 
                     /**
                      * Updating the parent SalesItem.
                      */
-                    parentSalesItem = SalesItemsCache.getInstance().getSalesItemByID(parent_ID);
+                    parentSalesItem = CheckOutDBCache.getInstance().getSalesItemByID(parent_ID);
 
                     /*
                      * making sure that the row size will be as close as possible to the column count,

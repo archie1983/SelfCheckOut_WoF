@@ -7,4 +7,5 @@ import androidx.room.RoomDatabase;
 @Database(entities = {SalesItems.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract SalesItemsDao salesItemsDao();
+    public abstract StoredBTDevicesDao storedBTDevicesDao();
 }

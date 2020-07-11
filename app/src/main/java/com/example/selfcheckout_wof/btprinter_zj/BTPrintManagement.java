@@ -15,8 +15,10 @@ import com.example.selfcheckout_wof.R;
 import com.example.selfcheckout_wof.SalesActivity;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
+import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
+import com.example.selfcheckout_wof.data.StoredBTDevices;
 
 import java.util.Iterator;
 
@@ -110,7 +112,18 @@ public class BTPrintManagement {
      */
     private static void createService() {
         receiptPrinterService = new BluetoothService(context, receiptPrinterActions);
-        connectToBlueToothPrinter();
+
+        /**
+         * First try and read the DB for an existing last used printer device.
+         * If that exists, then use that address. If not, then prompt user to scan
+         * and select a device.
+         */
+        StoredBTDevices currentDevice = CheckOutDBCache.getInstance().getLastUsedZJ_BTPrinter();
+        if (currentDevice != null) {
+            receiptPrinterDeviceAddr = currentDevice.getDeviceAddr();
+        } else {
+            connectToBlueToothPrinter();
+        }
     }
 
     public static final void createBTPrinterAdapter() {
@@ -174,13 +187,14 @@ public class BTPrintManagement {
             } else {
                 /**
                  * If our current address looks like a MAC address, then try to print
-                 * to that, if not, ask user to select the printer.
+                 * to that (no need to save to DB because this should already be there),
+                 * if not, ask user to select the printer.
                  */
-                if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
-                    BluetoothDevice device = mBluetoothAdapter
-                            .getRemoteDevice(receiptPrinterDeviceAddr);
-                    // Attempt to connect to the device
-                    receiptPrinterService.connect(device);
+                if (tryToConnectToCurrentMACAddress(false)) {
+                    /*
+                     * We tried to connect to and address that looked valid.
+                     * Let's see if it worked. This getState will trigger the callback.
+                     */
                     receiptPrinterService.getState();
                 } else {
                     /*
@@ -189,6 +203,31 @@ public class BTPrintManagement {
                     connectToBlueToothPrinter();
                 }
             }
+        }
+    }
+
+    /**
+     * If our current address looks like a MAC address, then try to connect
+     * to that.
+     */
+    private static boolean tryToConnectToCurrentMACAddress(boolean saveToDBIfMACGood) {
+        // Get the BLuetoothDevice object
+        if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
+            BluetoothDevice device = mBluetoothAdapter
+                    .getRemoteDevice(receiptPrinterDeviceAddr);
+            // Attempt to connect to the device
+            receiptPrinterService.connect(device);
+
+            if (saveToDBIfMACGood) {
+                /*
+                 * Store or update the device in the DB
+                 */
+                CheckOutDBCache.getInstance().storeLastUsedZJ_BTPrinter(device);
+            }
+
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -301,13 +340,9 @@ public class BTPrintManagement {
                         // Get the device MAC address
                         receiptPrinterDeviceAddr = data.getExtras().getString(
                                 DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-                        // Get the BLuetoothDevice object
-                        if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
-                            BluetoothDevice device = mBluetoothAdapter
-                                    .getRemoteDevice(receiptPrinterDeviceAddr);
-                            // Attempt to connect to the device
-                            receiptPrinterService.connect(device);
-                        }
+
+                        // and try to connect to it and save it to DB.
+                        tryToConnectToCurrentMACAddress(true);
                     }
                     break;
                 }

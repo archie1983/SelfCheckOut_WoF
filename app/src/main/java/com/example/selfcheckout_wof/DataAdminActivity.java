@@ -20,7 +20,7 @@ import com.example.selfcheckout_wof.custom_components.AdmSalesItemView;
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
 import com.example.selfcheckout_wof.custom_components.exceptions.AdminActivityNotReady;
-import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
+import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SalesItems;
@@ -137,7 +137,7 @@ public class DataAdminActivity extends AppCompatActivity
             multi_choice_number = 1;
         }
 
-        final AppDatabase db = SalesItemsCache.getDBInstance();
+        final AppDatabase db = CheckOutDBCache.getDBInstance();
 
         /*
          * If we have a loaded sales item, then we want to update it with the new
@@ -335,7 +335,7 @@ public class DataAdminActivity extends AppCompatActivity
          */
         SalesItems siToDisplayInSpinner = null;
 
-        for (SalesItems si : SalesItemsCache.getInstance().getSalesItemsList()) {
+        for (SalesItems si : CheckOutDBCache.getInstance().getSalesItemsList()) {
             if (si.si_id == salesItem.parentCategoryId) {
                 siToDisplayInSpinner = si;
             }
@@ -356,7 +356,7 @@ public class DataAdminActivity extends AppCompatActivity
          * any other index, then we want to display here the category, whose index is
          * 1 higher.
          */
-        spnParentCategories.setSelection(SalesItemsCache.getInstance().getSalesItemsParents().indexOf(siToDisplayInSpinner) + 1);
+        spnParentCategories.setSelection(CheckOutDBCache.getInstance().getSalesItemsParents().indexOf(siToDisplayInSpinner) + 1);
 
         /*
          * We'll also want the "delete category" button available
@@ -386,7 +386,7 @@ public class DataAdminActivity extends AppCompatActivity
      * flexibility in scheduling this task.
      */
     public void updateSalesItemsListView() {
-        SalesItemsCache.getInstance().forceLoadSalesItemsList();
+        CheckOutDBCache.getInstance().forceLoadSalesItemsList();
 
         /*
          * First re-populate the drop down box of main categories to select.
@@ -399,7 +399,7 @@ public class DataAdminActivity extends AppCompatActivity
         final SimpleCursorAdapter scaParentCategories = new SimpleCursorAdapter(
                 this,
                 android.R.layout.simple_spinner_dropdown_item,//android.R.layout.simple_spinner_item
-                SalesItemsCache.getInstance().getSalesItemsParentsForDropDownBox(),
+                CheckOutDBCache.getInstance().getSalesItemsParentsForDropDownBox(),
                 adapterCols,
                 adapterRowViews,
                 0);

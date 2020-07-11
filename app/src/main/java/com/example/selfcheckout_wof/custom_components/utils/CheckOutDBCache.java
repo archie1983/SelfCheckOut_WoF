@@ -9,6 +9,7 @@
 package com.example.selfcheckout_wof.custom_components.utils;
 
 import android.app.Application;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -16,11 +17,12 @@ import androidx.room.Room;
 
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.SalesItems;
+import com.example.selfcheckout_wof.data.StoredBTDevices;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SalesItemsCache extends Application {
+public class CheckOutDBCache extends Application {
     /**
      * A reference to the database. We'll initialise it in the getDBInstance(...) function
      */
@@ -58,6 +60,67 @@ public class SalesItemsCache extends Application {
         }
 
         return db_instance;
+    }
+
+    /**
+     * Cached version of last used ZJ BT printer. To avoid extra DB accesses.
+     */
+    private static StoredBTDevices lastUsedZJ_BTPrinter;
+
+    /**
+     * Last used ZJ BT printer.
+     */
+    public StoredBTDevices getLastUsedZJ_BTPrinter() {
+        if (lastUsedZJ_BTPrinter == null) {
+            final AppDatabase db = getDBInstance();
+            if (db != null) {
+                lastUsedZJ_BTPrinter = db.storedBTDevicesDao().getZJPrinter();
+            }
+            return lastUsedZJ_BTPrinter;
+        } else {
+            return lastUsedZJ_BTPrinter;
+        }
+    }
+
+    /**
+     * Stores (if none registered before) or updates (if one exists) last used ZJ BT printer
+     * device in the DB.
+     *
+     * @param device
+     */
+    public void storeLastUsedZJ_BTPrinter(BluetoothDevice device) {
+        final AppDatabase db = getDBInstance();
+        if (db != null) {
+            if (lastUsedZJ_BTPrinter == null) {
+                /*
+                 * If it doesn't exist at all, then put in this one.
+                 */
+                lastUsedZJ_BTPrinter = StoredBTDevices.createDevice(device.getName(), device.getAddress(), StoredBTDevices.BTDeviceType.ZJ_PRINTER);
+                db.storedBTDevicesDao().insertAll(lastUsedZJ_BTPrinter);
+            } else {
+                /*
+                 * If one already exists, then update it if it's different.
+                 */
+                if (!lastUsedZJ_BTPrinter.deviceName.equals(device.getName()) ||
+                        !lastUsedZJ_BTPrinter.deviceAddr.equals(device.getAddress())) {
+                    lastUsedZJ_BTPrinter.deviceAddr = device.getAddress();
+                    lastUsedZJ_BTPrinter.deviceName = device.getName();
+                    db.storedBTDevicesDao().update(lastUsedZJ_BTPrinter);
+                }
+            }
+        }
+    }
+
+    /**
+     * Last connected PPH card reader.
+     */
+    public StoredBTDevices getLastUsedPPHReader() {
+        StoredBTDevices reader = null;
+        final AppDatabase db = getDBInstance();
+        if (db != null) {
+            reader = db.storedBTDevicesDao().getZJPrinter();
+        }
+        return reader;
     }
 
     /**
@@ -223,9 +286,9 @@ public class SalesItemsCache extends Application {
      * Ensuring that we have an application context always available for
      * Room database access.
      */
-    private static SalesItemsCache instance;
+    private static CheckOutDBCache instance;
 
-    public static SalesItemsCache getInstance() {
+    public static CheckOutDBCache getInstance() {
         return instance;
     }
 

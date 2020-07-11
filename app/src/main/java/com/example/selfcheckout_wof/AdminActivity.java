@@ -16,7 +16,7 @@ import android.view.View;
 
 import com.example.selfcheckout_wof.PPH.login.PPHLoginActivity;
 import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
-import com.example.selfcheckout_wof.custom_components.utils.SalesItemsCache;
+import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
 import com.example.selfcheckout_wof.custom_components.utils.SqliteExportAndImport;
 import com.example.selfcheckout_wof.data.SystemChoices;
 
@@ -160,7 +160,7 @@ public class AdminActivity extends AppCompatActivity {
             getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
             try {
-                SqliteExportAndImport.export(getApplicationContext(), getContentResolver(), pickedDir, SalesItemsCache.getDBInstance().getOpenHelper().getReadableDatabase());
+                SqliteExportAndImport.export(getApplicationContext(), getContentResolver(), pickedDir, CheckOutDBCache.getDBInstance().getOpenHelper().getReadableDatabase());
             } catch (DataImportExportException exc) {
                 Log.d(LOG_TAG, exc.getMessage());
             }
@@ -170,7 +170,7 @@ public class AdminActivity extends AppCompatActivity {
 
             try {
                 SqliteExportAndImport.importData(getApplicationContext(), getContentResolver(), pickedDir,
-                        SalesItemsCache.getDBInstance().getOpenHelper().getWritableDatabase());
+                        CheckOutDBCache.getDBInstance().getOpenHelper().getWritableDatabase());
             } catch (DataImportExportException exc) {
                 Log.d(LOG_TAG, exc.getMessage());
             }
