@@ -11,6 +11,7 @@ package com.example.selfcheckout_wof.custom_components.utils;
 import android.app.Application;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 
 import androidx.room.ColumnInfo;
@@ -122,9 +123,11 @@ public class CheckOutDBCache extends Application {
     public void storeLastUsedZJ_BTPrinter(BluetoothDevice device) {
         final AppDatabase db = getDBInstance();
         if (db != null) {
-            if (lastUsedZJ_BTPrinter == null) {
+            if (lastUsedZJ_BTPrinter == null || lastUsedZJ_BTPrinter.deviceAddr.equals("")) {
                 /*
-                 * If it doesn't exist at all, then put in this one.
+                 * If it doesn't exist at all or we only have the default one (which
+                 * is basically the same as the device record not existing),
+                 * then put in this one.
                  */
                 lastUsedZJ_BTPrinter = StoredBTDevices.createDevice(device.getName(), device.getAddress(), StoredBTDevices.BTDeviceType.ZJ_PRINTER);
                 db.storedBTDevicesDao().insertAll(lastUsedZJ_BTPrinter);
@@ -320,5 +323,19 @@ public class CheckOutDBCache extends Application {
     public void onCreate() {
         instance = this;
         super.onCreate();
+        resources = getResources();
     }
+
+    private static Resources resources;
+
+    /**
+     * An easy way to access app resources. Could get them through the context variable too, but
+     * why not have both?
+     *
+     * @return
+     */
+    public static Resources getAppResources() {
+        return resources;
+    }
+
 }

@@ -60,6 +60,9 @@
     <string name="disconnected">disconnected</string>
     <string name="connect_printer">Connect Printer</string>
     <string name="test_printer">Test Printer</string>
+    <string name="unable_to_connect_device">Unable to connect device</string>
+    <string name="could_not_close_unwanted_socket">Could not close unwanted socket</string>
+    <string name="device_connection_lost">Device connection was lost</string>
 
     <!-- PPH strings -->
     <string name="yes">Yes</string>

@@ -10,6 +10,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -123,7 +126,7 @@ public class BluetoothService {
      * @param device  The BluetoothDevice that has been connected
      */
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice device) {
-        if (DEBUG) Log.d(TAG, "connected");
+        if (DEBUG) Log.d(TAG, CheckOutDBCache.getAppResources().getString(R.string.connected));
 
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {mConnectThread.cancel(); mConnectThread = null;}
@@ -182,9 +185,10 @@ public class BluetoothService {
         setState(STATE_LISTEN);
 
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_TOAST);
+        //Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_UNABLE_CONNECT);
         Bundle bundle = new Bundle();
-        bundle.putString(BTPrinterConstants.TOAST, "Unable to connect device");
+        bundle.putString(BTPrinterConstants.TOAST, CheckOutDBCache.getAppResources().getString(R.string.unable_to_connect_device));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
     }
@@ -196,9 +200,10 @@ public class BluetoothService {
         //setState(STATE_LISTEN);
 
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_TOAST);
+        //Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_UNABLE_CONNECT);
         Bundle bundle = new Bundle();
-        bundle.putString(BTPrinterConstants.TOAST, "Device connection was lost");
+        bundle.putString(BTPrinterConstants.TOAST, CheckOutDBCache.getAppResources().getString(R.string.device_connection_lost));
         msg.setData(bundle);
         mHandler.sendMessage(msg);
     }
@@ -256,7 +261,7 @@ public class BluetoothService {
                                 try {
                                     socket.close();
                                 } catch (IOException e) {
-                                    Log.e(TAG, "Could not close unwanted socket", e);
+                                    Log.e(TAG, CheckOutDBCache.getAppResources().getString(R.string.could_not_close_unwanted_socket), e);
                                 }
                                 break;
                         }
@@ -390,20 +395,20 @@ public class BluetoothService {
                     }
                     else
                     {
-                        Log.e(TAG, "disconnected");
+                        Log.e(TAG, CheckOutDBCache.getAppResources().getString(R.string.disconnected));
                         connectionLost();
 
                         //add by chongqing jinou
                         if(mState != STATE_NONE)
                         {
-                            Log.e(TAG, "disconnected");
+                            Log.e(TAG, CheckOutDBCache.getAppResources().getString(R.string.disconnected));
                             // Start the service over to restart listening mode
                             BluetoothService.this.start();
                         }
                         break;
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "disconnected", e);
+                    Log.e(TAG, CheckOutDBCache.getAppResources().getString(R.string.disconnected), e);
                     connectionLost();
 
                     //add by chongqing jinou

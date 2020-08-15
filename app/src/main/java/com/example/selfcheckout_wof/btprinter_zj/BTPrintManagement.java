@@ -94,14 +94,15 @@ public class BTPrintManagement {
                     break;
                 case BTPrinterConstants.MESSAGE_CONNECTION_LOST:    //蓝牙已断开连接
                     if (context != null) {
-                        Toast.makeText(context, "Device connection was lost",
+                        Toast.makeText(context, R.string.device_connection_lost,
                                 Toast.LENGTH_SHORT).show();
                     }
                     break;
                 case BTPrinterConstants.MESSAGE_UNABLE_CONNECT:     //无法连接设备
                     if (context != null) {
-                        Toast.makeText(context, "Unable to connect device",
+                        Toast.makeText(context, R.string.unable_to_connect_device,
                                 Toast.LENGTH_SHORT).show();
+                        connectToBlueToothPrinter();
                     }
                     break;
             }
@@ -109,9 +110,12 @@ public class BTPrintManagement {
     };
 
     /**
-     * Creating a BT service for the receipt printer.
+     * Creating a BT service for the receipt printer. After creating the service
+     * we will either go through the full connection process and return true
+     * or we will restore the printer's address from what we already have and
+     * return false.
      */
-    private static void createService() {
+    private static boolean createService() {
         receiptPrinterService = new BluetoothService(receiptPrinterActions);
 
         /**
@@ -128,8 +132,10 @@ public class BTPrintManagement {
          */
         if (currentDevice != null && currentDevice.getDeviceAddr() != "") {
             receiptPrinterDeviceAddr = currentDevice.getDeviceAddr();
+            return false;
         } else {
             connectToBlueToothPrinter();
+            return true;
         }
     }
 
@@ -173,7 +179,7 @@ public class BTPrintManagement {
                  */
                 if (receiptPrinterService == null) {
                     //stopBTPrinterService();
-                    createService();
+                    return createService();
                 } else {
                     /*
                      * If we already have a receipt printer service, then we're as good as connected.
