@@ -17,6 +17,7 @@ import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
 import com.example.selfcheckout_wof.custom_components.utils.Formatting;
+import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.example.selfcheckout_wof.data.StoredBTDevices;
 
@@ -111,7 +112,7 @@ public class BTPrintManagement {
      * Creating a BT service for the receipt printer.
      */
     private static void createService() {
-        receiptPrinterService = new BluetoothService(context, receiptPrinterActions);
+        receiptPrinterService = new BluetoothService(receiptPrinterActions);
 
         /**
          * First try and read the DB for an existing last used printer device.
@@ -119,7 +120,13 @@ public class BTPrintManagement {
          * and select a device.
          */
         StoredBTDevices currentDevice = CheckOutDBCache.getInstance().getLastUsedZJ_BTPrinter();
-        if (currentDevice != null) {
+
+        /**
+         * If we don't have a current device or the one we have is the dummy one with empty address
+         * (see com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache#getLastUsedZJ_BTPrinter()),
+         * then don't get the address but instead go through the full process of connecting.
+         */
+        if (currentDevice != null && currentDevice.getDeviceAddr() != "") {
             receiptPrinterDeviceAddr = currentDevice.getDeviceAddr();
         } else {
             connectToBlueToothPrinter();
@@ -143,7 +150,13 @@ public class BTPrintManagement {
         }
     }
 
-    public static final void createBTPrinterService() {
+    /**
+     * Creates the BT printer service (starts the processes that create it) if needed and returns
+     * true. If it already exists, then it won't create it, but just return false.
+     *
+     * @return
+     */
+    public static final boolean createBTPrinterService() {
         // If Bluetooth is not on, request that it be enabled.
         // createService() will then be called during onActivityResult()
         if (mBluetoothAdapter != null) {
@@ -155,16 +168,30 @@ public class BTPrintManagement {
                 }
                 // Otherwise, setup the session
             } else {
-                if (receiptPrinterService == null)
+                /**
+                 * If the printer service already exists, then stop it and re-create.
+                 */
+                if (receiptPrinterService == null) {
+                    //stopBTPrinterService();
                     createService();
+                } else {
+                    /*
+                     * If we already have a receipt printer service, then we're as good as connected.
+                     * Stop the progress bar and display the test printer button.
+                     */
+                    return false;
+                }
             }
         }
+        return true;
     }
 
     public static final void stopBTPrinterService() {
         // Stop the Bluetooth services
-        if (receiptPrinterService != null)
+        if (receiptPrinterService != null) {
             receiptPrinterService.stop();
+            //receiptPrinterService = null;
+        }
     }
 
     public static final void startBTPrinterService() {
@@ -210,7 +237,7 @@ public class BTPrintManagement {
      * If our current address looks like a MAC address, then try to connect
      * to that.
      */
-    private static boolean tryToConnectToCurrentMACAddress(boolean saveToDBIfMACGood) {
+    public static boolean tryToConnectToCurrentMACAddress(boolean saveToDBIfMACGood) {
         // Get the BLuetoothDevice object
         if (BluetoothAdapter.checkBluetoothAddress(receiptPrinterDeviceAddr)) {
             BluetoothDevice device = mBluetoothAdapter
@@ -220,9 +247,15 @@ public class BTPrintManagement {
 
             if (saveToDBIfMACGood) {
                 /*
-                 * Store or update the device in the DB
+                 * Store or update the device in the DB. Through its own thread of course
+                 * to avoid RoomDB complaints.
                  */
-                CheckOutDBCache.getInstance().storeLastUsedZJ_BTPrinter(device);
+                DBThread.addTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        CheckOutDBCache.getInstance().storeLastUsedZJ_BTPrinter(device);
+                    }
+                });
             }
 
             return true;
@@ -295,7 +328,7 @@ public class BTPrintManagement {
     /**
      * Prints a test message to test printer connectivity.
      */
-    private void Print_Test(){
+    public static void testPrinter(){
         String msg = "Congratulations!\n\n";
         String data = "Oscar Is A Good Boy and Eva is. :-)\n\n";
         SendDataByte(PrinterCommand.POS_Print_Text(msg, BTPrinterConstants.CHINESE, 0, 1, 1, 0));

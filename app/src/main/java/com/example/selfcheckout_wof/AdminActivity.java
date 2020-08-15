@@ -18,6 +18,7 @@ import com.example.selfcheckout_wof.PPH.login.PPHLoginActivity;
 import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
 import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
 import com.example.selfcheckout_wof.custom_components.utils.SqliteExportAndImport;
+import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SystemChoices;
 
 public class AdminActivity extends AppCompatActivity {
@@ -85,6 +86,9 @@ public class AdminActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        /**
+         * Making sure that this activity can handle all our SystemChoices intents.
+         */
         IntentFilter filter = new IntentFilter();
         for (SystemChoices sc : SystemChoices.values()) {
             filter.addAction(sc.getIntent().getAction());
@@ -92,6 +96,17 @@ public class AdminActivity extends AppCompatActivity {
 
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         this.registerReceiver(selfCheckoutIntentReveiver,filter);
+
+        /**
+         * Making sure that we have the previously used BT devices available
+         * for when we want to re-connect automatically if possible.
+         */
+        DBThread.addTask(new Runnable() {
+            @Override
+            public void run() {
+                CheckOutDBCache.getInstance().getLastUsedZJ_BTPrinter();
+            }
+        });
     }
 
     /** Called when another activity is taking focus. */

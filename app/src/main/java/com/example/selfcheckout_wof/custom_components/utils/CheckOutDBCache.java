@@ -13,7 +13,11 @@ import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.room.ColumnInfo;
+import androidx.room.PrimaryKey;
 import androidx.room.Room;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.selfcheckout_wof.data.AppDatabase;
 import com.example.selfcheckout_wof.data.SalesItems;
@@ -46,6 +50,21 @@ public class CheckOutDBCache extends Application {
     private static Cursor salesItemsParentsForDropDownBox = null;
 
     /**
+     * Migration for when I added a new table for the BT devices.
+     */
+    static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE StoredBTDevices (" +
+                    "dev_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                    "device_addr TEXT, " +
+                    "device_name TEXT, " +
+                    "dev_type INTEGER NOT NULL" +
+                    ")");
+        }
+    };
+
+    /**
      * Returns the database instance. This function has to be public,
      * because we will be accessing AdminActivity in a static context
      * and then using this function to get db instance so that we can
@@ -56,7 +75,10 @@ public class CheckOutDBCache extends Application {
     public static AppDatabase getDBInstance() {
         if (db_instance == null) {
             db_instance = Room.databaseBuilder(getContext(),
-                    AppDatabase.class, "sales-items").build();
+                    AppDatabase.class, "sales-items")
+                    //.fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_1_2)
+                    .build();
         }
 
         return db_instance;
@@ -75,6 +97,15 @@ public class CheckOutDBCache extends Application {
             final AppDatabase db = getDBInstance();
             if (db != null) {
                 lastUsedZJ_BTPrinter = db.storedBTDevicesDao().getZJPrinter();
+
+                /**
+                 * If this is null now, then that means we haven't got this record in the DB
+                 * and need to create a dummy value now to avoid further lookups in the DB
+                 * when we can't have them on the same thread as GUI.
+                 */
+                if (lastUsedZJ_BTPrinter == null) {
+                    lastUsedZJ_BTPrinter = StoredBTDevices.createDevice("", "", StoredBTDevices.BTDeviceType.ZJ_PRINTER);
+                }
             }
             return lastUsedZJ_BTPrinter;
         } else {
@@ -109,18 +140,6 @@ public class CheckOutDBCache extends Application {
                 }
             }
         }
-    }
-
-    /**
-     * Last connected PPH card reader.
-     */
-    public StoredBTDevices getLastUsedPPHReader() {
-        StoredBTDevices reader = null;
-        final AppDatabase db = getDBInstance();
-        if (db != null) {
-            reader = db.storedBTDevicesDao().getZJPrinter();
-        }
-        return reader;
     }
 
     /**

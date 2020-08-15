@@ -28,6 +28,8 @@ import com.example.selfcheckout_wof.PPH.ui.ReaderConnectionActivity;
 import com.example.selfcheckout_wof.PPH.ui.StepView;
 import com.example.selfcheckout_wof.PPH.ui.ToolbarActivity;
 import com.example.selfcheckout_wof.R;
+import com.example.selfcheckout_wof.btprinter_zj.BTPrintManagement;
+import com.example.selfcheckout_wof.btprinter_zj.BTPrinterConstants;
 import com.paypal.paypalretailsdk.AppInfo;
 import com.paypal.paypalretailsdk.Merchant;
 import com.paypal.paypalretailsdk.RetailSDK;
@@ -68,10 +70,10 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   private ProgressDialog mProgressDialog = null;
   private RadioGroup radioGroup1;
 
-  private StepView stpConnectToPaypal;
+  private StepView stpConnectToPaypal, stpConnectPrinter;
   private Boolean offlineClicked;
 
-  private Button connectButton;
+  private Button connectButton, testPrinterButton;
 
 
   // abstract method from ToolbarActivity
@@ -90,9 +92,16 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
 
     radioGroup1 = (RadioGroup) findViewById(R.id.radioGroup1);
     connectButton = (Button) findViewById(R.id.connect_reader_button);
+    testPrinterButton = (Button) findViewById(R.id.test_printer_button);
 
     stpConnectToPaypal = (StepView) findViewById(R.id.stpConnectToPaypal);
     stpConnectToPaypal.setOnButtonClickListener(this);
+
+    /**
+     * Printer connection stepview
+     */
+    stpConnectPrinter = (StepView) findViewById(R.id.stpConnectPrinter);
+    stpConnectPrinter.setOnButtonClickListener(this);
 
     offlineClicked = false;
   }
@@ -201,6 +210,13 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
     startActivity(readerConnectionIntent);
   }
 
+  /**
+   * Test printer after we've connected to it.
+   * @param view
+   */
+  public void onTestPrinter(View view) {
+    BTPrintManagement.testPrinter();
+  }
 
   private void startWebView(String url, final boolean isSandBox, final boolean isLive)
   {
@@ -279,6 +295,15 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
         Log.d(LOG_TAG, "onActivityResult RESULT_CANCELED! ");
         //Write your code if there's no result
       }
+    } else if (requestCode == BTPrinterConstants.REQUEST_CONNECT_DEVICE ||
+            requestCode == BTPrinterConstants.REQUEST_ENABLE_BT) {
+      /*
+       * If we have BT printer codes coming back to deal with, then handle that with the
+       * static functions that we have.
+       */
+      BTPrintManagement.processBTActivityResult(requestCode, resultCode, data);
+      stpConnectPrinter.hideProgressBarShowTick();
+      testPrinterButton.setVisibility(View.VISIBLE);
     }
   }
 
@@ -417,7 +442,6 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
           final RelativeLayout logoutContainer = (RelativeLayout) findViewById(R.id.logout);
           logoutContainer.setVisibility(View.VISIBLE);
           connectButton.setVisibility(View.VISIBLE);
-
         }
       });
     }
@@ -482,7 +506,44 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   {
     if (v == stpConnectToPaypal.getButton()){
       initSDK();
+    } else if(v == stpConnectPrinter.getButton()) {
+      /**
+       * Going through all BT printer connection steps, which we normally do as part of form
+       * loading in @link com.example.selfcheckout_wof.SelfCheckoutChargeActivity
+       */
+      stpConnectPrinter.showProgressBar();
+      BTPrintManagement.setContext(this);
+      BTPrintManagement.createBTPrinterAdapter();
+
+      /*
+       * Attempt to create the BT printer service. If it needs to be created, then this may
+       * invoke an activity that shows all BT devices and then the returning intent from that
+       * activity will be processed in this activity and things like progress bar disabled, etc.
+       *
+       * But if printer service doesn't need to be created, then we need to disable progress
+       * bar here.
+       */
+      if (!BTPrintManagement.createBTPrinterService()) {
+        //BTPrintManagement.processBTActivityResult(requestCode, resultCode, data);
+        BTPrintManagement.tryToConnectToCurrentMACAddress(false);
+        stpConnectPrinter.hideProgressBarShowTick();
+        testPrinterButton.setVisibility(View.VISIBLE);
+      }
+
+      BTPrintManagement.startBTPrinterService();
     }
+  }
+
+  @Override
+  protected void onStop() {
+    /**
+     * Making sure that we free BT resources that we used for printer connection.
+     * We won't need it anymore because we only wanted to make sure that we can connect
+     * to the printer and we wanted to have the MAC address at this point so that we can
+     * quikly re-connect when we really need to print.
+     */
+    super.onStop();
+    BTPrintManagement.stopBTPrinterService();
   }
 
   public void initSDK()

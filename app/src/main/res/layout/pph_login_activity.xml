@@ -84,6 +84,16 @@
                     stepview:code_text=""
                     stepview:title_text=""
                     />
+
+                <com.example.selfcheckout_wof.PPH.ui.StepView
+                    android:id="@+id/stpConnectPrinter"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_vertical_margin"
+                    stepview:button_text="@string/connect_printer"
+                    stepview:code_text=""
+                    stepview:title_text=""
+                    />
             </LinearLayout>
         </ScrollView>
 
@@ -131,19 +141,23 @@
                 android:layout_centerVertical="true"
                 android:onClick="onLogoutClicked"
                 android:textColor="@color/sdk_primary_dark_blue"
-
-
-
                 />
-
-
         </RelativeLayout>
-
-
    </LinearLayout>
 
-
-
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/dp_32"
+        android:background="@drawable/pph_blue_btn_selector"
+        android:onClick="onTestPrinter"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/test_printer_button"
+        android:visibility="gone"
+        android:text="@string/test_printer"
+        android:textAllCaps="false"
+        android:textColor="@color/sdk_white"
+        />
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

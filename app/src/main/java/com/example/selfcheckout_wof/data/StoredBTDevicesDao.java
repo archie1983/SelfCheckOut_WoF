@@ -13,7 +13,7 @@ import java.util.List;
 @Dao
 public interface StoredBTDevicesDao {
     @Query("SELECT * FROM StoredBTDevices")
-    List<SalesItems> getAll();
+    List<StoredBTDevices> getAll();
 
     @Query("SELECT * FROM StoredBTDevices WHERE dev_type=1")
     StoredBTDevices getZJPrinter();
