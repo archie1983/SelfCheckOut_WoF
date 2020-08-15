@@ -201,7 +201,7 @@ public class BluetoothService {
 
         // Send a failure message back to the Activity
         //Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_TOAST);
-        Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_UNABLE_CONNECT);
+        Message msg = mHandler.obtainMessage(BTPrinterConstants.MESSAGE_CONNECTION_LOST);
         Bundle bundle = new Bundle();
         bundle.putString(BTPrinterConstants.TOAST, CheckOutDBCache.getAppResources().getString(R.string.device_connection_lost));
         msg.setData(bundle);
