@@ -44,6 +44,15 @@ public class BTPrintManagement {
     }
 
     /**
+     * What we want to do when printer becomes ready.
+     */
+    private static Runnable printerReady = null;
+
+    public static final void setPrinterReadyBehaviour(Runnable printerReady_in) {
+        printerReady = printerReady_in;
+    }
+
+    /**
      * This handler is basically a reaction of GUI to different BT events.
      */
     private static final Handler receiptPrinterActions = new Handler() {
@@ -83,6 +92,9 @@ public class BTPrintManagement {
                         Toast.makeText(context,
                                 "Connected to " + receiptPrinterDeviceName,
                                 Toast.LENGTH_SHORT).show();
+                        if (printerReady != null) {
+                            printerReady.run();
+                        }
                     }
                     break;
                 case BTPrinterConstants.MESSAGE_TOAST:

@@ -122,6 +122,7 @@
     <dimen name="sdk_sw_update_height_minimum">80dp</dimen>
     <dimen name="blue_btn_radius">32dp</dimen>
     <dimen name="dp_32">32dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
 
     <dimen name="weighted">0dp</dimen>
 </resources>

@@ -512,6 +512,13 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
        * loading in @link com.example.selfcheckout_wof.SelfCheckoutChargeActivity
        */
       stpConnectPrinter.showProgressBar();
+      BTPrintManagement.setPrinterReadyBehaviour(new Runnable() {
+        @Override
+        public void run() {
+          stpConnectPrinter.hideProgressBarShowTick();
+          testPrinterButton.setVisibility(View.VISIBLE);
+        }
+      });
       BTPrintManagement.setContext(this);
       BTPrintManagement.createBTPrinterAdapter();
 
@@ -526,8 +533,6 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
       if (!BTPrintManagement.createBTPrinterService()) {
         //BTPrintManagement.processBTActivityResult(requestCode, resultCode, data);
         BTPrintManagement.tryToConnectToCurrentMACAddress(false);
-        stpConnectPrinter.hideProgressBarShowTick();
-        testPrinterButton.setVisibility(View.VISIBLE);
       }
 
       BTPrintManagement.startBTPrinterService();
