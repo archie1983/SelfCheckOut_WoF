@@ -20,6 +20,7 @@ import com.example.selfcheckout_wof.PPH.ui.PaymentOptionsActivity;
 import com.example.selfcheckout_wof.PPH.ui.RefundActivity;
 import com.example.selfcheckout_wof.PPH.ui.StepView;
 import com.example.selfcheckout_wof.PPH.ui.VaultActivity;
+import com.example.selfcheckout_wof.btprinter_zj.BTPrintManagement;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
@@ -45,7 +46,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implements View.OnClickListener
+public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
 {
     private static final String LOG_TAG = SelfCheckoutChargeActivity.class.getSimpleName();
     public static final String INTENT_TRANX_TOTAL_AMOUNT = "TOTAL_AMOUNT";
@@ -58,30 +59,10 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
     Invoice currentInvoice;
     Invoice invoiceForRefund;
 
-    private StepView createInvoiceStep;
-    private StepView createTxnStep;
-    private StepView acceptTxnStep;
-    private TextView step3Text;
     private SharedPreferences sharedPrefs;
 
-    // payment option constants
-    public static final String OPTION_AUTH_CAPTURE = "authCapture";
-    public static final String OPTION_VAULT_TYPE = "vaultType";
-    public static final String OPTION_CARD_READER_PROMPT = "cardReader";
-    public static final String OPTION_APP_PROMPT= "appPrompt";
-    public static final String OPTION_TIP_ON_READER = "tipReader";
-    public static final String OPTION_AMOUNT_TIP = "amountTip";
-    public static final String OPTION_QUICK_CHIP_ENABLED = "quickChipEnabled";
-    public static final String OPTION_MAGNETIC_SWIPE = "magneticSwipe";
-    public static final String OPTION_CHIP = "chip";
-    public static final String OPTION_CONTACTLESS = "contactless";
-    public static final String OPTION_MANUAL_CARD= "manualCard";
-    public static final String OPTION_SECURE_MANUAL= "secureManual";
-    public static final String OPTION_CUSTOMER_ID= "customoerId";
-    public static final String OPTION_TAG= "tag";
-
     // payment option booleans
-    private boolean isAuthCaptureEnabled = false;
+    private boolean isAuthCaptureEnabled = true;
     private TransactionBeginOptionsVaultType vaultType = TransactionBeginOptionsVaultType.PayOnly;
     private boolean isCardReaderPromptEnabled = true;
     private boolean isAppPromptEnabled = true;
@@ -106,18 +87,8 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
         Log.d(LOG_TAG, "onCreate");
         TextView paymentAmountText = (TextView) findViewById(R.id.payment_amount_text);
         paymentAmountText.setText(getString(R.string.payment_amount) + " (" + NumberFormat.getCurrencyInstance().getCurrency().getSymbol() + ")");
-        createInvoiceStep = (StepView)findViewById(R.id.create_invoice_step);
-        createInvoiceStep.setOnButtonClickListener(this);
-        createTxnStep = (StepView)findViewById(R.id.create_txn_step);
-        createTxnStep.setOnButtonClickListener(this);
-        acceptTxnStep = (StepView)findViewById(R.id.accept_txn_step);
-        acceptTxnStep.setOnButtonClickListener(this);
 
         sharedPrefs = getSharedPreferences(OfflinePayActivity.PREF_NAME, Context.MODE_PRIVATE);
-
-        createInvoiceStep.setStepEnabled();
-        createTxnStep.setStepDisabled();
-        acceptTxnStep.setStepDisabled();
     }
 
     /**
@@ -165,36 +136,23 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
         }
     }
 
-    public void onCreateInvoiceClicked()
+    public void onPayByCard(View view) {
+        createInvoice();
+        createTransactionAndAcceptIt();
+    }
+
+    /**
+     * Creates invoice
+     */
+    public void createInvoice()
     {
-        Log.d(LOG_TAG, "onCreateInvoiceClicked");
+        Log.d(LOG_TAG, "createInvoice");
         if (vaultType == TransactionBeginOptionsVaultType.VaultOnly)
         {
             return;
         }
 
-        Log.d(LOG_TAG, "onCreateInvoiceClicked amount:" + orderAmount);
-
-//        /**
-//         * Preparing the amount for payment.
-//         * One way to do it, is to create an invoice with one item - the grand total.
-//         */
-//        BigDecimal amount = BigDecimal.ZERO;
-//        amount = new BigDecimal(orderAmount);
-//        if (amount.compareTo(BigDecimal.ZERO) == 0)
-//        {
-//            showInvalidAmountAlertDialog();
-//            return;
-//        }
-//
-//
-//        currentInvoice = new Invoice(RetailSDK.getMerchant().getCurrency());
-//        BigDecimal quantity = new BigDecimal(1);
-//        currentInvoice.addItem("Item", quantity, amount, 1, null);
-//        // BigDecimal gratuityAmt = new BigDecimal(gratuityField.getText().toString());
-//        // if(gratuityAmt.intValue() > 0){
-//        //    invoice.setGratuityAmount(gratuityAmt);
-//        // }
+        Log.d(LOG_TAG, "createInvoice amount:" + orderAmount);
 
         /**
          * Preparing the amount for payment.
@@ -230,10 +188,126 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
             }
         }
 
-        // BigDecimal gratuityAmt = new BigDecimal(gratuityField.getText().toString());
-        // if(gratuityAmt.intValue() > 0){
-        //    invoice.setGratuityAmount(gratuityAmt);
-        // }
+        Log.d(LOG_TAG, "AE2 : Invoice created");
+    }
+
+    public void createTransactionAndAcceptIt()
+    {
+        Log.d(LOG_TAG, "createTransaction");
+        if (vaultType == TransactionBeginOptionsVaultType.VaultOnly) {
+            RetailSDK.getTransactionManager().createVaultTransaction(new TransactionManager.TransactionCallback()
+            {
+                @Override
+                public void transaction(RetailSDKException e, TransactionContext context)
+                {
+                    if (e != null) {
+                        final String errorTxt = e.toString();
+                        SelfCheckoutChargeActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "create transaction error: " + errorTxt, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }else{
+                        currentTransaction = context;
+                        acceptTransaction();
+                    }
+                }
+            });
+        }
+        else {
+            RetailSDK.getTransactionManager().createTransaction(currentInvoice, new TransactionManager.TransactionCallback()
+            {
+                @Override
+                public void transaction(RetailSDKException e, final TransactionContext context)
+                {
+                    if (e != null) {
+                        final String errorTxt = e.toString();
+                        SelfCheckoutChargeActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), "create transaction error: " + errorTxt, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }else{
+                        currentTransaction = context;
+                        Log.d(LOG_TAG, "AE2 : Current transaction acquired");
+                        acceptTransaction();
+                    }
+                }
+            });
+        }
+    }
+
+    public void acceptTransaction()
+    {
+        Log.d(LOG_TAG, "acceptTransaction");
+
+        PaymentDevice activeDevice = RetailSDK.getDeviceManager().getActiveReader();
+        DeviceUpdate deviceUpdate = activeDevice.getPendingUpdate();
+        if (deviceUpdate != null && deviceUpdate.getIsRequired() && !deviceUpdate.getWasInstalled())
+        {
+            deviceUpdate.offer(new DeviceUpdate.CompletedCallback()
+            {
+                @Override
+                public void completed(RetailSDKException e, Boolean aBoolean)
+                {
+                    Log.d(LOG_TAG, "device update completed");
+                    Log.d(LOG_TAG, "AE2 : Starting payment");
+                    SelfCheckoutChargeActivity.this.beginPayment();
+                }
+            });
+        }
+        else {
+            Log.d(LOG_TAG, "AE2 : Starting payment");
+            beginPayment();
+        }
+    }
+
+    public void onCreateInvoiceClicked()
+    {
+        Log.d(LOG_TAG, "onCreateInvoiceClicked");
+        if (vaultType == TransactionBeginOptionsVaultType.VaultOnly)
+        {
+            return;
+        }
+
+        Log.d(LOG_TAG, "onCreateInvoiceClicked amount:" + orderAmount);
+
+        /**
+         * Preparing the amount for payment.
+         * Another way to do it, is to create an invoice with each item that is being purchased.
+         */
+        currentInvoice = new Invoice(RetailSDK.getMerchant().getCurrency());
+        Iterator<ConfiguredMeal> itCurrentOrder = UsersSelectedChoice.getCurrentOrder();
+
+        /*
+         * Going through the meals in the order.
+         */
+        while (itCurrentOrder.hasNext()) {
+            ConfiguredMeal cm = itCurrentOrder.next();
+
+            ArrayList<PurchasableGoods> itemsInCurrentMeal = cm.getCurrentMealItems();
+
+            /*
+             * Going through each item in each meal.
+             */
+            if (itemsInCurrentMeal != null && itemsInCurrentMeal.size() > 0) {
+                for (PurchasableGoods pg : cm.getCurrentMealItems()) {
+                    BigDecimal amount = BigDecimal.ZERO;
+                    amount = new BigDecimal((double)pg.getPrice() / 100.0);
+                    /*
+                     * If we have a non-zero amount, then add that to the invoice.
+                     */
+                    if (amount.compareTo(BigDecimal.ZERO) != 0)
+                    {
+                        BigDecimal quantity = new BigDecimal(1);
+                        currentInvoice.addItem(pg.getLabel(), quantity, amount, pg.getID(), null);
+                    }
+                }
+            }
+        }
+
         Log.d(LOG_TAG, "AE : Invoice created");
     }
 
@@ -289,8 +363,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
 
         PaymentDevice activeDevice = RetailSDK.getDeviceManager().getActiveReader();
         DeviceUpdate deviceUpdate = activeDevice.getPendingUpdate();
-        if (deviceUpdate != null && deviceUpdate.getIsRequired() && !deviceUpdate.getWasInstalled())
-        {
+        if (deviceUpdate != null && deviceUpdate.getIsRequired() && !deviceUpdate.getWasInstalled()) {
             deviceUpdate.offer(new DeviceUpdate.CompletedCallback()
             {
                 @Override
@@ -302,8 +375,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
                 }
             });
 
-        }
-        else {
+        } else {
             Log.d(LOG_TAG, "AE : Starting payment");
             beginPayment();
         }
@@ -374,7 +446,6 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
                 public void run()
                 {
                     Toast.makeText(getApplicationContext(), "transaction error: " + errorTxt, Toast.LENGTH_SHORT).show();
-                    // refundButton.setEnabled(false);
                     finish();
                     startActivity(getIntent());
                 }
@@ -382,16 +453,22 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
         } else {
             invoiceForRefund = currentTransaction.getInvoice();
             final String recordTxt =  record.getTransactionNumber();
+
+            BTPrintManagement.setreceiptPrintedBehaviour(new Runnable() {
+                @Override
+                public void run() {
+                    UsersSelectedChoice.clearCurrentMeal();
+                    UsersSelectedChoice.clearOrder();
+                    goBackToSales();
+                }
+            });
+
+            BTPrintManagement.handleReceiptPrinting();
+
             this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    if (isAuthCaptureEnabled) {
-                        goToAuthCaptureActivity(record);
-                    }
-                    else
-                    {
-                        goToRefundActivity();
-                    }
+                    //BTPrintManagement.handleReceiptPrinting();
                     Toast.makeText(getApplicationContext(), String.format("Completed Transaction %s", recordTxt), Toast.LENGTH_SHORT).show();
                 }
             });
@@ -464,13 +541,20 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
         }
     }
 
+    /**
+     * Open the sales activity to start the next selection of goods
+     */
+    private void goBackToSales() {
+        Intent showSalesActivity = new Intent(this, SalesActivity.class);
+        startActivity(showSalesActivity);
+    }
+
     private void goToOfflinePayCompleteActivity()
     {
         Intent intent = new Intent(SelfCheckoutChargeActivity.this, OfflinePaySuccessActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
 
     public void goToAuthCaptureActivity(TransactionRecord record){
         Log.d(LOG_TAG, "goToAuthCaptureActivity");
@@ -570,85 +654,6 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
         }
     }
 
-
-    @Override
-    public void onClick(View v)
-    {
-        if (v == createInvoiceStep.getButton())
-        {
-            onCreateInvoiceClicked();
-            createInvoiceStep.setStepCompleted();
-            createTxnStep.setStepEnabled();
-        }
-        else if(v == createTxnStep.getButton())
-        {
-            onCreateTransactionClicked();
-            createTxnStep.setStepCompleted();
-            // Don't enable payment options step if offline mode is selected
-            if(!sharedPrefs.getBoolean(OfflinePayActivity.OFFLINE_MODE,false))
-            {
-                // enablePaymentOptionsStep();
-                acceptTxnStep.setStepEnabled();
-            } else {
-                acceptTxnStep.setStepEnabled();
-            }
-        }
-        else if(v == acceptTxnStep.getButton())
-        {
-            onAcceptTransactionClicked();
-        }
-    }
-
-
-
-
-//    @Override
-//    public void onClick(View v)
-//    {
-//        if (v == createInvoiceStep.getButton())
-//        {
-//            onCreateInvoiceClicked();
-//            createInvoiceStep.setStepCompleted();
-//            createTxnStep.setStepEnabled();
-//        }
-//        else if(v == createTxnStep.getButton())
-//        {
-//            onCreateTransactionClicked();
-//            createTxnStep.setStepCompleted();
-//            // Don't enable payment options step if offline mode is selected
-//            if(!sharedPrefs.getBoolean(OfflinePayActivity.OFFLINE_MODE,false))
-//            {
-//                // enablePaymentOptionsStep();
-//                acceptTxnStep.setStepEnabled();
-//            } else {
-//                acceptTxnStep.setStepEnabled();
-//            }
-//        }
-//        else if(v == acceptTxnStep.getButton())
-//        {
-//            onAcceptTransactionClicked();
-//        }else if(v == paymentOptionsStep){
-//            Intent optionsActivity = new Intent(this, PaymentOptionsActivity.class);
-//            optionsActivity.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-//            optionsActivity.putExtras(getOptionsBundle());
-//            startActivityForResult(optionsActivity,REQUEST_OPTIONS_ACTIVITY);
-//        }else if(v == offlineModeContainer){
-//            if (currentTransaction != null) {
-//                showTransactionAlreadyCreatedDialog();
-//            } else {
-//                Intent offlineActivity = new Intent(this, OfflinePayActivity.class);
-//                offlineActivity.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-//                startActivity(offlineActivity);
-//            }
-//        }
-//    }
-
-
-
-
-
-
-
     public List<FormFactor> getPreferredFormFactors()
     {
         List<FormFactor> formFactors = new ArrayList<>();
@@ -679,27 +684,5 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity implement
         }
         return formFactors;
 
-    }
-
-
-
-    private Bundle getOptionsBundle()
-    {
-        Bundle bundle = new Bundle();
-        bundle.putBoolean(OPTION_AUTH_CAPTURE,isAuthCaptureEnabled);
-        bundle.putInt(OPTION_VAULT_TYPE,vaultType.getValue());
-        bundle.putBoolean(OPTION_CARD_READER_PROMPT,isCardReaderPromptEnabled);
-        bundle.putBoolean(OPTION_APP_PROMPT,isAppPromptEnabled);
-        bundle.putBoolean(OPTION_TIP_ON_READER,isTippingOnReaderEnabled);
-        bundle.putBoolean(OPTION_AMOUNT_TIP,isAmountBasedTippingEnabled);
-        bundle.putBoolean(OPTION_QUICK_CHIP_ENABLED, isQuickChipEnabled);
-        bundle.putBoolean(OPTION_MAGNETIC_SWIPE,isMagneticSwipeEnabled);
-        bundle.putBoolean(OPTION_CHIP,isChipEnabled);
-        bundle.putBoolean(OPTION_CONTACTLESS,isContactlessEnabled);
-        bundle.putBoolean(OPTION_MANUAL_CARD,isManualCardEnabled);
-        bundle.putBoolean(OPTION_SECURE_MANUAL,isSecureManualEnabled);
-        bundle.putString(OPTION_CUSTOMER_ID,customerId);
-        bundle.putString(OPTION_TAG,tagString);
-        return bundle;
     }
 }

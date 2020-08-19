@@ -15,14 +15,11 @@ import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.selfcheckout_wof.PPH.ui.ReaderConnectionActivity;
 import com.example.selfcheckout_wof.PPH.ui.StepView;
@@ -67,6 +64,20 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   public static final String INTENT_URL_WEBVIEW = "URL_FOR_WEBVIEW";
   public static final String INTENT_ISLIVE_WEBVIEW = "ISLIVE_FOR_WEBVIEW";
 
+  /**
+   * Intenta variable names
+   */
+  public static final String PRINTER_CONNECTED = "printer_connected";
+  public static final String CARD_READER_CONNECTED = "card_reader_connected";
+
+  private static final int RETURN_FROM_CARD_READER_CONNECTION = 1001;
+
+  /*
+   * Flags of whether our hardware is connected. If it is not, then we can't start sales.
+   */
+  private boolean printerConnected = false;
+  private boolean cardReaderConnected = false;
+
   private ProgressDialog mProgressDialog = null;
   private RadioGroup radioGroup1;
 
@@ -104,9 +115,17 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
     stpConnectPrinter.setOnButtonClickListener(this);
 
     offlineClicked = false;
+
+    printerConnected = false;
+    cardReaderConnected = false;
   }
 
-
+  @Override
+  protected void onResume() {
+    super.onResume();
+//    printerConnected = false;
+//    cardReaderConnected = false;
+  }
 
   @Override
   public void onConfigurationChanged(Configuration newConfig)
@@ -114,8 +133,6 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
     super.onConfigurationChanged(newConfig);
     Log.d(LOG_TAG, "onConfigurationChanged");
   }
-
-
 
   public void onInitMerchantClicked()
   {
@@ -196,6 +213,7 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
     PPHLocalPreferences.storeLiveMidTierCredentials(PPHLoginActivity.this, null, null, null);
 
     Toast.makeText(getApplicationContext(), "Logged out! Please initialize Merchant.", Toast.LENGTH_SHORT).show();
+    cardReaderConnected = false;
 
     Intent intent = getIntent();
     finish();
@@ -207,7 +225,19 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
   {
     Intent readerConnectionIntent = new Intent(PPHLoginActivity.this, ReaderConnectionActivity.class);
     readerConnectionIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    startActivity(readerConnectionIntent);
+    startActivityForResult(readerConnectionIntent, RETURN_FROM_CARD_READER_CONNECTION);
+  }
+
+  /**
+   * Go back to the admin activity with the result of what's been connected.
+   * @param view
+   */
+  public void onGoBack(View view) {
+    Intent data = new Intent();
+    data.putExtra(PRINTER_CONNECTED, printerConnected);
+    data.putExtra(CARD_READER_CONNECTED, cardReaderConnected);
+    setResult(RESULT_OK,data);
+    finish();
   }
 
   /**
@@ -304,6 +334,11 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
       BTPrintManagement.processBTActivityResult(requestCode, resultCode, data);
       stpConnectPrinter.hideProgressBarShowTick();
       testPrinterButton.setVisibility(View.VISIBLE);
+    } else if (requestCode == RETURN_FROM_CARD_READER_CONNECTION && resultCode == RESULT_OK) {
+      /*
+       * Did it connect alright?
+       */
+      cardReaderConnected = data.getBooleanExtra(CARD_READER_CONNECTED, false);
     }
   }
 
@@ -517,6 +552,7 @@ public class PPHLoginActivity extends ToolbarActivity implements View.OnClickLis
         public void run() {
           stpConnectPrinter.hideProgressBarShowTick();
           testPrinterButton.setVisibility(View.VISIBLE);
+          printerConnected = true;
         }
       });
       BTPrintManagement.setContext(this);

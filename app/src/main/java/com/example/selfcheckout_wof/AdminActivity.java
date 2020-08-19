@@ -17,11 +17,18 @@ import android.view.View;
 import com.example.selfcheckout_wof.PPH.login.PPHLoginActivity;
 import com.example.selfcheckout_wof.custom_components.exceptions.DataImportExportException;
 import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
+import com.example.selfcheckout_wof.custom_components.utils.PopupQuestionsAndMessages;
 import com.example.selfcheckout_wof.custom_components.utils.SqliteExportAndImport;
 import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.SystemChoices;
 
 public class AdminActivity extends AppCompatActivity {
+
+    /*
+     * Flags of whether our hardware is connected. If it is not, then we can't start sales.
+     */
+    private boolean printerConnected = false;
+    private boolean cardReaderConnected = false;
 
     /**
      * Intent receiver for handling intents issued by GUI (e.g. when we want to launch
@@ -130,12 +137,20 @@ public class AdminActivity extends AppCompatActivity {
      * @param view
      */
     public void onStartSales(View view) {
-        Intent showSalesActivity = new Intent(this, SalesActivity.class);
-        startActivity(showSalesActivity);
+        if (cardReaderConnected && printerConnected) {
+            Intent showSalesActivity = new Intent(this, SalesActivity.class);
+            startActivity(showSalesActivity);
+        } else {
+            /*
+             * If hardware has not been connected, then we can't start sales.
+             */
+            PopupQuestionsAndMessages.pleaseConnectToPrinterAndCardReader(this);
+        }
     }
 
     private static final int TO_EXPORT_DB_REQUEST_CODE = 1;
     private static final int TO_IMPORT_DB_REQUEST_CODE = 2;
+    private static final int TO_CONNECT_HW_REQUEST_CODE = 3;
     /**
      * "Export DB" button press
      * @param view
@@ -167,10 +182,19 @@ public class AdminActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, resultData);
         if (resultCode != RESULT_OK)
             return;
-        Uri treeUri = resultData.getData();
-        DocumentFile pickedDir = DocumentFile.fromTreeUri(this, treeUri);
 
-        if (requestCode == TO_EXPORT_DB_REQUEST_CODE) {
+        Uri treeUri = null;
+        DocumentFile pickedDir = null;
+        /*
+         * If we're coming back from "Export DB" or "Import DB", then there should be a directory
+         * tree selected.
+         */
+        if ((requestCode == TO_EXPORT_DB_REQUEST_CODE || requestCode == TO_IMPORT_DB_REQUEST_CODE) && resultCode == RESULT_OK) {
+            treeUri = resultData.getData();
+            pickedDir = DocumentFile.fromTreeUri(this, treeUri);
+        }
+
+        if (requestCode == TO_EXPORT_DB_REQUEST_CODE && resultCode == RESULT_OK) {
             grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
@@ -179,7 +203,7 @@ public class AdminActivity extends AppCompatActivity {
             } catch (DataImportExportException exc) {
                 Log.d(LOG_TAG, exc.getMessage());
             }
-        } else if (requestCode == TO_IMPORT_DB_REQUEST_CODE) {
+        } else if (requestCode == TO_IMPORT_DB_REQUEST_CODE && resultCode == RESULT_OK) {
             grantUriPermission(getPackageName(), treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
             getContentResolver().takePersistableUriPermission(treeUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
@@ -189,6 +213,9 @@ public class AdminActivity extends AppCompatActivity {
             } catch (DataImportExportException exc) {
                 Log.d(LOG_TAG, exc.getMessage());
             }
+        } else if (requestCode == TO_CONNECT_HW_REQUEST_CODE && resultCode == RESULT_OK) {
+            cardReaderConnected = resultData.getBooleanExtra(PPHLoginActivity.CARD_READER_CONNECTED, false);
+            printerConnected = resultData.getBooleanExtra(PPHLoginActivity.PRINTER_CONNECTED, false);
         }
     }
 
@@ -196,6 +223,6 @@ public class AdminActivity extends AppCompatActivity {
 
     private void configurePaypalHere() {
         Intent pphLoginActivity = new Intent(this, PPHLoginActivity.class);
-        startActivity(pphLoginActivity);
+        startActivityForResult(pphLoginActivity, TO_CONNECT_HW_REQUEST_CODE);
     }
 }

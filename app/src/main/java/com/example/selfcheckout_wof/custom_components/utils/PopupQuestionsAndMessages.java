@@ -5,13 +5,15 @@ import android.content.DialogInterface;
 
 import androidx.appcompat.app.AlertDialog;
 
+import com.example.selfcheckout_wof.R;
+
 /**
  * A utility class for creating pop-up questions for different scenarious.
  * Typically it will be a static function taking in one or more Runnables,
  * that will define the behaviour of the buttons on the pop-up question.
  * After that it will just create the pop-up and show it.
  */
-public class PopupQuestions {
+public class PopupQuestionsAndMessages {
     public static void doYouWantToContinueShoppingOrCheckout(Context context,
                                                              final Runnable rOrderCompleteBehaviour,
                                                              final Runnable rAddAnotherBehaviour) {
@@ -35,6 +37,22 @@ public class PopupQuestions {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 rAddAnotherBehaviour.run();
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    public static void pleaseConnectToPrinterAndCardReader(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        builder.setTitle("Printer and Card reader");
+        builder.setMessage("Printer or card reader does not appear to be connected. Please connect to printer and card reader first.");
+
+        builder.setNeutralButton(R.string.ok, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
             }
         });

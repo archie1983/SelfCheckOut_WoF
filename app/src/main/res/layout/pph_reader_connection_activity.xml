@@ -79,7 +79,7 @@
 
     </LinearLayout>
 
-    <!-- "Connected to : " and Run transaction button container -->
+    <!-- "Connected to : ", Run transaction and Go back button container -->
     <LinearLayout
         android:id="@id/run_txn_btn_container"
         android:layout_width="match_parent"
@@ -87,7 +87,6 @@
         android:orientation="vertical"
         android:layout_alignParentBottom="true"
         android:layout_margin="@dimen/activity_vertical_margin"
-        android:visibility="gone"
         >
         <TextView
             android:id="@+id/textReaderId"
@@ -108,7 +107,19 @@
             android:layout_alignParentBottom="true"
             android:textAllCaps="false"
             android:textColor="@color/sdk_white"
-
+            android:visibility="gone"
+            />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onGoBack"
+            android:id="@+id/go_back"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:background="@drawable/pph_blue_btn_selector"
+            android:text="@string/go_back"
+            android:layout_alignParentBottom="true"
+            android:textAllCaps="false"
+            android:textColor="@color/sdk_white"
             />
     </LinearLayout>
 

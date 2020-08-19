@@ -53,6 +53,15 @@ public class BTPrintManagement {
     }
 
     /**
+     * What we want to do when receipt has been printed.
+     */
+    private static Runnable receiptPrinted = null;
+
+    public static final void setreceiptPrintedBehaviour(Runnable receiptPrinted_in) {
+        receiptPrinted = receiptPrinted_in;
+    }
+
+    /**
      * This handler is basically a reaction of GUI to different BT events.
      */
     private static final Handler receiptPrinterActions = new Handler() {
@@ -341,6 +350,11 @@ public class BTPrintManagement {
         SendDataByte(PrinterCommand.POS_Print_Text(textToPrint, BTPrinterConstants.UTF16, BTPrinterConstants.WEST_EUR, 0, 0, 0));
         SendDataByte(PrinterCommand.POS_Set_Cut(1));
         SendDataByte(PrinterCommand.POS_Set_PrtInit());
+
+        if (receiptPrinted != null) {
+            receiptPrinted.run();
+            receiptPrinted = null;
+        }
     }
 
     /**

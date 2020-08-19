@@ -144,7 +144,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dp_16"
+            android:layout_margin="@dimen/dp_8"
             android:background="@drawable/pph_blue_btn_selector"
             android:onClick="onTestPrinter"
             android:layout_alignParentBottom="true"
@@ -157,13 +157,26 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/dp_16"
+            android:layout_margin="@dimen/dp_8"
             android:background="@drawable/pph_blue_btn_selector"
             android:onClick="onConnectCardReaderClicked"
             android:layout_alignParentBottom="true"
             android:id="@+id/connect_reader_button"
             android:visibility="gone"
             android:text="@string/connect_card_reader"
+            android:textAllCaps="false"
+            android:textColor="@color/sdk_white"
+            />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/dp_8"
+            android:background="@drawable/pph_blue_btn_selector"
+            android:onClick="onGoBack"
+            android:layout_alignParentBottom="true"
+            android:id="@+id/go_back"
+            android:visibility="visible"
+            android:text="@string/go_back"
             android:textAllCaps="false"
             android:textColor="@color/sdk_white"
             />

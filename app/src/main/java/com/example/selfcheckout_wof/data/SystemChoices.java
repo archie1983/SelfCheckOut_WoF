@@ -11,7 +11,7 @@ public enum SystemChoices {
     UNKNOWN(R.drawable.dragndrop, "UNKNOWN"),
     MANAGE_DATA(R.drawable.dragndrop, "Manage Data"),
     EXPORT_DB(R.drawable.dragndrop, "Export Data"),
-    LOGIN_PAYPAL(R.drawable.dragndrop, "Login To Paypal"),
+    LOGIN_PAYPAL(R.drawable.dragndrop, "Connect Card reader and Printer"),
     START_SALES(R.drawable.dragndrop, "Start Sales"),
     IMPORT_DB(R.drawable.dragndrop, "Import Data");
 

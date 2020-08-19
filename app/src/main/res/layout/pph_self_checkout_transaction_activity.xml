@@ -21,83 +21,40 @@
 
 
     <!-- main container -->
-    <ScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/toolbar">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
+        <!-- payment amount container -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_margin="@dimen/activity_vertical_margin"
+            android:layout_height="wrap_content">
 
-            <!-- payment amount container -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_margin="@dimen/activity_vertical_margin"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/btnPrintReceipt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="onPrintReceipt"
-                    android:text="Print Receipt" />
-
-                <TextView
-                    android:id="@+id/payment_amount_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/payment_amount"
-                    android:textColor="@color/sdk_black"
-                    />
-            </LinearLayout>
-
-            <!-- Steps container -->
-            <LinearLayout
+            <Button
+                android:id="@+id/btnPrintReceipt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <com.example.selfcheckout_wof.PPH.ui.StepView
-                    android:id="@+id/create_invoice_step"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/activity_vertical_margin"
-                    stepview:title_text="@string/step_1"
-                    stepview:code_text="@string/create_invoice"
-                    stepview:button_text="@string/create_invoice_title"
-                    stepview:enabled="false"
-                    />
+                android:onClick="onPrintReceipt"
+                android:text="Print Receipt" />
 
-                <com.example.selfcheckout_wof.PPH.ui.StepView
-                    android:id="@+id/create_txn_step"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/activity_vertical_margin"
-                    stepview:title_text="@string/step_2"
-                    stepview:code_text="@string/create_transaction"
-                    stepview:button_text="@string/create_transaction_title"
-                    stepview:enabled="false"
-                    />
+            <Button
+                android:id="@+id/btnPayByCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onPayByCard"
+                android:text="Pay by card" />
 
-                <com.example.selfcheckout_wof.PPH.ui.StepView
-                    android:id="@+id/accept_txn_step"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="@dimen/activity_vertical_margin"
-                    stepview:title_text="@string/step_3"
-                    stepview:code_text="@string/accept_transaction"
-                    stepview:button_text="@string/accept_transaction_title"
-                    stepview:enabled="false"
-                    />
-
-            </LinearLayout>
-
+            <TextView
+                android:id="@+id/payment_amount_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/payment_amount"
+                android:textColor="@color/sdk_black"
+                />
         </LinearLayout>
-
-
-    </ScrollView>
-
+    </LinearLayout>
 </RelativeLayout>
 
