@@ -30,9 +30,10 @@
     <string name="btnLoginPaypal">Log in to PayPal</string>
     <string name="btnExportDB">Export Database</string>
 
-    <string name="checkout_please_pay">Please use the card machine to pay</string>
+    <string name="checkout_please_pay">Is your order complete?</string>
     <string name="checkout_print_receipt">Print receipt</string>
-    <string name="checkout_pay">Pay!</string>
+    <string name="checkout_pay">Yes, let\'s pay</string>
+    <string name="checkout_continue">No, change order</string>
 
     <string name="title_activity_sales">SalesActivity</string>
     <string name="btnGoToAdmin">Admin Section</string>

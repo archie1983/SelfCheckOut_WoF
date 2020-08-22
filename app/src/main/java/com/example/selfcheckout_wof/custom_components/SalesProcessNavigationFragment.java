@@ -86,6 +86,11 @@ public class SalesProcessNavigationFragment extends Fragment {
     //private Button btnPreviousPage, btnNextPage, btnStartAgain,
     private Button btnGoToCheckout;
 
+    /**
+     * A button to go back to browsing instead of paying.
+     */
+    private Button btnContinue;
+
     private OnFragmentInteractionListener mListener;
 
     public SalesProcessNavigationFragment() {
@@ -149,6 +154,14 @@ public class SalesProcessNavigationFragment extends Fragment {
              */
             rootView = inflater.inflate(R.layout.fragment_sales_process_checkout, container, false);
             vContentLayout = rootView.findViewById(R.id.vContentLayout);
+            btnContinue = rootView.findViewById(R.id.btnContinue);
+
+            btnContinue.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    requestPageLoad(0, SalesActivity.TOP_LEVEL_ITEMS);
+                }
+            });
         } else {
             /**
              * If we want normal sales process, then it's going to be either the current order
@@ -472,7 +485,7 @@ public class SalesProcessNavigationFragment extends Fragment {
                                     }
                                     @Override
                                     public int getImage_resource() {
-                                        return R.drawable.dragndrop;
+                                        return R.drawable.ic_green_arrow_right;
                                     }
                                     @Override
                                     public String getImage_path() {

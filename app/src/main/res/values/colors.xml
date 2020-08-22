@@ -35,4 +35,7 @@
     <color name="sdk_default_tab_bg">#94B8B8</color>
     <color name="sdk_transparent">#00000000</color>
     <color name="btn_pressed_dark_blue">#006591</color>
+
+    <color name="amountToPay">#40D547</color>
+    <color name="amountToPay_shade">#40A5A7</color>
 </resources>

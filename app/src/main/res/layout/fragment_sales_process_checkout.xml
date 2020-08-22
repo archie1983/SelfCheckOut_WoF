@@ -25,13 +25,24 @@ android:orientation="vertical">
             android:layout_height="109dp"
             android:text="@string/checkout_please_pay"
             android:textSize="@dimen/text_32" />
-
-        <Button
-            android:id="@+id/btnPay"
+        <LinearLayout
+            android:id="@+id/hButtonLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onPay"
-            android:text="@string/checkout_pay" />
+            android:orientation="horizontal"
+            android:gravity="center">
+            <Button
+                android:id="@+id/btnContinue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/checkout_continue" />
+            <Button
+                android:id="@+id/btnPay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onPay"
+                android:text="@string/checkout_pay" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
 </LinearLayout>

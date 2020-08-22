@@ -23,6 +23,7 @@ import com.example.selfcheckout_wof.PPH.ui.VaultActivity;
 import com.example.selfcheckout_wof.btprinter_zj.BTPrintManagement;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
+import com.example.selfcheckout_wof.custom_components.utils.Formatting;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
 import com.paypal.paypalretailsdk.DeviceUpdate;
 import com.paypal.paypalretailsdk.FormFactor;
@@ -85,8 +86,19 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
         setContentView(R.layout.pph_self_checkout_transaction_activity);
 
         Log.d(LOG_TAG, "onCreate");
+
+        /*
+         * Let's see if we can get the payment amount from the sending intent
+         */
+        Bundle extras = getIntent().getExtras();
+        double amount = 0.0;
+
+        if (extras != null) {
+            amount = extras.getDouble(SelfCheckoutChargeActivity.INTENT_TRANX_TOTAL_AMOUNT, 0.0);
+        }
+
         TextView paymentAmountText = (TextView) findViewById(R.id.payment_amount_text);
-        paymentAmountText.setText(getString(R.string.payment_amount) + " (" + NumberFormat.getCurrencyInstance().getCurrency().getSymbol() + ")");
+        paymentAmountText.setText(getString(R.string.payment_amount) + " :" + NumberFormat.getCurrencyInstance().getCurrency().getSymbol() + " " + amount);
 
         sharedPrefs = getSharedPreferences(OfflinePayActivity.PREF_NAME, Context.MODE_PRIVATE);
     }
@@ -133,6 +145,8 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
                     }
                 }
             });
+
+            onPayByCard(null);
         }
     }
 

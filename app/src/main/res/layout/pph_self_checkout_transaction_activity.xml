@@ -33,7 +33,7 @@
             android:layout_margin="@dimen/activity_vertical_margin"
             android:layout_height="wrap_content">
 
-            <Button
+            <!--Button
                 android:id="@+id/btnPrintReceipt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,14 +45,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="onPayByCard"
-                android:text="Pay by card" />
+                android:text="Pay by card" /-->
 
             <TextView
                 android:id="@+id/payment_amount_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/payment_amount"
-                android:textColor="@color/sdk_black"
+                android:textColor="@color/amountToPay"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:shadowColor="@color/amountToPay_shade"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="2" />
                 />
         </LinearLayout>
     </LinearLayout>
