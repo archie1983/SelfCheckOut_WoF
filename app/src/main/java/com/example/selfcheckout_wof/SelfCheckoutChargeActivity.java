@@ -79,6 +79,18 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
     private String tagString = "";
     private String mVaultId = "";
 
+    /**
+     * We'll want to keep track of where we're at with the payment.
+     */
+    private enum PaymentStep {
+        IDLE,
+        INVOICE_CREATED,
+        TRANSACTION_CREATED,
+        PAYMENT_STARTED,
+        TRANSACTION_ACCEPTED;
+    }
+    private PaymentStep currentPaymentStatus = PaymentStep.IDLE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,35 +130,44 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
          * Extracting the total amount tha we need to charge for.
          */
         Intent i= getIntent();
-        orderAmount = i.getDoubleExtra(INTENT_TRANX_TOTAL_AMOUNT, 0.0);
 
-        if(sharedPrefs.getBoolean(OfflinePayActivity.OFFLINE_MODE,false))
-        {
-            if (RetailSDK.getTransactionManager().getOfflinePaymentEligibility()){
-                RetailSDK.getTransactionManager().startOfflinePayment(new TransactionManager.OfflinePaymentStatusCallback() {
+        /*
+         * If we came here because we have an order to charge, then do that, otherwise not.
+         * ALso we only want to start the process if we're not in the middle of it.
+         */
+        if (i.hasExtra(INTENT_TRANX_TOTAL_AMOUNT) && currentPaymentStatus == PaymentStep.IDLE) {
+            orderAmount = i.getDoubleExtra(INTENT_TRANX_TOTAL_AMOUNT, 0.0);
+
+            System.out.println("AE: orderAmount = " + Double.toString(orderAmount) + " i.hasExtra(INTENT_TRANX_TOTAL_AMOUNT) = " + i.hasExtra(INTENT_TRANX_TOTAL_AMOUNT));
+
+            if(sharedPrefs.getBoolean(OfflinePayActivity.OFFLINE_MODE,false))
+            {
+                if (RetailSDK.getTransactionManager().getOfflinePaymentEligibility()){
+                    RetailSDK.getTransactionManager().startOfflinePayment(new TransactionManager.OfflinePaymentStatusCallback() {
+                        @Override
+                        public void offlinePaymentStatus(RetailSDKException error, OfflinePaymentInfo offlinePaymentInfo) {
+                            if (error != null) {
+                                Toast.makeText(getApplicationContext(), error.getDeveloperMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                } else {
+                    Toast.makeText(getApplicationContext(), "Merchant not whitelisted for offline payments", Toast.LENGTH_LONG).show();
+                }
+            }else{
+                RetailSDK.getTransactionManager().stopOfflinePayment(new TransactionManager.OfflinePaymentStatusCallback()
+                {
                     @Override
-                    public void offlinePaymentStatus(RetailSDKException error, OfflinePaymentInfo offlinePaymentInfo) {
+                    public void offlinePaymentStatus(RetailSDKException error, OfflinePaymentInfo offlinePaymentInfo)
+                    {
                         if (error != null) {
                             Toast.makeText(getApplicationContext(), error.getDeveloperMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
-            } else {
-                Toast.makeText(getApplicationContext(), "Merchant not whitelisted for offline payments", Toast.LENGTH_LONG).show();
-            }
-        }else{
-            RetailSDK.getTransactionManager().stopOfflinePayment(new TransactionManager.OfflinePaymentStatusCallback()
-            {
-                @Override
-                public void offlinePaymentStatus(RetailSDKException error, OfflinePaymentInfo offlinePaymentInfo)
-                {
-                    if (error != null) {
-                        Toast.makeText(getApplicationContext(), error.getDeveloperMessage(), Toast.LENGTH_LONG).show();
-                    }
-                }
-            });
 
-            onPayByCard(null);
+                onPayByCard(null);
+            }
         }
     }
 
@@ -202,6 +223,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
             }
         }
 
+        currentPaymentStatus = PaymentStep.INVOICE_CREATED;
         Log.d(LOG_TAG, "AE2 : Invoice created");
     }
 
@@ -219,11 +241,12 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
                         SelfCheckoutChargeActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "create transaction error: " + errorTxt, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "create transaction error4: " + errorTxt, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }else{
                         currentTransaction = context;
+                        currentPaymentStatus = PaymentStep.TRANSACTION_CREATED;
                         acceptTransaction();
                     }
                 }
@@ -240,11 +263,12 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
                         SelfCheckoutChargeActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "create transaction error: " + errorTxt, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "create transaction error5: " + errorTxt, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }else{
                         currentTransaction = context;
+                        currentPaymentStatus = PaymentStep.TRANSACTION_CREATED;
                         Log.d(LOG_TAG, "AE2 : Current transaction acquired");
                         acceptTransaction();
                     }
@@ -339,7 +363,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
                         SelfCheckoutChargeActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "create transaction error: " + errorTxt, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "create transaction error2: " + errorTxt, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }else{
@@ -359,7 +383,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
                         SelfCheckoutChargeActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(getApplicationContext(), "create transaction error: " + errorTxt, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "create transaction error1: " + errorTxt, Toast.LENGTH_SHORT).show();
                             }
                         });
                     }else{
@@ -400,6 +424,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
         currentTransaction.setCompletedHandler(new TransactionContext.TransactionCompletedCallback() {
             @Override
             public void transactionCompleted(RetailSDKException error, TransactionRecord record) {
+                currentPaymentStatus = PaymentStep.TRANSACTION_ACCEPTED;
                 SelfCheckoutChargeActivity.this.transactionCompleted(error, record);
             }
         });
@@ -447,6 +472,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
                 options.setVaultCustomerId(customerId);
             }
         }
+        currentPaymentStatus = PaymentStep.PAYMENT_STARTED;
         currentTransaction.beginPayment(options);
     }
 
@@ -459,7 +485,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
                 @Override
                 public void run()
                 {
-                    Toast.makeText(getApplicationContext(), "transaction error: " + errorTxt, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "transaction error3: " + errorTxt, Toast.LENGTH_SHORT).show();
                     finish();
                     startActivity(getIntent());
                 }
@@ -473,6 +499,7 @@ public class SelfCheckoutChargeActivity extends BTPrintingBaseActivity
                 public void run() {
                     UsersSelectedChoice.clearCurrentMeal();
                     UsersSelectedChoice.clearOrder();
+                    currentPaymentStatus = PaymentStep.IDLE;
                     goBackToSales();
                 }
             });
