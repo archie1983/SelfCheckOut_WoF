@@ -507,6 +507,11 @@ public class SalesProcessNavigationFragment extends Fragment {
                                     public int getPage() {
                                         return 0;
                                     }
+
+                                    @Override
+                                    public String getBarCode() {
+                                        return "";
+                                    }
                                 };
 
                                 action = new ActionForSelectionGUI(pg) {

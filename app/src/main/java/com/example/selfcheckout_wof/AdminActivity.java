@@ -137,7 +137,8 @@ public class AdminActivity extends AppCompatActivity {
      * @param view
      */
     public void onStartSales(View view) {
-        if (cardReaderConnected && printerConnected) {
+        //if (cardReaderConnected && printerConnected) {
+        if (true) { //# Restore the line above for production deployment
             Intent showSalesActivity = new Intent(this, SalesActivity.class);
             startActivity(showSalesActivity);
         } else {

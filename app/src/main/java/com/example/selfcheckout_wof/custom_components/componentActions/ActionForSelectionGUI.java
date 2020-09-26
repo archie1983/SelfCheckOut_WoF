@@ -35,10 +35,13 @@ public class ActionForSelectionGUI {
      * Checks if we can still add a goods item belonging to its parent category
      * on the current page and adds it if it's possible.
      *
+     * It's a public static method, because we also want to add items to the
+     * current order with a scanner and scanning takes place on the SalesActivity.
+     *
      * @param pgSelectedItem
      * @return
      */
-    private boolean addSelectedItem(PurchasableGoods pgSelectedItem) {
+    public static boolean addSelectedItem(PurchasableGoods pgSelectedItem) {
         /*
          * How many of this category items can we have selected?
          */

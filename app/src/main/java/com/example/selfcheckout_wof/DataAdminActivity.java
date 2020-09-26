@@ -1,10 +1,14 @@
 package com.example.selfcheckout_wof;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
@@ -16,6 +20,8 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemView;
 import com.example.selfcheckout_wof.custom_components.AdmSalesItemsListFragment;
 import com.example.selfcheckout_wof.custom_components.componentActions.AdmSalesItemAction;
@@ -115,6 +121,7 @@ public class DataAdminActivity extends AppCompatActivity
     public void onAddOrEditMainCategory(View view) {
         String mainCatText = ((EditText)findViewById(R.id.txtCatLabel)).getText().toString();
         String itemDescription = ((EditText)findViewById(R.id.txtDescription)).getText().toString();
+        String itemBarCode = ((EditText)findViewById(R.id.txtBarCode)).getText().toString();
 
         long price;
         try {
@@ -155,6 +162,7 @@ public class DataAdminActivity extends AppCompatActivity
             selectedSalesItem.price = price;
             selectedSalesItem.page = page;
             selectedSalesItem.description = itemDescription;
+            selectedSalesItem.barCode = itemBarCode;
 
             /*
              * Creating a copy of the modified sales item, because we're passing
@@ -178,7 +186,8 @@ public class DataAdminActivity extends AppCompatActivity
                     itemDescription,
                     multi_choice_number,
                     price,
-                    page);
+                    page,
+                    itemBarCode);
             /**
              * Adding a sales item and updating list in a separate thread because
              * Room doesn't allow running db stuff on the main thread.
@@ -213,6 +222,7 @@ public class DataAdminActivity extends AppCompatActivity
         ((EditText)findViewById(R.id.txtPage)).setText("");
         ((EditText)findViewById(R.id.txtPrice)).setText("");
         ((EditText)findViewById(R.id.txtDescription)).setText("");
+        ((EditText)findViewById(R.id.txtBarCode)).setText("");
 
         /*
          * Parent category
@@ -297,6 +307,12 @@ public class DataAdminActivity extends AppCompatActivity
          */
         EditText txtDescription = ((EditText)findViewById(R.id.txtDescription));
         txtDescription.setText(salesItem.description);
+
+        /*
+         * bar code
+         */
+        EditText txtBarCode = ((EditText)findViewById(R.id.txtBarCode));
+        txtBarCode.setText(salesItem.barCode);
 
         /*
          * number of multi selectable items on the page
@@ -530,6 +546,7 @@ public class DataAdminActivity extends AppCompatActivity
     @Override
     public void onActivityResult(int requestCode, int resultCode,
                                  Intent resultData) {
+        super.onActivityResult(requestCode, resultCode, resultData);
 
         // The ACTION_OPEN_DOCUMENT intent was sent with the request code
         // READ_REQUEST_CODE. If the request code seen here doesn't match, it's the

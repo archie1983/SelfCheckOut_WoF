@@ -66,6 +66,16 @@ public class CheckOutDBCache extends Application {
     };
 
     /**
+     * Migration for when I added a bar code column for the sales items class.
+     */
+    static final Migration MIGRATION_2_3 = new Migration(2, 3) {
+        @Override
+        public void migrate(SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE SalesItems ADD COLUMN bar_code CHAR(30)");
+        }
+    };
+
+    /**
      * Returns the database instance. This function has to be public,
      * because we will be accessing AdminActivity in a static context
      * and then using this function to get db instance so that we can
@@ -78,7 +88,7 @@ public class CheckOutDBCache extends Application {
             db_instance = Room.databaseBuilder(getContext(),
                     AppDatabase.class, "sales-items")
                     //.fallbackToDestructiveMigration()
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .build();
         }
 
@@ -300,6 +310,21 @@ public class CheckOutDBCache extends Application {
         final AppDatabase db = getDBInstance();
         if (db != null) {
             salesItem = db.salesItemsDao().getSalesItem(sid);
+        }
+        return salesItem;
+    }
+
+    /**
+     * Returns a sales item looked up by its bar code ID.
+     *
+     * @param bcid
+     * @return
+     */
+    public SalesItems getSalesItemByID(String bcid) {
+        SalesItems salesItem = null;
+        final AppDatabase db = getDBInstance();
+        if (db != null) {
+            salesItem = db.salesItemsDao().getSalesItem(bcid);
         }
         return salesItem;
     }

@@ -9,15 +9,23 @@ import androidx.fragment.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
+import android.widget.Toast;
 
 import com.example.selfcheckout_wof.custom_components.SalesProcessNavigationFragment;
 import com.example.selfcheckout_wof.custom_components.UsersSelectedChoice;
+import com.example.selfcheckout_wof.custom_components.componentActions.ActionForSelectionGUI;
 import com.example.selfcheckout_wof.custom_components.componentActions.ConfiguredMeal;
+import com.example.selfcheckout_wof.custom_components.utils.CheckOutDBCache;
+import com.example.selfcheckout_wof.data.DBThread;
 import com.example.selfcheckout_wof.data.PurchasableGoods;
+import com.example.selfcheckout_wof.data.SalesItems;
 
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -216,5 +224,67 @@ public class SalesActivity extends AppCompatActivity
     @Override
     public void onFragmentInteraction(SalesProcessNavigationFragment.SalesProcesses process, int pageNumber, int parentId) {
         displayAvailableSalesItemsOrCurrentOrder(pageNumber, parentId, process);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        Log.i("key pressed", String.valueOf(event.getKeyCode()));
+        return super.dispatchKeyEvent(event);
+    }
+
+    private static String scannedCode = "";
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_1:
+                scannedCode += "1";
+                return true;
+            case KeyEvent.KEYCODE_2:
+                scannedCode += "2";
+                return true;
+            case KeyEvent.KEYCODE_3:
+                scannedCode += "3";
+                return true;
+            case KeyEvent.KEYCODE_4:
+                scannedCode += "4";
+                return true;
+            case KeyEvent.KEYCODE_5:
+                scannedCode += "5";
+                return true;
+            case KeyEvent.KEYCODE_6:
+                scannedCode += "6";
+                return true;
+            case KeyEvent.KEYCODE_7:
+                scannedCode += "7";
+                return true;
+            case KeyEvent.KEYCODE_8:
+                scannedCode += "8";
+                return true;
+            case KeyEvent.KEYCODE_9:
+                scannedCode += "9";
+                return true;
+            case KeyEvent.KEYCODE_0:
+                scannedCode += "0";
+                return true;
+            case KeyEvent.KEYCODE_ENTER:
+                Log.i("scanned code", scannedCode);
+                Toast.makeText(getApplicationContext(), scannedCode, Toast.LENGTH_SHORT).show();
+
+                DBThread.addTask(new Runnable() {
+                     @Override
+                     public void run() {
+                         SalesItems sales_item = CheckOutDBCache.getInstance().getSalesItemByID(scannedCode);
+                         ActionForSelectionGUI.addSelectedItem(sales_item);
+                         scannedCode = "";
+
+                         displayAvailableSalesItemsOrCurrentOrder(0, SalesActivity.TOP_LEVEL_ITEMS, SalesProcessNavigationFragment.SalesProcesses.SEE_ORDER);
+                         displayAvailableSalesItemsOrCurrentOrder(0, SalesActivity.TOP_LEVEL_ITEMS, SalesProcessNavigationFragment.SalesProcesses.LOAD_PAGE);
+                     }
+                 });
+
+                return true;
+            default:
+                return super.onKeyUp(keyCode, event);
+        }
     }
 }

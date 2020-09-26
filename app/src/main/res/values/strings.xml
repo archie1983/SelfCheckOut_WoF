@@ -13,6 +13,7 @@
     <string name="enter_item_page">Page</string>
     <string name="enter_item_multi_choice_number">Multi choice number</string>
     <string name="enter_item_description">Item Description</string>
+    <string name="enter_bar_code">Click here and scan bar code</string>
     <string name="choose_cat_img">Choose Category Image</string>
     <string name="btnEditSalesItem">Edit</string>
     <string name="btnEditMeal">Edit</string>

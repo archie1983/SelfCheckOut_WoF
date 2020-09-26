@@ -38,6 +38,9 @@ public interface SalesItemsDao {
     @Query("SELECT * FROM salesitems WHERE si_id=:sid")
     SalesItems getSalesItem(int sid);
 
+    @Query("SELECT * FROM salesitems WHERE bar_code=:bcid")
+    SalesItems getSalesItem(String bcid);
+
     @Insert
     void insertAll(SalesItems... salesItems);
 

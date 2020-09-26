@@ -28,6 +28,9 @@ public class SalesItems implements PurchasableGoods {
     @ColumnInfo(name = "item_description")
     public String description;
 
+    @ColumnInfo(name = "bar_code")
+    public String barCode;
+
     @ColumnInfo(name = "picture_url")
     public String pictureUrl;
 
@@ -55,6 +58,7 @@ public class SalesItems implements PurchasableGoods {
      */
     public SalesItems(SalesItems salesItem) {
         this.pictureUrl = salesItem.pictureUrl;
+        this.barCode = salesItem.barCode;
         this.label = salesItem.label;
         this.si_id = salesItem.si_id;
         this.price = salesItem.price;
@@ -82,7 +86,8 @@ public class SalesItems implements PurchasableGoods {
                                             String description,
                                             int numberOfMultiSelectableItems,
                                             long price,
-                                            int page
+                                            int page,
+                                            String barCode
     ) {
         SalesItems s = new SalesItems();
         s.label = label;
@@ -92,6 +97,7 @@ public class SalesItems implements PurchasableGoods {
         s.price = price;
         s.pictureUrl = pictureUrl;
         s.page = page;
+        s.barCode = barCode;
 
         return s;
     }
@@ -198,4 +204,11 @@ public class SalesItems implements PurchasableGoods {
     public int getPage() {
         return page;
     }
+
+    /**
+     * The bard code of the item.
+     * @return
+     */
+    @Override
+    public String getBarCode() { return barCode; }
 }

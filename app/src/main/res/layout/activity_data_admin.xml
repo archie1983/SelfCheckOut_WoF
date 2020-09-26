@@ -36,6 +36,15 @@ tools:context=".AdminActivity">
                 android:importantForAutofill="no"
                 android:inputType="text" />
 
+            <EditText
+                android:id="@+id/txtBarCode"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="@string/enter_bar_code"
+                android:importantForAutofill="no"
+                android:inputType="text" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

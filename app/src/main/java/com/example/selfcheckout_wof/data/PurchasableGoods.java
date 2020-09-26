@@ -47,4 +47,10 @@ public interface PurchasableGoods {
      * @return
      */
     public int getPage();
+
+    /**
+     * The bard code of the item.
+     * @return
+     */
+    public String getBarCode();
 }
